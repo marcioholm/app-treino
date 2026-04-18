@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import MKLogo from '@/components/MKLogo';
 
 export default function Login() {
     const [isRegister, setIsRegister] = useState(false);
@@ -90,7 +89,9 @@ export default function Login() {
                     {/* Logo and branding */}
                     <div className="text-center space-y-4">
                         <div className="flex justify-center">
-                            <MKLogo size="xl" />
+                            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#D4537E] to-[#993556] flex items-center justify-center shadow-lg">
+                                <span className="text-white font-bold">M&K</span>
+                            </div>
                         </div>
                         <div>
                             <h1 className="text-4xl font-extrabold text-white tracking-tight">
