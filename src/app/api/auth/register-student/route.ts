@@ -17,9 +17,15 @@ export async function POST(req: Request) {
         const body = await req.json();
         const { name, email, password, phone, trainerId } = registerSchema.parse(body);
 
-        // Verify trainer exists
-        const trainer = await prisma.user.findUnique({
-            where: { id: trainerId, role: 'TRAINER' },
+        // Verify trainer exists - search by studentCode or id
+        let trainer = await prisma.user.findFirst({
+            where: { 
+                OR: [
+                    { id: trainerId },
+                    { studentCode: trainerId.toUpperCase() }
+                ],
+                role: { in: ['TRAINER', 'OWNER_PERSONAL'] }
+            },
         });
 
         if (!trainer) {
