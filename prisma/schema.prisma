@@ -22,16 +22,17 @@ model Tenant {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  tenantId  String
-  name      String
-  email     String   @unique
-  password  String
-  role      Role     @default(TRAINER)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  student   Student?
-  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  email       String   @unique
+  password    String
+  role        Role     @default(TRAINER)
+  studentCode String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  student     Student?
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
 model Student {
