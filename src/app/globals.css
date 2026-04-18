@@ -6,35 +6,29 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
-  /* M&K Fitness Colors */
-  --color-mk-pink: #D4537E;
-  --color-mk-pink-dark: #993556;
-  --color-mk-pink-light: #FDE8EE;
-  --color-mk-black: #1a1a1a;
-  --color-mk-white: #ffffff;
-
-  --color-primary-50: #FDE8EE;
-  --color-primary-100: #FBD0DE;
-  --color-primary-200: #F7A9BF;
-  --color-primary-300: #F2829F;
-  --color-primary-400: #ED5B80;
-  --color-primary-500: #D4537E;
+  /* M&K Fitness Center — Brand Colors */
+  --color-primary-50: #FBEAF0;
+  --color-primary-100: #F4C0D1;
+  --color-primary-200: #ED93B1;
+  --color-primary-400: #D4537E;
+  --color-primary-500: #C4436E;
   --color-primary-600: #993556;
-  --color-primary-700: #6D273F;
+  --color-primary-700: #72243E;
+  --color-primary-900: #4B1528;
+
+  --color-surface: #ffffff;
+  --color-surface-dark: #1a1a1a;
 }
 
 :root {
-  --background: #fafafa;
+  --background: #f9f5f7;
   --foreground: #1a1a1a;
-  --mk-pink: #D4537E;
-  --mk-pink-dark: #993556;
-  --mk-pink-light: #FDE8EE;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #1a1a1a;
-    --foreground: #ffffff;
+    --foreground: #f9f5f7;
   }
 }
 
@@ -62,7 +56,6 @@ html, body {
   background-clip: text;
 }
 
-/* Fix next.js wrapper height */
 #__next {
   height: 100%;
 }

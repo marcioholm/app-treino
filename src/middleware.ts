@@ -17,7 +17,7 @@ export async function middleware(request: NextRequest) {
     }
 
     // Get token from cookies
-    const token = request.cookies.get('trainer_os_token')?.value;
+    const token = request.cookies.get('mk_app_token')?.value;
     // Fallback to Authorization header API requests
     const authHeader = request.headers.get('authorization');
     const finalToken = token || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);

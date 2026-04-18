@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth/jwt';
 export async function GET(req: Request) {
     try {
         const authHeader = req.headers.get('authorization');
-        const tokenCookie = req.headers.get('cookie')?.split('trainer_os_token=')[1]?.split(';')[0];
+        const tokenCookie = req.headers.get('cookie')?.split('mk_app_token=')[1]?.split(';')[0];
         const finalToken = tokenCookie || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
 
         if (!finalToken) {

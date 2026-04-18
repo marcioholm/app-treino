@@ -74,140 +74,143 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-white to-pink-100 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-pink-100">
+        <div className="min-h-screen flex items-center justify-center bg-[#1a1a1a] py-12 px-4">
+            <div className="max-w-md w-full space-y-6">
                 <div className="text-center">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#D4537E] to-[#993556] rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                        <span className="text-white text-2xl font-bold">M&K</span>
-                    </div>
-                    <h2 className="text-2xl font-bold text-[#1a1a1a]">
-                        MeuTreino
-                    </h2>
-                    <p className="mt-2 text-sm text-gray-500">
-                        {isRegister ? 'Crie sua conta' : 'Bem-vinda à M&K!'}
+                    <h1 className="text-4xl font-extrabold text-white tracking-tight">
+                        M<span className="text-[#D4537E]">&</span>K
+                    </h1>
+                    <p className="text-[#D4537E] font-semibold text-sm tracking-widest uppercase mt-1">
+                        Fitness Center
                     </p>
-                    <p className="text-xs text-[#D4537E] font-medium mt-1">M&K Fitness Center</p>
+                    <p className="text-gray-400 text-xs mt-2">MeuTreino App</p>
                 </div>
 
-                <div className="flex rounded-full bg-pink-50 p-1">
-                    <button
-                        type="button"
-                        onClick={() => { setIsRegister(false); setError(''); }}
-                        className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all ${
-                            !isRegister ? 'bg-[#D4537E] text-white shadow-md' : 'text-gray-500'
-                        }`}
-                    >
-                        Login
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => { setIsRegister(true); setError(''); }}
-                        className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all ${
-                            isRegister ? 'bg-[#D4537E] text-white shadow-md' : 'text-gray-500'
-                        }`}
-                    >
-                        Cadastrar
-                    </button>
+                <div className="bg-white rounded-2xl p-8 space-y-5 shadow-xl">
+                    <div className="flex rounded-lg bg-gray-100 p-1">
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegister(false); setError(''); }}
+                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                                !isRegister ? 'bg-white text-[#D4537E] shadow-sm font-semibold' : 'text-gray-500'
+                            }`}
+                        >
+                            Login
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegister(true); setError(''); }}
+                            className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                                isRegister ? 'bg-white text-[#D4537E] shadow-sm font-semibold' : 'text-gray-500'
+                            }`}
+                        >
+                            Cadastrar
+                        </button>
+                    </div>
+
+                    {isRegister ? (
+                        <form className="space-y-4" onSubmit={handleRegister}>
+                            {error && (
+                                <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm text-center">
+                                    {error}
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-[#D4537E]"
+                                    placeholder="Seu nome"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                                <input
+                                    type="email"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-[#D4537E]"
+                                    placeholder="seu@email.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                                <input
+                                    type="password"
+                                    required
+                                    minLength={6}
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-[#D4537E]"
+                                    placeholder="Mínimo 6 caracteres"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Código da Coach</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-[#D4537E]"
+                                    placeholder="Cole o código da sua coach"
+                                    value={trainerCode}
+                                    onChange={(e) => setTrainerCode(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#D4537E] hover:bg-[#993556] disabled:opacity-70 transition-colors"
+                            >
+                                {loading ? 'Criando conta...' : 'Criar minha conta'}
+                            </button>
+                        </form>
+                    ) : (
+                        <form className="space-y-5" onSubmit={handleLogin}>
+                            {error && (
+                                <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm text-center">
+                                    {error}
+                                </div>
+                            )}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
+                                <input
+                                    type="email"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-[#D4537E]"
+                                    placeholder="seu@email.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+                                <input
+                                    type="password"
+                                    required
+                                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-[#D4537E]"
+                                    placeholder="Sua senha"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-[#D4537E] hover:bg-[#993556] disabled:opacity-70 transition-colors"
+                            >
+                                {loading ? 'Entrando...' : 'Entrar'}
+                            </button>
+                        </form>
+                    )}
                 </div>
 
-                {isRegister ? (
-                    <form className="mt-8 space-y-4" onSubmit={handleRegister}>
-                        {error && (
-                            <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm text-center">
-                                {error}
-                            </div>
-                        )}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Nome completo</label>
-                            <input
-                                type="text"
-                                required
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
-                                placeholder="Seu nome"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                            <input
-                                type="email"
-                                required
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
-                                placeholder="seu@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                            <input
-                                type="password"
-                                required
-                                minLength={6}
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
-                                placeholder="Mínimo 6 caracteres"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Código da Coach</label>
-                            <input
-                                type="text"
-                                required
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
-                                placeholder="Cole o código da sua coach"
-                                value={trainerCode}
-                                onChange={(e) => setTrainerCode(e.target.value)}
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-[#D4537E] to-[#993556] hover:from-[#993556] hover:to-[#D4537E] disabled:opacity-70 transition-all shadow-md"
-                        >
-                            {loading ? 'Criando conta...' : 'Criar minha conta'}
-                        </button>
-                    </form>
-                ) : (
-                    <form className="mt-8 space-y-6" onSubmit={handleLogin}>
-                        {error && (
-                            <div className="bg-red-50 text-red-500 p-3 rounded-lg text-sm text-center">
-                                {error}
-                            </div>
-                        )}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail</label>
-                            <input
-                                type="email"
-                                required
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
-                                placeholder="seu@email.com"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-                            <input
-                                type="password"
-                                required
-                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
-                                placeholder="Sua senha"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-[#D4537E] to-[#993556] hover:from-[#993556] hover:to-[#D4537E] disabled:opacity-70 transition-all shadow-md"
-                        >
-                            {loading ? 'Entrando...' : 'Entrar'}
-                        </button>
-                    </form>
-                )}
+                <p className="text-center text-gray-500 text-xs">
+                    Academia exclusiva para mulheres · Arapoti/PR
+                </p>
             </div>
         </div>
     );

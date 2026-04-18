@@ -6,30 +6,30 @@ export default function PersonalLayout({ children }: { children: React.ReactNode
             <nav className="w-full md:w-64 bg-white border-r border-pink-100 flex flex-col justify-between hidden md:flex">
                 <div className="p-6">
                     <Link href="/personal/dashboard">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-10 h-10 bg-gradient-to-br from-[#D4537E] to-[#993556] rounded-xl flex items-center justify-center">
-                                <span className="text-white font-bold">M&K</span>
-                            </div>
-                            <div>
-                                <h1 className="text-lg font-bold text-[#1a1a1a]">MeuTreino</h1>
-                                <p className="text-xs text-[#D4537E]">M&K Fitness</p>
-                            </div>
+                        <div className="mb-8">
+                            <h1 className="text-2xl font-bold tracking-tight">
+                                <span className="text-[#1a1a1a]">M</span>
+                                <span className="text-[#D4537E]">&</span>
+                                <span className="text-[#1a1a1a]">K</span>
+                                <span className="text-gray-500 text-lg font-normal ml-2">Admin</span>
+                            </h1>
+                            <p className="text-xs text-[#D4537E] font-medium mt-1">M&K Fitness Center</p>
                         </div>
                     </Link>
                     <div className="space-y-1">
-                        <Link href="/personal/dashboard" className="block px-4 py-2.5 text-gray-700 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors font-medium">
+                        <Link href="/personal/dashboard" className="block px-4 py-2.5 text-[#993556] bg-[#FBEAF0] rounded-lg font-medium">
                             Dashboard
                         </Link>
-                        <Link href="/personal/students" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-pink-50 transition-colors">
+                        <Link href="/personal/students" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-[#FBEAF0] hover:text-[#D4537E] transition-colors">
                             Alunas
                         </Link>
-                        <Link href="/personal/anamnesis" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-pink-50 transition-colors">
+                        <Link href="/personal/anamnesis" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-[#FBEAF0] hover:text-[#D4537E] transition-colors">
                             Anamnese
                         </Link>
-                        <Link href="/personal/library" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-pink-50 transition-colors">
+                        <Link href="/personal/library" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-[#FBEAF0] hover:text-[#D4537E] transition-colors">
                             Biblioteca
                         </Link>
-                        <Link href="/personal/chat" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-pink-50 transition-colors">
+                        <Link href="/personal/chat" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-[#FBEAF0] hover:text-[#D4537E] transition-colors">
                             Mensagens
                         </Link>
                     </div>
@@ -47,12 +47,11 @@ export default function PersonalLayout({ children }: { children: React.ReactNode
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
                 <header className="md:hidden bg-white border-b border-pink-100 p-4 flex items-center justify-between">
                     <Link href="/personal/dashboard">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-[#D4537E] to-[#993556] rounded-lg flex items-center justify-center">
-                                <span className="text-white text-sm font-bold">M&K</span>
-                            </div>
-                            <h1 className="text-lg font-bold text-[#1a1a1a]">MeuTreino</h1>
-                        </div>
+                        <h1 className="text-xl font-bold tracking-tight">
+                            <span className="text-[#1a1a1a]">M</span>
+                            <span className="text-[#D4537E]">&</span>
+                            <span className="text-[#1a1a1a]">K</span>
+                        </h1>
                     </Link>
                     <button className="text-gray-600 p-2">
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

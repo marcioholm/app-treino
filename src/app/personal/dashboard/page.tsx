@@ -6,7 +6,7 @@ import { generateTrainerAlerts } from '@/lib/engine/alerts';
 
 export default async function PersonalDashboard() {
     const cookieStore = await cookies();
-    const tokenCookie = cookieStore.get('trainer_os_token')?.value;
+    const tokenCookie = cookieStore.get('mk_app_token')?.value;
     const payload = tokenCookie ? await verifyToken(tokenCookie) : null;
 
     if (!payload || (payload.role !== 'TRAINER' && payload.role !== 'OWNER_PERSONAL')) {

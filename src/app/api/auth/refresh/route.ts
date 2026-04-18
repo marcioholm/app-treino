@@ -4,7 +4,7 @@ import { verifyToken, signToken } from '@/lib/auth/jwt';
 export async function POST(req: Request) {
     try {
         const authHeader = req.headers.get('authorization');
-        const tokenCookie = req.headers.get('cookie')?.split('trainer_os_token=')[1]?.split(';')[0];
+        const tokenCookie = req.headers.get('cookie')?.split('mk_app_token=')[1]?.split(';')[0];
         const finalToken = tokenCookie || (authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null);
 
         if (!finalToken) {
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
 
         const response = NextResponse.json({ token: newToken });
 
-        response.cookies.set('trainer_os_token', newToken, {
+        response.cookies.set('mk_app_token', newToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',

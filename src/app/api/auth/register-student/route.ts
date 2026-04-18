@@ -77,7 +77,7 @@ export async function POST(req: Request) {
             token,
         });
 
-        response.cookies.set('trainer_os_token', token, {
+        response.cookies.set('mk_app_token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',

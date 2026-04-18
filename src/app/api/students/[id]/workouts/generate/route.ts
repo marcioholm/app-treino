@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth/jwt';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
-        const tokenCookie = req.headers.get('cookie')?.split('trainer_os_token=')[1]?.split(';')[0];
+        const tokenCookie = req.headers.get('cookie')?.split('mk_app_token=')[1]?.split(';')[0];
         const payload = tokenCookie ? await verifyToken(tokenCookie) : null;
 
         if (!payload) {

@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db/prisma';
 
 export default async function StudentAnalytics() {
     const cookieStore = await cookies();
-    const token = cookieStore.get('trainer_os_token')?.value;
+    const token = cookieStore.get('mk_app_token')?.value;
     const payload = token ? await verifyToken(token) : null;
 
     if (!payload || payload.role !== 'STUDENT') {

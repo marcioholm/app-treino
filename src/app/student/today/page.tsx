@@ -6,7 +6,7 @@ import { prisma } from '@/lib/db/prisma';
 
 export default async function StudentToday() {
     const cookieStore = await cookies();
-    const token = cookieStore.get('trainer_os_token')?.value;
+    const token = cookieStore.get('mk_app_token')?.value;
     const payload = token ? await verifyToken(token) : null;
 
     if (!payload || payload.role !== 'STUDENT') {
@@ -49,18 +49,18 @@ export default async function StudentToday() {
                     <span className="text-xs text-[#D4537E] font-medium">M&K Fitness</span>
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900">Olá, {student.user.name.split(' ')[0]}! 💪</h1>
-                <p className="text-gray-500 mt-1 text-sm">Vamos continuar evoluindo?</p>
+                <p className="text-gray-500 mt-1 text-sm">Vamos arrasar no treino hoje?</p>
             </header>
 
             {needsCheckIn && (
-                <div className="bg-gradient-to-r from-pink-50 to-purple-50 border border-pink-200 rounded-xl p-4 flex items-center justify-between shadow-sm">
+                <div className="bg-[#FBEAF0] border border-[#F4C0D1] rounded-xl p-4 flex items-center justify-between shadow-sm">
                     <div className="flex items-center gap-3">
-                        <div className="bg-[#D4537E]/10 text-[#D4537E] p-2 rounded-full">
+                        <div className="bg-[#F4C0D1] text-[#993556] p-2 rounded-full">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         </div>
                         <div>
-                            <h3 className="font-bold text-[#1a1a1a] text-sm">Check-in Semanal</h3>
-                            <p className="text-xs text-gray-500">Como você está se sentindo?</p>
+                            <h3 className="font-bold text-[#4B1528] text-sm">Check-in Semanal</h3>
+                            <p className="text-xs text-[#72243E]">Como você está se sentindo?</p>
                         </div>
                     </div>
                     <Link href="/student/checkin" className="bg-[#D4537E] hover:bg-[#993556] text-white text-xs font-bold px-4 py-2 rounded-lg shrink-0 transition-colors shadow-sm">
@@ -69,7 +69,7 @@ export default async function StudentToday() {
                 </div>
             )}
 
-            <div className="bg-gradient-to-br from-[#D4537E] to-[#993556] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden mt-4">
+            <div className="bg-gradient-to-br from-[#D4537E] to-[#72243E] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden mt-4">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-10 -mt-10"></div>
                 <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-8 -mb-8"></div>
 
@@ -79,7 +79,7 @@ export default async function StudentToday() {
                     <h2 className="text-3xl font-bold mb-2">A - Push</h2>
                     <p className="text-pink-100 text-sm mb-6">Peito, Ombros e Tríceps • 50 min</p>
 
-                    <Link href="/student/workout/mock-id" className="block w-full text-center bg-white text-[#D4537E] py-3.5 rounded-xl font-bold text-lg shadow-sm hover:bg-gray-50 transition-colors">
+                    <Link href="/student/workout/mock-id" className="block w-full text-center bg-white text-[#993556] py-3.5 rounded-xl font-bold text-lg shadow-sm hover:bg-gray-50 transition-colors">
                         Iniciar Treino
                     </Link>
                 </div>
