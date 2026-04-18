@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/jwt';
 import { prisma } from '@/lib/db/prisma';
+import ManifestoBanner from '@/components/ManifestoBanner';
 
 export default async function StudentToday() {
     const cookieStore = await cookies();
@@ -51,6 +52,8 @@ export default async function StudentToday() {
                 <h1 className="text-2xl font-bold text-gray-900">Olá, {student.user.name.split(' ')[0]}! 💪</h1>
                 <p className="text-gray-500 mt-1 text-sm">Vamos arrasar no treino hoje?</p>
             </header>
+
+            <ManifestoBanner />
 
             {needsCheckIn && (
                 <div className="bg-[#FBEAF0] border border-[#F4C0D1] rounded-xl p-4 flex items-center justify-between shadow-sm">
