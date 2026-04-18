@@ -1,18 +1,18 @@
 import { PrismaClient } from '@prisma/client';
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+declare global {
+  var prisma: PrismaClient | undefined;
+}
 
-const prismaClientSingleton = () => {
-  return new PrismaClient({
+function createPrismaClient() {
+  const client = new PrismaClient({
     log: ['error'],
-    datasources: {
-      db: {
-        url: process.env.DATABASE_URL || 'postgresql://postgres:hI494IxoEtu4a00Z@db.vlpbichjuuttxhfepjil.supabase.co:5432/postgres',
-      },
-    },
   });
-};
+  return client;
+}
 
-export const prisma = globalForPrisma.prisma ?? prismaClientSingleton();
+export const prisma = global.prisma ?? createPrismaClient();
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
+if (process.env.NODE_ENV !== 'production') {
+  global.prisma = prisma;
+}

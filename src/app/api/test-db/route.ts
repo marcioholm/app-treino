@@ -1,12 +1,28 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db/prisma';
+import { PrismaClient } from '@prisma/client';
 
 export async function GET() {
     try {
+        const prisma = new PrismaClient({
+            datasources: {
+                db: {
+                    url: process.env.DATABASE_URL,
+                },
+            },
+        });
+        
         const count = await prisma.user.count();
-        return NextResponse.json({ status: 'ok', users: count });
+        await prisma.$disconnect();
+        
+        return NextResponse.json({ 
+            status: 'ok', 
+            users: count,
+            dbUrl: process.env.DATABASE_URL ? 'exists' : 'missing'
+        });
     } catch (error: any) {
-        console.error('DB Error:', error.message);
-        return NextResponse.json({ status: 'error', error: error.message }, { status: 500 });
+        return NextResponse.json({ 
+            status: 'error', 
+            error: error.message 
+        }, { status: 500 });
     }
 }
