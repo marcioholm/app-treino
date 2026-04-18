@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -12,15 +12,19 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#D4537E",
+};
+
 export const metadata: Metadata = {
-  title: "TrainerOS",
-  description: "Plataforma completa para Personal Trainers",
+  title: "MeuTreino App · M&K Fitness Center",
+  description: "Seu treino na palma da mão — exclusivo para alunas da M&K Fitness Center",
   manifest: "/manifest.json",
-  themeColor: "#000000",
+  themeColor: "#D4537E",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "TrainerOS",
+    title: "MeuTreino M&K",
   },
 };
 
@@ -30,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-BR">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

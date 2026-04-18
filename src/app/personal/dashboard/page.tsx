@@ -70,7 +70,7 @@ export default async function PersonalDashboard() {
 
     const getAdherenceColor = (score: number) => {
         if (score >= 85) return 'text-green-600 bg-green-50';
-        if (score >= 50) return 'text-yellow-600 bg-yellow-50';
+        if (score >= 50) return 'text-pink-600 bg-pink-50';
         return 'text-red-600 bg-red-50';
     };
 
@@ -78,8 +78,8 @@ export default async function PersonalDashboard() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-                <Link href="/personal/students/new" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
-                    + Novo Aluno
+                <Link href="/personal/students/new" className="bg-[#D4537E] hover:bg-[#993556] text-white px-4 py-2 rounded-lg font-medium transition-colors shadow-sm">
+                    + Nova Aluna
                 </Link>
             </div>
 
@@ -111,7 +111,7 @@ export default async function PersonalDashboard() {
                             studentsWithAdherence.map((student) => (
                                 <div key={student.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                                     <div className="flex items-center gap-4">
-                                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold">
+                                        <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center text-[#D4537E] font-bold">
                                             {student.user.name.charAt(0).toUpperCase()}
                                         </div>
                                         <div>

@@ -74,24 +74,27 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 via-white to-pink-100 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-xl border border-pink-100">
                 <div className="text-center">
-                    <h2 className="text-3xl font-extrabold text-blue-600">
-                        TrainerOS
+                    <div className="mx-auto w-16 h-16 bg-gradient-to-br from-[#D4537E] to-[#993556] rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                        <span className="text-white text-2xl font-bold">M&K</span>
+                    </div>
+                    <h2 className="text-2xl font-bold text-[#1a1a1a]">
+                        MeuTreino
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
-                        {isRegister ? 'Crie sua conta' : 'Entre na sua conta'}
+                    <p className="mt-2 text-sm text-gray-500">
+                        {isRegister ? 'Crie sua conta' : 'Bem-vinda à M&K!'}
                     </p>
+                    <p className="text-xs text-[#D4537E] font-medium mt-1">M&K Fitness Center</p>
                 </div>
 
-                {/* Toggle */}
-                <div className="flex rounded-lg bg-gray-100 p-1">
+                <div className="flex rounded-full bg-pink-50 p-1">
                     <button
                         type="button"
                         onClick={() => { setIsRegister(false); setError(''); }}
-                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                            !isRegister ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+                        className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all ${
+                            !isRegister ? 'bg-[#D4537E] text-white shadow-md' : 'text-gray-500'
                         }`}
                     >
                         Login
@@ -99,8 +102,8 @@ export default function Login() {
                     <button
                         type="button"
                         onClick={() => { setIsRegister(true); setError(''); }}
-                        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
-                            isRegister ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-600'
+                        className={`flex-1 py-2 px-4 rounded-full text-sm font-medium transition-all ${
+                            isRegister ? 'bg-[#D4537E] text-white shadow-md' : 'text-gray-500'
                         }`}
                     >
                         Cadastrar
@@ -119,7 +122,7 @@ export default function Login() {
                             <input
                                 type="text"
                                 required
-                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
                                 placeholder="Seu nome"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
@@ -130,7 +133,7 @@ export default function Login() {
                             <input
                                 type="email"
                                 required
-                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
                                 placeholder="seu@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -142,19 +145,19 @@ export default function Login() {
                                 type="password"
                                 required
                                 minLength={6}
-                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
                                 placeholder="Mínimo 6 caracteres"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Código do Personal</label>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">Código da Coach</label>
                             <input
                                 type="text"
                                 required
-                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Cole o código do seu personal"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
+                                placeholder="Cole o código da sua coach"
                                 value={trainerCode}
                                 onChange={(e) => setTrainerCode(e.target.value)}
                             />
@@ -162,9 +165,9 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-70 transition-colors"
+                            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-[#D4537E] to-[#993556] hover:from-[#993556] hover:to-[#D4537E] disabled:opacity-70 transition-all shadow-md"
                         >
-                            {loading ? 'Criando conta...' : 'Criar conta'}
+                            {loading ? 'Criando conta...' : 'Criar minha conta'}
                         </button>
                     </form>
                 ) : (
@@ -179,7 +182,7 @@ export default function Login() {
                             <input
                                 type="email"
                                 required
-                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
                                 placeholder="seu@email.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
@@ -190,7 +193,7 @@ export default function Login() {
                             <input
                                 type="password"
                                 required
-                                className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent transition-all"
                                 placeholder="Sua senha"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
@@ -199,7 +202,7 @@ export default function Login() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-70 transition-colors"
+                            className="w-full py-3 px-4 border border-transparent text-sm font-medium rounded-xl text-white bg-gradient-to-r from-[#D4537E] to-[#993556] hover:from-[#993556] hover:to-[#D4537E] disabled:opacity-70 transition-all shadow-md"
                         >
                             {loading ? 'Entrando...' : 'Entrar'}
                         </button>
