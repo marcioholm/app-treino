@@ -1,7 +1,6 @@
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/jwt';
 import { prisma } from '@/lib/db/prisma';
-import MKLogo from '@/components/MKLogo';
 import { redirect } from 'next/navigation';
 
 export default async function TrainerCode() {
@@ -26,37 +25,63 @@ export default async function TrainerCode() {
         });
     }
 
-    const copyToClipboard = () => {
-        navigator.clipboard.writeText(studentCode || '');
-    };
-
     return (
-        <div className="p-8 max-w-md mx-auto space-y-8">
-            <div className="text-center">
-                <MKLogo size="xl" className="mx-auto mb-4" />
-                <h1 className="text-2xl font-bold text-gray-900">Código da Coach</h1>
-                <p className="text-gray-500 mt-2">Compartilhe este código com suas alunas</p>
+        <div style={{ padding: '2rem', maxWidth: '28rem', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <div style={{ 
+                    width: '4rem', 
+                    height: '4rem', 
+                    borderRadius: '0.75rem',
+                    background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 1rem'
+                }}>
+                    <span style={{ color: 'white', fontWeight: 'bold' }}>M&K</span>
+                </div>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#1a1a1a' }}>Código da Coach</h1>
+                <p style={{ color: '#6b7280', marginTop: '0.5rem' }}>Compartilhe este código com suas alunas</p>
             </div>
 
-            <div className="bg-gradient-to-br from-[#D4537E] to-[#993556] rounded-3xl p-8 text-center shadow-2xl">
-                <p className="text-pink-100 text-sm mb-2">Seu código único</p>
-                <p className="text-4xl font-extrabold text-white tracking-widest">{studentCode}</p>
-                <p className="text-pink-200 text-xs mt-4">M&K Fitness Center</p>
+            <div style={{ 
+                background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+                borderRadius: '1.5rem', 
+                padding: '2rem',
+                textAlign: 'center',
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+            }}>
+                <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.875rem', marginBottom: '0.5rem' }}>Seu código único</p>
+                <p style={{ color: 'white', fontSize: '2.25rem', fontWeight: '800', letterSpacing: '0.25em' }}>{studentCode}</p>
+                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginTop: '1rem' }}>M&K Fitness Center</p>
             </div>
 
             <button
-                onClick={copyToClipboard}
-                className="w-full py-4 px-6 bg-[#D4537E] hover:bg-[#993556] text-white font-semibold rounded-2xl transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-3"
+                onClick={() => navigator.clipboard.writeText(studentCode || '')}
+                style={{ 
+                    width: '100%', 
+                    padding: '1rem', 
+                    backgroundColor: '#D4537E',
+                    color: 'white',
+                    fontWeight: '600',
+                    borderRadius: '1rem',
+                    border: 'none',
+                    cursor: 'pointer',
+                    marginTop: '1.5rem'
+                }}
             >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
-                </svg>
-                Copiar código
+                📋 Copiar código
             </button>
 
-            <div className="bg-[#FBEAF0] rounded-2xl p-5 border border-[#F4C0D1]">
-                <p className="text-sm text-[#72243E]">
-                    <strong>Como funciona:</strong> Suas alunas devem inserir este código ao se cadastrarem no app. Isso as vincula automaticamente à sua conta.
+            <div style={{ 
+                backgroundColor: '#FBEAF0', 
+                borderRadius: '1rem', 
+                padding: '1.25rem',
+                marginTop: '1.5rem',
+                border: '1px solid #F4C0D1'
+            }}>
+                <p style={{ fontSize: '0.875rem', color: '#72243E' }}>
+                    <strong>Como funciona:</strong> Suas alunas devem inserir este código ao se cadastrarem no app.
                 </p>
             </div>
         </div>
