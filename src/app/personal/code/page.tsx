@@ -2,6 +2,7 @@ import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/jwt';
 import { prisma } from '@/lib/db/prisma';
 import { redirect } from 'next/navigation';
+import CopyButton from '@/components/CopyButton';
 
 export default async function TrainerCode() {
     const cookieStore = await cookies();
@@ -56,22 +57,7 @@ export default async function TrainerCode() {
                 <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.75rem', marginTop: '1rem' }}>M&K Fitness Center</p>
             </div>
 
-            <button
-                onClick={() => navigator.clipboard.writeText(studentCode || '')}
-                style={{ 
-                    width: '100%', 
-                    padding: '1rem', 
-                    backgroundColor: '#D4537E',
-                    color: 'white',
-                    fontWeight: '600',
-                    borderRadius: '1rem',
-                    border: 'none',
-                    cursor: 'pointer',
-                    marginTop: '1.5rem'
-                }}
-            >
-                📋 Copiar código
-            </button>
+            <CopyButton code={studentCode || ''} />
 
             <div style={{ 
                 backgroundColor: '#FBEAF0', 

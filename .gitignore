@@ -44,3 +44,41 @@ yarn-error.log*
 next-env.d.ts
 
 /src/generated/prisma
+
+# AI and IDE Agents
+.adal/
+.agents/
+.augment/
+.claude/
+.codebuddy/
+.commandcode/
+.continue/
+.cortex/
+.crush/
+.factory/
+.goose/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
+skills-lock.json
+skills/
+
+# Legacy Monorepo leftovers locally
+apps/
+packages/
+services/
