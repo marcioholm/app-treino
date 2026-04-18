@@ -11,7 +11,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const tenantId = payload.tenantId;
+        const tenantId = payload.tenantId!;
 
         const templates = await prisma.anamnesisTemplate.findFirst({
             where: { tenantId, isDefault: true },
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
         // Check if student already answered
         const existingAnswers = await prisma.anamnesisAnswer.count({
-            where: { studentId: payload.studentId }
+            where: { studentId: payload.studentId! }
         });
 
         return NextResponse.json({

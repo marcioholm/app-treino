@@ -19,9 +19,9 @@ export async function POST(req: Request) {
             answers.map((answer: any) =>
                 prisma.anamnesisAnswer.create({
                     data: {
-                        studentId: payload.studentId,
-                        templateId,
-                        questionId: answer.questionId,
+                        studentId: payload.studentId!,
+                        templateId: String(templateId),
+                        questionId: String(answer.questionId),
                         answerText: answer.answerText || null,
                         answerArray: answer.answerArray || [],
                     }
