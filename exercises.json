@@ -1,0 +1,305 @@
+[
+  {
+    "name": "Supino Reto Barra",
+    "group": "Peito",
+    "subgroup": "Supinos",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Barra Livre",
+    "tags": []
+  },
+  {
+    "name": "Supino Inclinado Halteres",
+    "group": "Peito",
+    "subgroup": "Supinos",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Halteres",
+    "tags": []
+  },
+  {
+    "name": "Crucifixo Máquina",
+    "group": "Peito",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Máquina / Cabos",
+    "tags": []
+  },
+  {
+    "name": "Voador",
+    "group": "Peito",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Crossover",
+    "group": "Peito",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Máquina / Cabos",
+    "tags": []
+  },
+  {
+    "name": "Puxada Frente",
+    "group": "Costas",
+    "subgroup": "Puxadas",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Remada Curvada Barra",
+    "group": "Costas",
+    "subgroup": "Remadas",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Barra Livre",
+    "tags": []
+  },
+  {
+    "name": "Terra",
+    "group": "Costas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": [
+      "lombar",
+      "composto"
+    ]
+  },
+  {
+    "name": "Barra Fixa",
+    "group": "Costas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Barra Livre",
+    "tags": []
+  },
+  {
+    "name": "Remada Baixa",
+    "group": "Costas",
+    "subgroup": "Remadas",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Agachamento Livre",
+    "group": "Pernas",
+    "subgroup": "Agachamentos",
+    "modality": "BODYWEIGHT",
+    "type": "STRENGTH",
+    "equipment": "Peso Corporal",
+    "tags": [
+      "joelho",
+      "composto"
+    ]
+  },
+  {
+    "name": "Leg Press 45",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Máquina / Cabos",
+    "tags": []
+  },
+  {
+    "name": "Cadeira Extensora",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Máquina / Cabos",
+    "tags": []
+  },
+  {
+    "name": "Mesa Flexora",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Máquina / Cabos",
+    "tags": []
+  },
+  {
+    "name": "Stiff",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": [
+      "lombar",
+      "posterior"
+    ]
+  },
+  {
+    "name": "Panturrilha Sentado",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Salto na Caixa",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "BODYWEIGHT",
+    "type": "STRENGTH",
+    "equipment": "Peso Corporal",
+    "tags": [
+      "joelho",
+      "impacto"
+    ]
+  },
+  {
+    "name": "Avanço",
+    "group": "Pernas",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Desenvolvimento Halteres",
+    "group": "Ombros",
+    "subgroup": "Desenvolvimentos",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Halteres",
+    "tags": []
+  },
+  {
+    "name": "Elevação Lateral",
+    "group": "Ombros",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Elevação Frontal",
+    "group": "Ombros",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Crucifixo Invertido",
+    "group": "Ombros",
+    "subgroup": null,
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Rosca Direta Barra",
+    "group": "Braços",
+    "subgroup": "Roscas",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Barra Livre",
+    "tags": []
+  },
+  {
+    "name": "Tríceps Polia",
+    "group": "Braços",
+    "subgroup": "Extensões de Tríceps",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Máquina / Cabos",
+    "tags": []
+  },
+  {
+    "name": "Rosca Martelo",
+    "group": "Braços",
+    "subgroup": "Roscas",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Tríceps Testa",
+    "group": "Braços",
+    "subgroup": "Extensões de Tríceps",
+    "modality": "GYM",
+    "type": "STRENGTH",
+    "equipment": "Variado",
+    "tags": []
+  },
+  {
+    "name": "Prancha Isométrica",
+    "group": "Core",
+    "subgroup": null,
+    "modality": "BODYWEIGHT",
+    "type": "STRENGTH",
+    "equipment": "Peso Corporal",
+    "tags": [
+      "core",
+      "isometria"
+    ]
+  },
+  {
+    "name": "Abdominal Crunch",
+    "group": "Core",
+    "subgroup": null,
+    "modality": "BODYWEIGHT",
+    "type": "STRENGTH",
+    "equipment": "Peso Corporal",
+    "tags": []
+  },
+  {
+    "name": "Abdominal Infra",
+    "group": "Core",
+    "subgroup": "Infra",
+    "modality": "BODYWEIGHT",
+    "type": "STRENGTH",
+    "equipment": "Peso Corporal",
+    "tags": []
+  },
+  {
+    "name": "Esteira",
+    "group": "Cardio",
+    "subgroup": null,
+    "modality": "AEROBIC",
+    "type": "CARDIO",
+    "equipment": "Esteira",
+    "tags": []
+  },
+  {
+    "name": "Bicicleta Ergométrica",
+    "group": "Cardio",
+    "subgroup": null,
+    "modality": "AEROBIC",
+    "type": "CARDIO",
+    "equipment": "Bicicleta Ergométrica",
+    "tags": []
+  },
+  {
+    "name": "Elíptico",
+    "group": "Cardio",
+    "subgroup": null,
+    "modality": "AEROBIC",
+    "type": "CARDIO",
+    "equipment": "Elíptico",
+    "tags": []
+  }
+]

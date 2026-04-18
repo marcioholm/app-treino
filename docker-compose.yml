@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: traineros_db
+    environment:
+      POSTGRES_USER: traineros
+      POSTGRES_PASSWORD: traineros_password
+      POSTGRES_DB: traineros_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - traineros_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  traineros_data:

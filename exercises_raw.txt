@@ -1,0 +1,45 @@
+Peito
+Supino Reto Barra
+Supino Inclinado Halteres
+Crucifixo Máquina
+Voador
+Crossover
+
+Costas
+Puxada Frente
+Remada Curvada Barra
+Terra
+Barra Fixa
+Remada Baixa
+
+Pernas
+Agachamento Livre
+Leg Press 45
+Cadeira Extensora
+Mesa Flexora
+Stiff
+Panturrilha Sentado
+Salto na Caixa
+Avanço
+
+Ombros
+Desenvolvimento Halteres
+Elevação Lateral
+Elevação Frontal
+Crucifixo Invertido
+
+Braços
+Rosca Direta Barra
+Tríceps Polia
+Rosca Martelo
+Tríceps Testa
+
+Core
+Prancha Isométrica
+Abdominal Crunch
+Abdominal Infra
+
+Cardio
+Esteira
+Bicicleta Ergométrica
+Elíptico
