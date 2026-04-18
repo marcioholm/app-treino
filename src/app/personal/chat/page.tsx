@@ -1,8 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function PersonalChat() {
+function ChatContent() {
     const [conversations, setConversations] = useState<any[]>([]);
     const [activeChat, setActiveChat] = useState<any>(null);
     const [messages, setMessages] = useState<any[]>([]);
@@ -79,7 +79,6 @@ export default function PersonalChat() {
 
     return (
         <div className="flex h-[calc(100vh-64px)]">
-            {/* Conversation List */}
             <div className={`w-full md:w-80 border-r border-gray-200 bg-white ${activeChat ? 'hidden md:block' : ''}`}>
                 <div className="p-4 border-b border-gray-200">
                     <h1 className="text-lg font-bold text-gray-900">Mensagens</h1>
@@ -121,7 +120,6 @@ export default function PersonalChat() {
                 </div>
             </div>
 
-            {/* Chat Area */}
             {activeChat ? (
                 <div className="flex-1 flex flex-col">
                     <div className="p-4 border-b border-gray-200 bg-white flex items-center gap-3">
@@ -189,5 +187,17 @@ export default function PersonalChat() {
                 </div>
             )}
         </div>
+    );
+}
+
+export default function PersonalChat() {
+    return (
+        <Suspense fallback={
+            <div className="flex items-center justify-center h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+        }>
+            <ChatContent />
+        </Suspense>
     );
 }

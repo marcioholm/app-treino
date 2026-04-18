@@ -13,7 +13,7 @@ export default async function StudentAnalytics() {
         redirect('/login');
     }
 
-    const student = await prisma.student.findUnique({
+    const student: any = await prisma.student.findUnique({
         where: { userId: payload.userId },
         include: { 
             assessments: { orderBy: { date: 'desc' }, take: 10 },
@@ -28,7 +28,7 @@ export default async function StudentAnalytics() {
                 }
             }
         }
-    } as any);
+    });
 
     if (!student) {
         redirect('/login');
