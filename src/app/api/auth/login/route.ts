@@ -55,6 +55,7 @@ export async function POST(req: Request) {
 
         return response;
     } catch (error) {
+        console.error('Login error:', error);
         if (error instanceof z.ZodError) {
             return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
         }
