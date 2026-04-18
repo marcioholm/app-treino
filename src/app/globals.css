@@ -20,16 +20,10 @@
   --color-surface-dark: #1a1a1a;
 }
 
+/* Force light mode for better contrast */
 :root {
-  --background: #f9f5f7;
+  --background: #ffffff;
   --foreground: #1a1a1a;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #1a1a1a;
-    --foreground: #f9f5f7;
-  }
 }
 
 html, body {
@@ -39,8 +33,8 @@ html, body {
   padding: 0;
   scroll-behavior: smooth;
   font-family: var(--font-sans), sans-serif;
-  background-color: var(--background);
-  color: var(--foreground);
+  background-color: #ffffff;
+  color: #1a1a1a;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -76,4 +70,14 @@ html, body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #993556;
+}
+
+/* Input fields - always light bg */
+input, textarea, select {
+  background-color: #f9fafb !important;
+  color: #1a1a1a !important;
+}
+
+input::placeholder {
+  color: #9ca3af !important;
 }
