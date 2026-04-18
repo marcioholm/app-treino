@@ -32,6 +32,9 @@ export default function PersonalLayout({ children }: { children: React.ReactNode
                         <Link href="/personal/chat" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-[#FBEAF0] hover:text-[#D4537E] transition-colors">
                             Mensagens
                         </Link>
+                        <Link href="/personal/code" className="block px-4 py-2.5 text-gray-700 rounded-lg hover:bg-[#FBEAF0] hover:text-[#D4537E] transition-colors">
+                            Meu Código
+                        </Link>
                     </div>
                 </div>
                 <div className="p-4 border-t border-pink-100">

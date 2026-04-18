@@ -84,8 +84,15 @@ export default async function PersonalDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Link href="/personal/code" className="bg-gradient-to-br from-[#D4537E] to-[#993556] p-6 rounded-xl text-white shadow-lg hover:shadow-xl transition-all hover:scale-[1.02] flex flex-col justify-between h-32">
+                    <div>
+                        <h2 className="text-pink-100 font-medium text-sm">Seu Código</h2>
+                        <p className="text-2xl font-bold mt-1">Compartilhe</p>
+                    </div>
+                    <p className="text-xs text-pink-200">Clique para copiar</p>
+                </Link>
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-32">
-                    <h2 className="text-gray-500 font-medium text-sm">Total de Alunos</h2>
+                    <h2 className="text-gray-500 font-medium text-sm">Total de Alunas</h2>
                     <p className="text-3xl font-bold text-gray-900">{students.length}</p>
                 </div>
                 <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-between h-32">
