@@ -76,193 +76,204 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-[#1a1a1a] relative overflow-hidden">
-            {/* Background decoration */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-1/2 -right-1/4 w-[600px] h-[600px] rounded-full bg-[#D4537E] opacity-[0.08]" />
-                <div className="absolute -bottom-1/2 -left-1/4 w-[500px] h-[500px] rounded-full bg-[#D4537E] opacity-[0.06]" />
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-[#D4537E] opacity-[0.03]" />
-            </div>
-
-            <div className="min-h-screen flex items-center justify-center py-12 px-4 relative z-10">
-                <div className="max-w-md w-full space-y-8">
-                    {/* Logo and branding */}
-                    <div className="text-center space-y-4">
-                        <div className="flex justify-center">
-                            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#D4537E] to-[#993556] flex items-center justify-center shadow-lg">
-                                <span className="text-white font-bold">M&K</span>
-                            </div>
-                        </div>
-                        <div>
-                            <h1 className="text-4xl font-extrabold text-white tracking-tight">
-                                M<span className="text-[#D4537E]">&</span>K
-                            </h1>
-                            <p className="text-[#D4537E] font-semibold text-sm tracking-widest uppercase mt-2">
-                                Fitness Center
-                            </p>
-                        </div>
-                        <p className="text-gray-400 text-sm">Seu espaço de transformação</p>
+        <div style={{ minHeight: '100vh', backgroundColor: '#1a1a1a', padding: '2rem 1rem' }}>
+            <div style={{ maxWidth: '28rem', margin: '0 auto' }}>
+                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                    <div style={{ 
+                        width: '4rem', 
+                        height: '4rem', 
+                        borderRadius: '0.75rem',
+                        background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        margin: '0 auto 1rem'
+                    }}>
+                        <span style={{ color: 'white', fontWeight: 'bold' }}>M&K</span>
                     </div>
-
-                    {/* Main card */}
-                    <div className="bg-white/95 backdrop-blur-sm rounded-3xl p-8 space-y-6 shadow-2xl border border-white/10">
-                        {/* Toggle */}
-                        <div className="flex rounded-2xl bg-[#f9f5f7] p-1.5">
-                            <button
-                                type="button"
-                                onClick={() => { setIsRegister(false); setError(''); }}
-                                className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                                    !isRegister 
-                                        ? 'bg-white text-[#D4537E] shadow-lg' 
-                                        : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                            >
-                                Login
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => { setIsRegister(true); setError(''); }}
-                                className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                                    isRegister 
-                                        ? 'bg-white text-[#D4537E] shadow-lg' 
-                                        : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                            >
-                                Cadastrar
-                            </button>
-                        </div>
-
-                        {isRegister ? (
-                            <form className="space-y-5" onSubmit={handleRegister}>
-                                {error && (
-                                    <div className="bg-red-50 text-red-500 p-4 rounded-xl text-sm text-center">
-                                        {error}
-                                    </div>
-                                )}
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">Nome completo</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="Como devemos te chamar?"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">E-mail</label>
-                                    <input
-                                        type="email"
-                                        required
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="seu@email.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">Senha</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        minLength={6}
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="Mínimo 6 caracteres"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">WhatsApp (opcional)</label>
-                                    <input
-                                        type="tel"
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="(00) 00000-0000"
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">Código da Coach</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="Cole o código da sua coach"
-                                        value={trainerCode}
-                                        onChange={(e) => setTrainerCode(e.target.value)}
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full py-4 px-4 border border-transparent text-base font-semibold rounded-xl text-white bg-gradient-to-r from-[#D4537E] to-[#993556] hover:opacity-90 disabled:opacity-50 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    {loading ? (
-                                        <span className="flex items-center justify-center gap-2">
-                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                            </svg>
-                                            Criando conta...
-                                        </span>
-                                    ) : 'Criar minha conta'}
-                                </button>
-                            </form>
-                        ) : (
-                            <form className="space-y-5" onSubmit={handleLogin}>
-                                {error && (
-                                    <div className="bg-red-50 text-red-500 p-4 rounded-xl text-sm text-center">
-                                        {error}
-                                    </div>
-                                )}
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">E-mail</label>
-                                    <input
-                                        type="email"
-                                        required
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="seu@email.com"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                    />
-                                </div>
-                                <div className="space-y-1">
-                                    <label className="block text-sm font-medium text-gray-700">Senha</label>
-                                    <input
-                                        type="password"
-                                        required
-                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
-                                        placeholder="Sua senha"
-                                        value={password}
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
-                                </div>
-                                <button
-                                    type="submit"
-                                    disabled={loading}
-                                    className="w-full py-4 px-4 border border-transparent text-base font-semibold rounded-xl text-white bg-gradient-to-r from-[#D4537E] to-[#993556] hover:opacity-90 disabled:opacity-50 transition-all duration-300 shadow-lg hover:shadow-xl"
-                                >
-                                    {loading ? (
-                                        <span className="flex items-center justify-center gap-2">
-                                            <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                                            </svg>
-                                            Entrando...
-                                        </span>
-                                    ) : 'Entrar'}
-                                </button>
-                            </form>
-                        )}
-                    </div>
-
-                    {/* Footer */}
-                    <p className="text-center text-gray-500 text-xs">
-                        Academia exclusiva para mulheres · Arapoti/PR
+                    <h1 style={{ color: 'white', fontSize: '2rem', fontWeight: '800' }}>
+                        M<span style={{ color: '#D4537E' }}>&</span>K
+                    </h1>
+                    <p style={{ color: '#D4537E', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.1em', marginTop: '0.5rem' }}>
+                        Fitness Center
                     </p>
                 </div>
+
+                <div style={{ 
+                    backgroundColor: 'rgba(255,255,255,0.95)', 
+                    borderRadius: '1.5rem', 
+                    padding: '2rem',
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                }}>
+                    <div style={{ display: 'flex', borderRadius: '1rem', backgroundColor: '#f9f5f7', padding: '0.25rem', marginBottom: '1.5rem' }}>
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegister(false); setError(''); }}
+                            style={{ 
+                                flex: 1, 
+                                padding: '0.75rem', 
+                                borderRadius: '0.75rem',
+                                fontSize: '0.875rem',
+                                fontWeight: '600',
+                                border: 'none',
+                                cursor: 'pointer',
+                                backgroundColor: !isRegister ? 'white' : 'transparent',
+                                color: !isRegister ? '#D4537E' : '#6b7280',
+                                boxShadow: !isRegister ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
+                            }}
+                        >
+                            Login
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => { setIsRegister(true); setError(''); }}
+                            style={{ 
+                                flex: 1, 
+                                padding: '0.75rem', 
+                                borderRadius: '0.75rem',
+                                fontSize: '0.875rem',
+                                fontWeight: '600',
+                                border: 'none',
+                                cursor: 'pointer',
+                                backgroundColor: isRegister ? 'white' : 'transparent',
+                                color: isRegister ? '#D4537E' : '#6b7280',
+                                boxShadow: isRegister ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
+                            }}
+                        >
+                            Cadastrar
+                        </button>
+                    </div>
+
+                    {error && (
+                        <div style={{ 
+                            backgroundColor: '#fef2f2', 
+                            color: '#dc2626', 
+                            padding: '0.75rem', 
+                            borderRadius: '0.5rem',
+                            marginBottom: '1rem',
+                            fontSize: '0.875rem'
+                        }}>
+                            {error}
+                        </div>
+                    )}
+
+                    {isRegister ? (
+                        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Nome</label>
+                                <input
+                                    type="text"
+                                    required
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>E-mail</label>
+                                <input
+                                    type="email"
+                                    required
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Senha</label>
+                                <input
+                                    type="password"
+                                    required
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>WhatsApp (opicional)</label>
+                                <input
+                                    type="tel"
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    value={phone}
+                                    onChange={(e) => setPhone(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Código do Personal</label>
+                                <input
+                                    type="text"
+                                    required
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    value={trainerCode}
+                                    onChange={(e) => setTrainerCode(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '1rem', 
+                                    borderRadius: '0.75rem',
+                                    fontWeight: '600',
+                                    color: 'white',
+                                    background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+                                    border: 'none',
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    opacity: loading ? 0.5 : 1
+                                }}
+                            >
+                                {loading ? 'Cadastrando...' : 'Cadastrar'}
+                            </button>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>E-mail</label>
+                                <input
+                                    type="email"
+                                    required
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    placeholder="seu@email.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Senha</label>
+                                <input
+                                    type="password"
+                                    required
+                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    placeholder="Sua senha"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '1rem', 
+                                    borderRadius: '0.75rem',
+                                    fontWeight: '600',
+                                    color: 'white',
+                                    background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+                                    border: 'none',
+                                    cursor: loading ? 'not-allowed' : 'pointer',
+                                    opacity: loading ? 0.5 : 1
+                                }}
+                            >
+                                {loading ? 'Entrando...' : 'Entrar'}
+                            </button>
+                        </form>
+                    )}
+                </div>
+
+                <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.75rem', marginTop: '2rem' }}>
+                    Academia M&K Fitness Center · Arapoti/PR
+                </p>
             </div>
         </div>
     );

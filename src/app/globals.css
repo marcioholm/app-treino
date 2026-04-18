@@ -50,9 +50,7 @@ html, body {
   background-clip: text;
 }
 
-#__next {
-  height: 100%;
-}
+/* Note: #__next is for Pages Router, not App Router */
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
