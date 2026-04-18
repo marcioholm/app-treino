@@ -20,3 +20,313 @@ model Tenant {
   users              User[]
   workouts           Workout[]
 }
+
+model User {
+  id          String   @id @default(cuid())
+  tenantId    String
+  name        String
+  email       String   @unique
+  password    String
+  role        Role     @default(TRAINER)
+  studentCode String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  student     Student?
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Student {
+  id                 String                @id @default(cuid())
+  tenantId           String
+  userId             String                @unique
+  phone              String?
+  pushSubscription   String?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  anamnesisAnswers AnamnesisAnswer[]
+  assessments      Assessment[]
+  conversations    Conversation[]
+  progressions     ExerciseProgression[]
+  goals            Goal[]
+  tenant           Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  checkIns         WeeklyCheckIn[]
+  workouts         Workout[]
+}
+
+model Assessment {
+  id        String   @id @default(cuid())
+  studentId String
+  weight    Float
+  height    Float
+  bmi       Float?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Goal {
+  id           String    @id @default(cuid())
+  studentId    String
+  objective    Objective
+  level        Level
+  daysPerWeek  Int
+  hasGymAccess Boolean   @default(true)
+  restrictions String[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Exercise {
+  id               String                @id @default(cuid())
+  tenantId         String?
+  name             String
+  group            String
+  subgroup         String?
+  modality         Modality
+  type             ExerciseType
+  equipment        String?
+  tags             String[]
+  createdAt        DateTime              @default(now())
+  updatedAt        DateTime              @updatedAt
+  defaultMET       Float?
+  description      String?
+  imageUrl         String?
+  videoUrl         String?
+  tenant           Tenant?               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  progressions     ExerciseProgression[]
+  workoutExercises WorkoutExercise[]
+}
+
+model Workout {
+  id        String           @id @default(cuid())
+  tenantId  String
+  studentId String
+  name      String
+  notes     String?
+  published Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  student   Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  tenant    Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sessions  WorkoutSession[]
+}
+
+model WorkoutSession {
+  id        String            @id @default(cuid())
+  workoutId String
+  name      String
+  dayOfWeek Int?
+  order     Int               @default(0)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  exercises WorkoutExercise[]
+  logs      WorkoutLog[]
+  workout   Workout           @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+}
+
+model WorkoutExercise {
+  id         String         @id @default(cuid())
+  sessionId  String
+  exerciseId String
+  order      Int
+  sets       Int
+  reps       String
+  restTime   Int?
+  notes      String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  setLogs    SetLog[]
+  exercise   Exercise       @relation(fields: [exerciseId], references: [id])
+  session    WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model WorkoutLog {
+  id                String         @id @default(cuid())
+  sessionId         String
+  startedAt         DateTime?
+  notes             String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  activeSeconds     Int            @default(0)
+  calorieMethod     String?
+  caloriesEstimated Float?
+  endedAt           DateTime?
+  pausedAt          DateTime?
+  rpeFinal          Int?
+  totalSeconds      Int?
+  lastResumedAt     DateTime?
+  setLogs           SetLog[]
+  session           WorkoutSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model SetLog {
+  id                String          @id @default(cuid())
+  workoutExerciseId String
+  workoutLogId      String
+  setNumber         Int
+  reps              Int?
+  load              Float?
+  rpe               Int?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+  workoutLog        WorkoutLog      @relation(fields: [workoutLogId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  tenantId  String
+  userId    String
+  action    String
+  details   Json?
+  createdAt DateTime @default(now())
+}
+
+model AnamnesisTemplate {
+  id        String             @id @default(cuid())
+  tenantId  String
+  name      String
+  isDefault Boolean            @default(false)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  answers   AnamnesisAnswer[]
+  sections  AnamnesisSection[]
+  tenant    Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model AnamnesisSection {
+  id         String              @id @default(cuid())
+  templateId String
+  name       String
+  order      Int                 @default(0)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+  questions  AnamnesisQuestion[]
+  template   AnamnesisTemplate   @relation(fields: [templateId], references: [id], onDelete: Cascade)
+}
+
+model AnamnesisQuestion {
+  id        String            @id @default(cuid())
+  sectionId String
+  text      String
+  type      String
+  options   String[]
+  required  Boolean           @default(true)
+  order     Int               @default(0)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+  answers   AnamnesisAnswer[]
+  section   AnamnesisSection  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+}
+
+model AnamnesisAnswer {
+  id          String            @id @default(cuid())
+  studentId   String
+  templateId  String
+  questionId  String
+  answerText  String?
+  answerArray String[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  question    AnamnesisQuestion @relation(fields: [questionId], references: [id])
+  student     Student           @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  template    AnamnesisTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+}
+
+model ExerciseProgression {
+  id             String   @id @default(cuid())
+  studentId      String
+  exerciseId     String
+  lastLoad       Float?
+  personalRecord Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  exercise       Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  student        Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, exerciseId])
+}
+
+model WeeklyCheckIn {
+  id         String   @id @default(cuid())
+  studentId  String
+  weight     Float
+  energy     Int
+  sleep      Int
+  soreness   Int
+  motivation Int
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  student    Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  tenantId  String
+  title     String
+  message   String
+  type      String
+  priority  String
+  resolved  Boolean  @default(false)
+  linkUrl   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id        String    @id @default(cuid())
+  tenantId  String
+  studentId String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  student   Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  messages  Message[]
+
+  @@unique([tenantId, studentId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  senderId       String
+  senderRole     Role
+  content        String
+  read           Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  OWNER_PERSONAL
+  TRAINER
+  STUDENT
+}
+
+enum Objective {
+  EMAGRECIMENTO
+  HIPERTROFIA
+  DEFINICAO
+}
+
+enum Level {
+  INICIANTE
+  INTERMEDIARIO
+  AVANCADO
+}
+
+enum Modality {
+  BODYWEIGHT
+  GYM
+  AEROBIC
+}
+
+enum ExerciseType {
+  STRENGTH
+  CARDIO
+}
