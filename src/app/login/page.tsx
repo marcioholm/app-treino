@@ -8,6 +8,7 @@ export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
+    const [phone, setPhone] = useState('');
     const [trainerCode, setTrainerCode] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -55,7 +56,8 @@ export default function Login() {
                 body: JSON.stringify({ 
                     name, 
                     email, 
-                    password, 
+                    password,
+                    phone,
                     trainerId: trainerCode 
                 })
             });
@@ -168,6 +170,16 @@ export default function Login() {
                                         placeholder="Mínimo 6 caracteres"
                                         value={password}
                                         onChange={(e) => setPassword(e.target.value)}
+                                    />
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="block text-sm font-medium text-gray-700">WhatsApp (opcional)</label>
+                                    <input
+                                        type="tel"
+                                        className="w-full px-4 py-3.5 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-[#D4537E] focus:bg-white transition-all duration-300"
+                                        placeholder="(00) 00000-0000"
+                                        value={phone}
+                                        onChange={(e) => setPhone(e.target.value)}
                                     />
                                 </div>
                                 <div className="space-y-1">

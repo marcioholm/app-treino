@@ -8,13 +8,14 @@ const registerSchema = z.object({
     name: z.string().min(2),
     email: z.string().email(),
     password: z.string().min(6),
+    phone: z.string().optional(),
     trainerId: z.string(),
 });
 
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, email, password, trainerId } = registerSchema.parse(body);
+        const { name, email, password, phone, trainerId } = registerSchema.parse(body);
 
         // Verify trainer exists
         const trainer = await prisma.user.findUnique({
@@ -53,6 +54,7 @@ export async function POST(req: Request) {
                 data: {
                     userId: user.id,
                     tenantId: trainer.tenantId,
+                    phone: phone || null,
                 },
             });
 
