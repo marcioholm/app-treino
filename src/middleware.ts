@@ -8,6 +8,7 @@ export async function middleware(request: NextRequest) {
     // Paths that do not require authentication
     if (
         pathname.startsWith('/api/auth') ||
+        pathname.startsWith('/api/test-db') ||
         pathname.startsWith('/_next') ||
         pathname === '/' ||
         pathname.startsWith('/login') ||
