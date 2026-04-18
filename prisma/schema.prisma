@@ -36,10 +36,11 @@ model User {
 }
 
 model Student {
-  id               String                @id @default(cuid())
-  tenantId         String
-  userId           String                @unique
-  createdAt        DateTime              @default(now())
+  id                 String                @id @default(cuid())
+  tenantId           String
+  userId             String                @unique
+  pushSubscription   String?
+  createdAt          DateTime              @default(now())
   updatedAt        DateTime              @updatedAt
   anamnesisAnswers AnamnesisAnswer[]
   assessments      Assessment[]

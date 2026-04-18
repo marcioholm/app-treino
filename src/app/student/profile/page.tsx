@@ -1,13 +1,16 @@
 'use client';
 import Link from 'next/link';
 import { History, Calendar, UserRound, LogOut, Settings, Award } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const NotificationManager = dynamic(() => import('@/components/NotificationManager'), { ssr: false });
 
 export default function ProfilePage() {
     return (
         <div className="flex flex-col h-screen bg-gray-50 pb-20">
             <header className="bg-white px-6 py-5 border-b border-gray-100 shadow-sm sticky top-0 z-10 flex items-center justify-between">
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Perfil</h1>
-                <button className="text-gray-400 hover:text-gray-600"><Settings className="w-6 h-6" /></button>
+                <NotificationManager />
             </header>
 
             <main className="flex-1 p-4 lg:p-6 overflow-auto max-w-md mx-auto w-full space-y-6">
