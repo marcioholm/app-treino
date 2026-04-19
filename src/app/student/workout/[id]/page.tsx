@@ -160,7 +160,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
     if (isLoadingSession) {
         return (
-            <div className="h-screen flex items-center justify-center bg-gray-50">
+            <div className="h-screen flex items-center justify-center bg-black">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
             </div>
         );
@@ -168,17 +168,17 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
     if (!sessionData) {
         return (
-            <div className="h-screen flex flex-col items-center justify-center bg-gray-50 p-6 text-center">
-                <h1 className="text-xl font-bold text-gray-900 mb-2">Sessão não encontrada</h1>
-                <Link href="/student/today" className="text-blue-600 font-bold">Voltar</Link>
+            <div className="h-screen flex flex-col items-center justify-center bg-black p-6 text-center">
+                <h1 className="text-xl font-bold text-white mb-2">Sessão não encontrada</h1>
+                <Link href="/student/today" className="text-[#D4537E] font-bold">Voltar</Link>
             </div>
         );
     }
 
     if (isFinished) {
         return (
-            <div className="flex flex-col h-screen w-full bg-blue-600 p-6 text-center text-white space-y-6 flex-1 justify-center animate-in fade-in zoom-in duration-500">
-                <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <div className="flex flex-col h-screen w-full bg-[#D4537E] p-6 text-center text-white space-y-6 flex-1 justify-center animate-in fade-in zoom-in duration-500">
+                <div className="w-24 h-24 bg-[#111111]/20 rounded-full flex items-center justify-center mb-4 mx-auto">
                     <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
@@ -186,7 +186,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                 <h1 className="text-3xl font-extrabold">Treino Concluído!</h1>
                 <p className="text-blue-100 text-lg mb-8">Excelente trabalho hoje. O descanso também faz parte do processo.</p>
 
-                <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 grid grid-cols-2 gap-4 w-full max-w-sm mx-auto">
+                <div className="bg-[#111111]/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 grid grid-cols-2 gap-4 w-full max-w-sm mx-auto">
                     <div className="flex flex-col items-center">
                         <span className="text-3xl font-black mb-1">{Math.floor(activeSeconds / 60)}</span>
                         <span className="text-xs text-blue-200 uppercase tracking-widest font-bold">Minutos</span>
@@ -201,7 +201,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     </div>
                 </div>
 
-                <div className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 w-full max-w-sm mx-auto space-y-4">
+                <div className="bg-[#111111]/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 w-full max-w-sm mx-auto space-y-4">
                     <label className="block text-sm font-bold text-white uppercase tracking-wider text-left">
                         Qual foi a intensidade do treino? (RPE)
                     </label>
@@ -218,7 +218,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
                 <div className="flex-1"></div>
 
-                <button onClick={handleFinishWorkout} className="mt-auto bg-white text-blue-600 font-bold text-lg px-8 py-4 rounded-xl shadow-lg w-full mb-8 max-w-sm mx-auto hover:bg-gray-50 active:scale-95 transition-all">
+                <button onClick={handleFinishWorkout} className="mt-auto bg-[#111111] text-[#D4537E] font-bold text-lg px-8 py-4 rounded-xl shadow-lg w-full mb-8 max-w-sm mx-auto hover:bg-black active:scale-95 transition-all">
                     Registrar e Voltar
                 </button>
             </div>
@@ -229,19 +229,19 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     const progressPerc = Math.round(((currentIndex + 1) / sessionData.exercises.length) * 100);
 
     return (
-        <div className="flex flex-col h-screen w-full bg-gray-50 pb-20">
-            <header className="bg-white border-b border-gray-200 px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
-                <Link href="/student/today" onClick={() => pauseTimer()} className="text-gray-400 p-2 -ml-2 hover:bg-gray-50 rounded-full">
+        <div className="flex flex-col h-screen w-full bg-black pb-20">
+            <header className="bg-[#111111] border-b border-[#333333] px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
+                <Link href="/student/today" onClick={() => pauseTimer()} className="text-gray-400 p-2 -ml-2 hover:bg-black rounded-full">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
                 </Link>
                 <div className="flex flex-col items-center flex-1">
-                    <h1 className="font-bold text-gray-900 text-center">{sessionData.name}</h1>
-                    <span className="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full font-bold">
+                    <h1 className="font-bold text-white text-center">{sessionData.name}</h1>
+                    <span className="text-xs font-mono text-[#D4537E] bg-[#D4537E]/10 px-2 py-0.5 rounded-full font-bold">
                         {formatTime(activeSeconds)}
                     </span>
                 </div>
                 <div className="w-10 flex justify-end">
-                    <button onClick={isRunning ? pauseTimer : startTimer} className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors">
+                    <button onClick={isRunning ? pauseTimer : startTimer} className="p-2 text-gray-400 hover:text-[#D4537E] hover:bg-[#D4537E]/10 rounded-full transition-colors">
                         {isRunning ? (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         ) : (
@@ -253,19 +253,19 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
             <div className="flex-1 overflow-auto p-4 space-y-6 max-w-md mx-auto w-full">
                 {/* Progress */}
-                <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                    <div className="flex justify-between text-xs text-gray-500 font-semibold uppercase tracking-wider mb-2">
+                <div className="bg-[#111111] p-4 rounded-xl shadow-sm border border-[#333333]">
+                    <div className="flex justify-between text-xs text-gray-400 font-semibold uppercase tracking-wider mb-2">
                         <span>Progresso</span>
                         <span>{currentIndex + 1}/{sessionData.exercises.length} Exercícios</span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
-                        <div className="bg-blue-600 h-2 rounded-full transition-all duration-500" style={{ width: `${progressPerc}%` }}></div>
+                    <div className="w-full bg-[#1a1a1a] rounded-full h-2 overflow-hidden">
+                        <div className="bg-[#D4537E] h-2 rounded-full transition-all duration-500" style={{ width: `${progressPerc}%` }}></div>
                     </div>
                 </div>
 
                 {/* Current Exercise */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" key={currentIndex}>
-                    <div className="aspect-video bg-gray-100 relative flex items-center justify-center border-b border-gray-100">
+                <div className="bg-[#111111] rounded-xl shadow-sm border border-[#333333] overflow-hidden" key={currentIndex}>
+                    <div className="aspect-video bg-[#1a1a1a] relative flex items-center justify-center border-b border-[#333333]">
                         {currentWorkoutExercise.exercise.videoUrl ? (
                             <video src={currentWorkoutExercise.exercise.videoUrl} className="w-full h-full object-cover" autoPlay loop muted playsInline />
                         ) : (
@@ -280,8 +280,8 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     </div>
 
                     <div className="p-5">
-                        <h2 className="text-xl font-bold text-gray-900 mb-1">{currentWorkoutExercise.exercise.name}</h2>
-                        <p className="text-sm text-gray-500 mb-6 font-medium">
+                        <h2 className="text-xl font-bold text-white mb-1">{currentWorkoutExercise.exercise.name}</h2>
+                        <p className="text-sm text-gray-400 mb-6 font-medium">
                             {currentWorkoutExercise.exercise.group} • {currentWorkoutExercise.sets} séries de {currentWorkoutExercise.reps} reps
                         </p>
 
@@ -306,8 +306,8 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                                 const setNum = i + 1;
                                 const setLog = workoutLogs[currentIndex]?.[setNum] || { load: '', reps: currentWorkoutExercise.reps.split('-')[0], isCompleted: false };
                                 return (
-                                    <div key={setNum} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${setLog.isCompleted ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-gray-50'}`}>
-                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${setLog.isCompleted ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-600'}`}>
+                                    <div key={setNum} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${setLog.isCompleted ? 'border-blue-500 bg-[#D4537E]/10' : 'border-[#333333] bg-black'}`}>
+                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${setLog.isCompleted ? 'bg-[#D4537E] text-white' : 'bg-[#333333] text-gray-400'}`}>
                                             {setNum}
                                         </div>
 
@@ -318,7 +318,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                                                     placeholder="kg"
                                                     value={setLog.load}
                                                     onChange={(e) => updateSetLog(currentIndex, setNum, 'load', e.target.value)}
-                                                    className="w-full p-2 bg-transparent border border-gray-200 rounded-lg text-center font-bold text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                                    className="w-full p-2 bg-transparent border border-[#333333] rounded-lg text-center font-bold text-white focus:ring-2 focus:ring-[#D4537E] outline-none bg-[#111111]"
                                                 />
                                             </div>
                                             <div className="relative">
@@ -327,14 +327,14 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                                                     placeholder="reps"
                                                     value={setLog.reps}
                                                     onChange={(e) => updateSetLog(currentIndex, setNum, 'reps', e.target.value)}
-                                                    className="w-full p-2 bg-transparent border border-gray-200 rounded-lg text-center font-bold text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
+                                                    className="w-full p-2 bg-transparent border border-[#333333] rounded-lg text-center font-bold text-white focus:ring-2 focus:ring-[#D4537E] outline-none bg-[#111111]"
                                                 />
                                             </div>
                                         </div>
 
                                         <button
                                             onClick={() => toggleSet(currentIndex, setNum)}
-                                            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${setLog.isCompleted ? 'bg-blue-600 text-white shadow-sm' : 'bg-gray-200 text-gray-400 hover:bg-gray-300'}`}
+                                            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${setLog.isCompleted ? 'bg-[#D4537E] text-white shadow-sm' : 'bg-[#333333] text-gray-400 hover:bg-[#444444]'}`}
                                         >
                                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                                         </button>
@@ -347,11 +347,11 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
                 <button
                     onClick={handleNext}
-                    className="w-full bg-blue-600 hover:bg-blue-700 active:scale-[0.98] transition-all text-white py-4 rounded-xl font-bold text-lg shadow-[0_4px_14px_0_rgba(37,99,235,0.39)]"
+                    className="w-full bg-[#D4537E] hover:bg-[#993556] active:scale-[0.98] transition-all text-white py-4 rounded-xl font-bold text-lg shadow-[0_4px_14px_0_rgba(37,99,235,0.39)]"
                 >
                     {currentIndex === sessionData.exercises.length - 1 ? 'Finalizar Treino' : 'Próximo Exercício'}
                 </button>
-                <button className="w-full bg-white text-gray-500 py-3 rounded-xl font-semibold border border-gray-200 hover:bg-gray-50">
+                <button className="w-full bg-[#111111] text-gray-400 py-3 rounded-xl font-semibold border border-[#333333] hover:bg-black">
                     Substituir Exercício
                 </button>
             </div>

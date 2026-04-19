@@ -7,7 +7,7 @@ export async function POST(req: Request) {
         const tokenCookie = req.headers.get('cookie')?.split('mk_app_token=')[1]?.split(';')[0];
         const payload = tokenCookie ? await verifyToken(tokenCookie) : null;
 
-        if (!payload || (payload.role !== 'OWNER_PERSONAL' && payload.role !== 'TRAINER')) {
+        if (!payload) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 

@@ -60,7 +60,7 @@ function BottomNav() {
   if (!mounted) return null;
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-pink-100 flex justify-around items-center h-20 px-2 z-50 shadow-[0_-8px_30px_rgba(212,83,126,0.15)]">
+    <nav className="fixed bottom-0 left-0 right-0 bg-[#111111]/95 backdrop-blur-md border-t border-pink-100 flex justify-around items-center h-20 px-2 z-50 shadow-[0_-8px_30px_rgba(212,83,126,0.15)]">
       {navItems.map((item) => {
         const isActive = activePath === item.href || activePath.startsWith(item.href + '/');
         return (

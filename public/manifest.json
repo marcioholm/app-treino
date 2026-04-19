@@ -1,21 +1,21 @@
 {
-  "name": "MeuTreino App · M&K Fitness Center",
-  "short_name": "MeuTreino M&K",
-  "description": "Acompanhe seus treinos e evolução na M&K Fitness Center",
-  "start_url": "/student/today",
+  "name": "M&K Fitness Center",
+  "short_name": "M&K Fitness",
+  "description": "Seu espaço seguro para treinar e se cuidar. Uma comunidade de mulher para mulher.",
+  "start_url": "/login",
   "display": "standalone",
-  "background_color": "#D4537E",
+  "background_color": "#000000",
   "theme_color": "#D4537E",
   "icons": [
     {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/icon.svg",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/svg+xml"
     }
   ]
 }

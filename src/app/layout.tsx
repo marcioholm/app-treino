@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import PushNotificationsSetup from "@/components/PushNotificationsSetup";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,6 +27,10 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "MeuTreino M&K",
   },
+  icons: {
+    apple: "/icon.svg",
+    icon: "/icon.svg"
+  }
 };
 
 export default function RootLayout({
@@ -38,6 +43,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <PushNotificationsSetup />
         {children}
       </body>
     </html>

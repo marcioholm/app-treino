@@ -11,7 +11,7 @@ export default function StudentChat() {
 
     useEffect(() => {
         fetchMessages();
-        const interval = setInterval(fetchMessages, 5000);
+        const interval = setInterval(fetchMessages, 1500);
         return () => clearInterval(interval);
     }, []);
 
@@ -31,14 +31,25 @@ export default function StudentChat() {
         e.preventDefault();
         if (!newMessage.trim() || sending) return;
         
+        const contentSent = newMessage;
+        setNewMessage('');
+        
+        // Optimistic UI update
+        const tempId = `temp-${Date.now()}`;
+        setMessages(prev => [...prev, {
+            id: tempId,
+            content: contentSent,
+            senderRole: 'STUDENT',
+            createdAt: new Date().toISOString()
+        }]);
+
         setSending(true);
         try {
             await fetch('/api/chat/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ content: newMessage })
+                body: JSON.stringify({ content: contentSent })
             });
-            setNewMessage('');
             fetchMessages();
         } catch (err) {
             console.error(err);
@@ -57,14 +68,14 @@ export default function StudentChat() {
 
     return (
         <div className="flex flex-col h-full max-w-md mx-auto">
-            <div className="p-4 border-b border-gray-200 bg-white">
-                <h1 className="text-lg font-bold text-gray-900">Mensagens</h1>
-                <p className="text-sm text-gray-500">Fale com seu personal</p>
+            <div className="p-4 border-b border-[#333333] bg-[#111111]">
+                <h1 className="text-lg font-bold text-white">Mensagens</h1>
+                <p className="text-sm text-gray-400">Fale com seu personal</p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.length === 0 ? (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="text-center text-gray-400 py-8">
                         <p>Nenhuma mensagem ainda.</p>
                         <p className="text-sm">Envie uma mensagem para começar a conversa!</p>
                     </div>
@@ -77,12 +88,12 @@ export default function StudentChat() {
                             <div
                                 className={`max-w-[75%] rounded-2xl px-4 py-2 ${
                                     msg.senderRole === 'STUDENT'
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-100 text-gray-900'
+                                        ? 'bg-[#D4537E] text-white'
+                                        : 'bg-[#1a1a1a] text-white'
                                 }`}
                             >
                                 <p className="text-sm">{msg.content}</p>
-                                <p className={`text-[10px] mt-1 ${msg.senderRole === 'STUDENT' ? 'text-blue-200' : 'text-gray-500'}`}>
+                                <p className={`text-[10px] mt-1 ${msg.senderRole === 'STUDENT' ? 'text-blue-200' : 'text-gray-400'}`}>
                                     {new Date(msg.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                 </p>
                             </div>
@@ -91,19 +102,19 @@ export default function StudentChat() {
                 )}
             </div>
 
-            <form onSubmit={sendMessage} className="p-4 border-t border-gray-200 bg-white">
+            <form onSubmit={sendMessage} className="p-4 border-t border-[#333333] bg-[#111111]">
                 <div className="flex gap-2">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Digite sua mensagem..."
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="flex-1 px-4 py-3 border border-[#444444] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent"
                     />
                     <button
                         type="submit"
                         disabled={sending || !newMessage.trim()}
-                        className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-xl font-medium transition-colors"
+                        className="bg-[#D4537E] hover:bg-[#993556] disabled:opacity-50 text-white px-4 py-2 rounded-xl font-medium transition-colors"
                     >
                         Enviar
                     </button>

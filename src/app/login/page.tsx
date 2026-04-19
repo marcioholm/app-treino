@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import ManifestoBanner from '@/components/ManifestoBanner';
+import MKLogo from '@/components/MKLogo';
 
 export default function Login() {
     const [isRegister, setIsRegister] = useState(false);
@@ -76,175 +78,140 @@ export default function Login() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', backgroundColor: '#1a1a1a', padding: '2rem 1rem' }}>
-            <div style={{ maxWidth: '28rem', margin: '0 auto' }}>
-                <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                    <div style={{ 
-                        width: '4rem', 
-                        height: '4rem', 
-                        borderRadius: '0.75rem',
-                        background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        margin: '0 auto 1rem'
-                    }}>
-                        <span style={{ color: 'white', fontWeight: 'bold' }}>M&K</span>
-                    </div>
-                    <h1 style={{ color: 'white', fontSize: '2rem', fontWeight: '800' }}>
-                        M<span style={{ color: '#D4537E' }}>&</span>K
-                    </h1>
-                    <p style={{ color: '#D4537E', fontSize: '0.75rem', fontWeight: '600', letterSpacing: '0.1em', marginTop: '0.5rem' }}>
-                        Fitness Center
-                    </p>
-                </div>
+        <div className="min-h-screen bg-black flex flex-col md:flex-row w-full font-sans">
+            {/* Desktop Left Side: Manifesto Banner */}
+            <div className="hidden md:flex md:w-1/2 lg:w-[60%]">
+                <ManifestoBanner />
+            </div>
 
-                <div style={{ 
-                    backgroundColor: 'rgba(255,255,255,0.95)', 
-                    borderRadius: '1.5rem', 
-                    padding: '2rem',
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
-                }}>
-                    <div style={{ display: 'flex', borderRadius: '1rem', backgroundColor: '#f9f5f7', padding: '0.25rem', marginBottom: '1.5rem' }}>
+            {/* Right Side / Mobile Full: Form View */}
+            <div className="w-full md:w-1/2 lg:w-[40%] min-h-screen flex flex-col justify-center px-6 py-12 md:px-12 xl:px-20 relative">
+                <div className="absolute top-6 left-6 md:hidden">
+                    <MKLogo size="sm" variant="icon" />
+                </div>
+                
+                <div className="w-full max-w-[400px] mx-auto">
+                    <div className="text-center md:text-left mb-10">
+                        <div className="hidden md:block mb-8">
+                            <MKLogo size="md" variant="icon" />
+                        </div>
+                        <h1 className="text-white text-3xl font-black mb-2 tracking-tight">
+                            {isRegister ? 'Crie sua conta' : 'Bem-vinda de volta'}
+                        </h1>
+                        <p className="text-gray-400 font-medium">
+                            {isRegister ? 'Preencha seus dados para começar.' : 'Faça login para acessar seus treinos.'}
+                        </p>
+                    </div>
+
+                    <div className="bg-[#111111] p-1.5 rounded-2xl flex mb-8">
                         <button
                             type="button"
                             onClick={() => { setIsRegister(false); setError(''); }}
-                            style={{ 
-                                flex: 1, 
-                                padding: '0.75rem', 
-                                borderRadius: '0.75rem',
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                border: 'none',
-                                cursor: 'pointer',
-                                backgroundColor: !isRegister ? 'white' : 'transparent',
-                                color: !isRegister ? '#D4537E' : '#6b7280',
-                                boxShadow: !isRegister ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
-                            }}
+                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 ${!isRegister ? 'bg-black text-white shadow-sm border border-[#333333]' : 'text-gray-400 hover:text-white'}`}
                         >
-                            Login
+                            Fazer Login
                         </button>
                         <button
                             type="button"
                             onClick={() => { setIsRegister(true); setError(''); }}
-                            style={{ 
-                                flex: 1, 
-                                padding: '0.75rem', 
-                                borderRadius: '0.75rem',
-                                fontSize: '0.875rem',
-                                fontWeight: '600',
-                                border: 'none',
-                                cursor: 'pointer',
-                                backgroundColor: isRegister ? 'white' : 'transparent',
-                                color: isRegister ? '#D4537E' : '#6b7280',
-                                boxShadow: isRegister ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none'
-                            }}
+                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-200 ${isRegister ? 'bg-black text-white shadow-sm border border-[#333333]' : 'text-gray-400 hover:text-white'}`}
                         >
-                            Cadastrar
+                            Cadastre-se
                         </button>
                     </div>
 
                     {error && (
-                        <div style={{ 
-                            backgroundColor: '#fef2f2', 
-                            color: '#dc2626', 
-                            padding: '0.75rem', 
-                            borderRadius: '0.5rem',
-                            marginBottom: '1rem',
-                            fontSize: '0.875rem'
-                        }}>
+                        <div className="bg-[#1a0f14] border border-[#4a1f2f] text-[#ff4d85] p-4 rounded-xl mb-6 text-sm font-medium">
                             {error}
                         </div>
                     )}
 
                     {isRegister ? (
-                        <form onSubmit={handleRegister} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <form onSubmit={handleRegister} className="flex flex-col gap-5">
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Nome</label>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">Nome Completo</label>
                                 <input
                                     type="text"
                                     required
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    placeholder="Como você gostaria de ser chamada?"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>E-mail</label>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">E-mail</label>
                                 <input
                                     type="email"
                                     required
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="seu.email@exemplo.com"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Senha</label>
-                                <input
-                                    type="password"
-                                    required
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>WhatsApp (opicional)</label>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">WhatsApp</label>
                                 <input
                                     type="tel"
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    required
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
+                                    placeholder="(DDD) 90000-0000"
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Código do Personal</label>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">Código da Personal</label>
                                 <input
                                     type="text"
                                     required
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors uppercase"
                                     value={trainerCode}
                                     onChange={(e) => setTrainerCode(e.target.value)}
+                                    placeholder="Ex: MK2024"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">Senha</label>
+                                <input
+                                    type="password"
+                                    required
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="Sua senha secreta"
                                 />
                             </div>
                             <button
                                 type="submit"
                                 disabled={loading}
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '1rem', 
-                                    borderRadius: '0.75rem',
-                                    fontWeight: '600',
-                                    color: 'white',
-                                    background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
-                                    border: 'none',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    opacity: loading ? 0.5 : 1
-                                }}
+                                className={`w-full mt-2 py-4 rounded-xl font-bold text-white transition-all ${loading ? 'opacity-50 cursor-not-allowed bg-[#333333]' : 'bg-[#E11383] hover:bg-[#c90d72] shadow-[0_0_20px_rgba(225,19,131,0.3)]'}`}
                             >
-                                {loading ? 'Cadastrando...' : 'Cadastrar'}
+                                {loading ? 'Cadastrando...' : 'Criar minha conta'}
                             </button>
                         </form>
                     ) : (
-                        <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <form onSubmit={handleLogin} className="flex flex-col gap-6">
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>E-mail</label>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2">E-mail</label>
                                 <input
                                     type="email"
                                     required
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
-                                    placeholder="seu@email.com"
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors"
+                                    placeholder="seu.email@exemplo.com"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                 />
                             </div>
                             <div>
-                                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.25rem' }}>Senha</label>
+                                <label className="block text-sm font-semibold text-gray-300 mb-2 flex justify-between">
+                                    <span>Senha</span>
+                                </label>
                                 <input
                                     type="password"
                                     required
-                                    style={{ width: '100%', padding: '0.875rem', backgroundColor: '#f9fafb', border: '2px solid transparent', borderRadius: '0.75rem', outline: 'none' }}
+                                    className="w-full p-4 bg-black border border-[#333333] rounded-xl outline-none focus:border-[#E11383] text-white transition-colors"
                                     placeholder="Sua senha"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
@@ -253,27 +220,21 @@ export default function Login() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                style={{ 
-                                    width: '100%', 
-                                    padding: '1rem', 
-                                    borderRadius: '0.75rem',
-                                    fontWeight: '600',
-                                    color: 'white',
-                                    background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
-                                    border: 'none',
-                                    cursor: loading ? 'not-allowed' : 'pointer',
-                                    opacity: loading ? 0.5 : 1
-                                }}
+                                className={`w-full mt-2 py-4 rounded-xl font-bold text-white transition-all ${loading ? 'opacity-50 cursor-not-allowed bg-[#333333]' : 'bg-[#E11383] hover:bg-[#c90d72] shadow-[0_0_20px_rgba(225,19,131,0.3)]'}`}
                             >
-                                {loading ? 'Entrando...' : 'Entrar'}
+                                {loading ? 'Entrando...' : 'Entrar no sistema'}
                             </button>
                         </form>
                     )}
+                    
+                    <p className="text-center text-[#666666] text-xs font-medium mt-10">
+                        &copy; {new Date().getFullYear()} M&K Fitness Center. Todos os direitos reservados.
+                    </p>
                 </div>
-
-                <p style={{ textAlign: 'center', color: '#6b7280', fontSize: '0.75rem', marginTop: '2rem' }}>
-                    Academia M&K Fitness Center · Arapoti/PR
-                </p>
+            </div>
+            {/* Show manifesto at the bottom on mobile instead of hiding entirely */}
+            <div className="md:hidden w-full border-t border-[#1a1a1a]">
+                 <ManifestoBanner />
             </div>
         </div>
     );

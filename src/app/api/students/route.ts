@@ -7,6 +7,7 @@ const studentSchema = z.object({
     name: z.string().min(3),
     email: z.string().email(),
     password: z.string().min(6),
+    birthDate: z.string().optional(),
 });
 
 export async function GET(req: Request) {
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        const { name, email, password } = studentSchema.parse(body);
+        const { name, email, password, birthDate } = studentSchema.parse(body);
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) return NextResponse.json({ error: 'E-mail em uso' }, { status: 400 });
@@ -46,7 +47,8 @@ export async function POST(req: Request) {
                     email,
                     password: hashedPassword,
                     role: 'STUDENT',
-                    tenantId
+                    tenantId,
+                    birthDate: birthDate ? new Date(birthDate) : null
                 }
             });
 
