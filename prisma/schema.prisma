@@ -29,6 +29,9 @@ model User {
   password    String
   role        Role     @default(TRAINER)
   studentCode String?
+  avatarUrl   String?
+  pushSubscription String?
+  birthDate   DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   student     Student?
@@ -40,6 +43,7 @@ model Student {
   tenantId           String
   userId             String                @unique
   phone              String?
+  avatarUrl          String?
   pushSubscription   String?
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="black">
+  <rect width="512" height="512" fill="#000000" rx="100" />
+  <circle cx="256" cy="256" r="220" fill="none" stroke="#D4537E" stroke-width="20" />
+  <path d="M140 160 v200 m232 -200 v200 m-272 -140 h60 m152 0 h60 m-272 80 h60 m152 0 h60 m-120 -40 h120" stroke="white" stroke-width="20" stroke-linecap="round" stroke-linejoin="round" />
+  <text x="256" y="415" font-family="sans-serif" font-weight="900" font-size="36" fill="white" text-anchor="middle" letter-spacing="4">M&amp;K FITNESS</text>
+  <text x="256" y="455" font-family="sans-serif" font-weight="900" font-size="36" fill="white" text-anchor="middle" letter-spacing="4">CENTER</text>
+</svg>

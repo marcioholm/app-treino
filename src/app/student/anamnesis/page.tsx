@@ -74,24 +74,24 @@ export default function StudentAnamnesis() {
         }
     };
 
-    if (loading) return <div className="p-8 text-center text-gray-500">Preparando sua avaliação...</div>;
+    if (loading) return <div className="p-8 text-center text-gray-400">Preparando sua avaliação...</div>;
     if (!template) return <div className="p-8 text-center text-red-500">Nenhuma avaliação pendente encontrada.</div>;
 
     return (
         <div className="p-4 max-w-lg mx-auto pb-24">
             <header className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900">Avaliação Inicial</h1>
-                <p className="text-gray-500 mt-1 text-sm">Responda as perguntas abaixo para que seu treinador possa montar o treino ideal para você.</p>
+                <h1 className="text-2xl font-bold text-white">Avaliação Inicial</h1>
+                <p className="text-gray-400 mt-1 text-sm">Responda as perguntas abaixo para que seu treinador possa montar o treino ideal para você.</p>
             </header>
 
             <form onSubmit={handleSubmit} className="space-y-8">
                 {template.sections.map((section: any, sIdx: number) => (
-                    <div key={section.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                        <h2 className="font-bold text-blue-600 mb-4 pb-2 border-b border-gray-100">{sIdx + 1}. {section.name}</h2>
+                    <div key={section.id} className="bg-[#111111] rounded-xl shadow-sm border border-[#333333] p-5">
+                        <h2 className="font-bold text-[#D4537E] mb-4 pb-2 border-b border-[#333333]">{sIdx + 1}. {section.name}</h2>
                         <div className="space-y-6">
                             {section.questions.map((q: any) => (
                                 <div key={q.id}>
-                                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                                    <label className="block text-sm font-medium text-white mb-2">
                                         {q.text} {q.required && <span className="text-red-500">*</span>}
                                     </label>
 
@@ -99,7 +99,7 @@ export default function StudentAnamnesis() {
                                         <input
                                             required={q.required}
                                             type="text"
-                                            className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-blue-500"
+                                            className="w-full border border-[#333333] rounded-lg p-3 outline-none focus:border-[#D4537E]"
                                             onChange={(e) => handleChange(q.id, e.target.value, 'TEXT')}
                                         />
                                     )}
@@ -107,7 +107,7 @@ export default function StudentAnamnesis() {
                                         <input
                                             required={q.required}
                                             type="number"
-                                            className="w-full border border-gray-200 rounded-lg p-3 outline-none focus:border-blue-500"
+                                            className="w-full border border-[#333333] rounded-lg p-3 outline-none focus:border-[#D4537E]"
                                             onChange={(e) => handleChange(q.id, e.target.value, 'NUMBER')}
                                         />
                                     )}
@@ -124,13 +124,13 @@ export default function StudentAnamnesis() {
                                     {q.type === 'MULTIPLE_CHOICE' && (
                                         <div className="space-y-3">
                                             {q.options.map((opt: string, i: number) => (
-                                                <label key={i} className="flex items-center gap-3 p-3 border border-gray-100 rounded-lg bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors">
+                                                <label key={i} className="flex items-center gap-3 p-3 border border-[#333333] rounded-lg bg-black cursor-pointer hover:bg-[#1a1a1a] transition-colors">
                                                     <input
                                                         type="checkbox"
-                                                        className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                                                        className="w-4 h-4 text-[#D4537E] rounded border-[#444444] focus:ring-[#D4537E]"
                                                         onChange={(e) => handleArrayChange(q.id, opt, e.target.checked)}
                                                     />
-                                                    <span className="text-sm text-gray-700">{opt}</span>
+                                                    <span className="text-sm text-gray-300">{opt}</span>
                                                 </label>
                                             ))}
                                         </div>
@@ -144,7 +144,7 @@ export default function StudentAnamnesis() {
                 <button
                     type="submit"
                     disabled={submitting}
-                    className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95"
+                    className="w-full bg-[#D4537E] hover:bg-[#993556] disabled:bg-[#4B1528] text-white font-bold py-4 rounded-xl shadow-lg transition-transform active:scale-95"
                 >
                     {submitting ? 'Enviando...' : 'Finalizar Avaliação'}
                 </button>

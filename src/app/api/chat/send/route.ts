@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
+import { sendPushNotification } from '@/lib/push';
 
 export async function POST(req: Request) {
     try {
@@ -42,6 +43,33 @@ export async function POST(req: Request) {
                 content
             }
         });
+
+        // Trigger Push Notification
+        if (senderRole === 'STUDENT') {
+            const receiver = await prisma.user.findFirst({
+                where: { tenantId: payload.tenantId, role: 'TRAINER' }
+            });
+            if (receiver?.pushSubscription) {
+                await sendPushNotification(receiver.pushSubscription, {
+                    title: 'Nova Mensagem - M&K',
+                    body: 'Uma aluna acabou de enviar uma mensagem.',
+                    icon: '/icon.svg',
+                    url: `/personal/chat?studentId=${studentIdToUse}`
+                });
+            }
+        } else {
+            const receiver = await prisma.student.findUnique({
+                where: { id: studentIdToUse }
+            });
+            if (receiver?.pushSubscription) {
+                await sendPushNotification(receiver.pushSubscription, {
+                    title: 'Sua treinadora enviou uma mensagem',
+                    body: content,
+                    icon: '/icon.svg',
+                    url: `/student/chat`
+                });
+            }
+        }
 
         return NextResponse.json(message);
     } catch (error) {

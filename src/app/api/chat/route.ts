@@ -35,6 +35,19 @@ export async function GET(req: Request) {
             });
         }
 
+        if (conversation) {
+            // Update unread messages where sender is NOT the current user role
+            const updateRoles = payload.role === 'STUDENT' ? ['TRAINER', 'OWNER_PERSONAL'] : ['STUDENT'];
+            await prisma.message.updateMany({
+                where: {
+                    conversationId: conversation.id,
+                    senderRole: { in: updateRoles },
+                    read: false
+                },
+                data: { read: true }
+            });
+        }
+
         return NextResponse.json(conversation || { messages: [], student: null });
     } catch (error) {
         console.error('Error:', error);
