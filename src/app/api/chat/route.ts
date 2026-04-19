@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
+import { Role } from '@prisma/client';
 
 export async function GET(req: Request) {
     try {
@@ -37,7 +38,7 @@ export async function GET(req: Request) {
 
         if (conversation) {
             // Update unread messages where sender is NOT the current user role
-            const updateRoles = payload.role === 'STUDENT' ? ['TRAINER', 'OWNER_PERSONAL'] : ['STUDENT'];
+            const updateRoles: Role[] = payload.role === 'STUDENT' ? ['TRAINER', 'OWNER_PERSONAL'] : ['STUDENT'];
             await prisma.message.updateMany({
                 where: {
                     conversationId: conversation.id,
