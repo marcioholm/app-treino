@@ -48,11 +48,6 @@ const FRASES = [
     tag: "M&K",
     icon: "🏋️"
   },
-  {
-    frase: "Não existe corpo errado para estar aqui.",
-    tag: "Inclusão",
-    icon: "🌈"
-  },
 ];
 
 export default function ManifestoBanner() {
