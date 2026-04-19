@@ -28,8 +28,9 @@ export const metadata: Metadata = {
     title: "MeuTreino M&K",
   },
   icons: {
-    apple: "/icon.svg",
-    icon: "/icon.svg"
+    apple: "/logo-app.png",
+    icon: "/logo-app.png",
+    shortcut: "/logo-app.png"
   }
 };
 

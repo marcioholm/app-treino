@@ -18,8 +18,8 @@ export default function MKLogo({ size = 'md', variant = 'full', className = '' }
   // Icon represents just the pink circle with the M&K lettering or figure
   if (variant === 'icon') {
     return (
-      <div className={`${sizes[size]} rounded-full border-2 border-[#E11383] bg-black flex items-center justify-center shadow-lg ${className}`}>
-        <span className="text-white font-bold tracking-tighter" style={{ fontSize: size === 'xl' ? '2.5rem' : size === 'lg' ? '1.5rem' : '1rem' }}>M&K</span>
+      <div className={`${sizes[size]} rounded-2xl overflow-hidden bg-black flex items-center justify-center shadow-lg ${className}`}>
+        <img src="/logo-app.png" alt="M&K Logo" className="w-full h-full object-cover" />
       </div>
     );
   }
