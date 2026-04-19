@@ -18,19 +18,19 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MeuTreino App · M&K Fitness Center",
-  description: "Seu treino na palma da mão — exclusivo para alunas da M&K Fitness Center",
+  title: "M&K Fitness Center",
+  description: "Seu espaço seguro para treinar e se cuidar. Uma comunidade de mulher para mulher.",
   manifest: "/manifest.json",
   themeColor: "#D4537E",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "MeuTreino M&K",
+    title: "M&K Fitness",
   },
   icons: {
-    apple: "/logo-app.png",
-    icon: "/logo-app.png",
-    shortcut: "/logo-app.png"
+    apple: "/favicon.png",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png"
   }
 };
 
