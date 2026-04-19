@@ -1,79 +1,206 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
+const FRASES = [
+  {
+    frase: "Você não precisa ser a mais forte da sala. Só precisa aparecer.",
+    tag: "Consistência",
+    icon: "✨"
+  },
+  {
+    frase: "Aqui ninguém te julga. Aqui todo mundo cresce.",
+    tag: "Comunidade",
+    icon: "💜"
+  },
+  {
+    frase: "Cada rep é uma escolha por você mesma.",
+    tag: "Empoderamento",
+    icon: "💪"
+  },
+  {
+    frase: "Mãe, profissional, mulher — e ainda assim, cuida de si. Isso é força.",
+    tag: "Para Você",
+    icon: "🌟"
+  },
+  {
+    frase: "O seu ritmo é o ritmo certo.",
+    tag: "Respeito",
+    icon: "🧘"
+  },
+  {
+    frase: "Treinar aqui é um ato de amor próprio.",
+    tag: "Autocuidado",
+    icon: "❤️"
+  },
+  {
+    frase: "Você começou. Isso já é mais do que a maioria faz.",
+    tag: "Coragem",
+    icon: "🚀"
+  },
+  {
+    frase: "Seu corpo é seu. Cuide dele do jeito que você merece.",
+    tag: "Pertencimento",
+    icon: "💕"
+  },
+  {
+    frase: "A academia que entende que você tem vida além da academia.",
+    tag: "M&K",
+    icon: "🏋️"
+  },
+  {
+    frase: "Não existe corpo errado para estar aqui.",
+    tag: "Inclusão",
+    icon: "🌈"
+  },
+];
+
 export default function ManifestoBanner() {
+  const [index, setIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    
+    const interval = setInterval(() => {
+      setIsVisible(false);
+      setTimeout(() => {
+        setIndex(prev => (prev + 1) % FRASES.length);
+        setIsVisible(true);
+      }, 400);
+    }, 8000);
+    
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
+
+  useEffect(() => {
+    const dayOfYear = Math.floor(
+      (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
+    );
+    setIndex(dayOfYear % FRASES.length);
+  }, []);
+
+  const current = FRASES[index];
+
   return (
-    <div className="h-full w-full bg-black flex flex-col justify-center items-start overflow-y-auto no-scrollbar relative p-8 md:p-16 lg:p-24 border-r border-[#1a1a1a]">
-      {/* Visual background accents */}
-      <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-[#E11383] opacity-10 blur-[120px] rounded-full pointer-events-none -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#E11383] opacity-5 blur-[100px] rounded-full pointer-events-none translate-x-1/3 translate-y-1/3" />
+    <div 
+      style={{
+        position: 'relative',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        background: 'linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)',
+        padding: '24px',
+        boxShadow: '0 8px 32px rgba(212, 83, 126, 0.15)',
+      }}
+    >
+      {/* Background decoration */}
+      <div style={{
+        position: 'absolute',
+        top: '-30px',
+        right: '-30px',
+        width: '120px',
+        height: '120px',
+        borderRadius: '50%',
+        background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+        opacity: 0.15,
+      }} />
+      
+      <div style={{
+        position: 'absolute',
+        bottom: '-20px',
+        left: '-20px',
+        width: '80px',
+        height: '80px',
+        borderRadius: '50%',
+        background: 'linear-gradient(135deg, #D4537E 0%, #993556 100%)',
+        opacity: 0.1,
+      }} />
 
-      <div className="relative z-10 max-w-2xl text-left space-y-6">
-        <h2 className="text-[#E11383] text-sm tracking-[0.3em] font-black uppercase mb-12">
-          M&K Fitness Center
-        </h2>
-
-        <p className="text-white text-3xl font-black italic tracking-tight leading-tight">
-          "Aqui, você não precisa estar pronta.<br />
-          <span className="text-[#E11383]">Você só precisa começar.</span>"
-        </p>
-
-        <div className="space-y-5 text-gray-400 text-lg leading-relaxed mt-10 font-medium">
-          <p>
-            A gente sabe que nem sempre é fácil. A rotina é corrida. O tempo é curto. E muitas vezes, a vontade vem acompanhada de insegurança.
-            Insegurança com o corpo. Com o olhar dos outros. Com aquele sentimento de não pertencer.
-          </p>
-          <p>
-            A verdade é que muitas mulheres já desistiram antes mesmo de começar. Não por falta de vontade… Mas porque nunca encontraram um lugar onde se sentissem à vontade.
-          </p>
-          <p>
-            E muitas outras nem começaram. Porque são mães. Porque não têm com quem deixar os filhos. Porque colocaram todo mundo na frente… E acabaram se deixando por último.
-          </p>
-
-          <p className="text-white font-bold text-2xl pt-4">
-            Foi por isso que a M&K nasceu. Para ser diferente.
-          </p>
-
-          <p>
-            Uma <span className="text-white font-semibold">comunidade de mulher para mulher</span>. Um espaço onde você não precisa se comparar. Não precisa se provar. Não precisa se encaixar em padrão nenhum.
-            Aqui, cada mulher tem seu tempo. Seu ritmo. Sua história.
-          </p>
-
-          <div className="pl-6 border-l-4 border-[#E11383] my-8 py-2">
-            <p className="text-white font-semibold text-xl">
-              O treino não é sobre pressão. <span className="text-gray-400 font-normal">É sobre constância.</span><br />
-              Não é sobre perfeição. <span className="text-gray-400 font-normal">É sobre evolução.</span>
-            </p>
-          </div>
-
-          <p>
-            E sim, aqui você pode cuidar de você… sem precisar abrir mão de quem você ama.<br />
-            Porque a gente acredita que ser mãe não pode ser o motivo para você parar — mas sim mais um motivo para continuar.
-          </p>
-
-          <p>
-            Acreditamos que cuidar da saúde vai muito além da estética. É sobre se sentir bem. Ter energia. Ter confiança. Voltar a olhar pra si mesma com carinho.<br />
-            A gente entende a sua rotina. A gente entende seus desafios. E a gente criou um espaço que cabe na sua realidade.
-          </p>
-
-          <p className="text-white font-medium text-xl pt-2">
-            Um espaço seguro. Acolhedor. Sem julgamentos.
-          </p>
-          <p className="text-[#E11383] font-bold text-xl pb-6">
-            Aqui, você não treina sozinha. Aqui, você faz parte de algo.
-          </p>
-          
-          <p className="italic text-gray-400">Porque no fim das contas…</p>
-          
-          <p className="text-white text-3xl font-black italic tracking-tight">
-            não é sobre ser perfeita.<br />
-            <span className="text-[#E11383]">É sobre se cuidar.</span>
-          </p>
-
+      {/* Content */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+        {/* Tag */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          marginBottom: '16px',
+        }}>
+          <span style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '6px',
+            fontSize: '11px',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            color: '#D4537E',
+            backgroundColor: 'rgba(212, 83, 126, 0.15)',
+            padding: '6px 12px',
+            borderRadius: '20px',
+          }}>
+            <span>{current.icon}</span>
+            <span>{current.tag}</span>
+          </span>
         </div>
 
-        <div className="mt-16 pt-8 border-t border-[#333333]">
-          <h3 className="text-white font-black text-xl">M&K Fitness Center</h3>
-          <p className="text-gray-400 text-sm mt-1">Uma comunidade de mulher para mulher.<br />Seu espaço para cuidar de você.</p>
+        {/* Quote */}
+        <div 
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(10px)',
+            transition: 'all 0.4s ease-out',
+          }}
+        >
+          <p style={{
+            fontSize: '18px',
+            fontWeight: '500',
+            lineHeight: '1.5',
+            color: '#ffffff',
+            marginBottom: '12px',
+          }}>
+            "{current.frase}"
+          </p>
+          
+          <p style={{
+            fontSize: '12px',
+            fontWeight: '600',
+            color: '#D4537E',
+            letterSpacing: '0.05em',
+          }}>
+            — M&K Fitness Center
+          </p>
+        </div>
+
+        {/* Dots indicator */}
+        <div style={{
+          display: 'flex',
+          gap: '6px',
+          marginTop: '20px',
+        }}>
+          {FRASES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => {
+                setIsAutoPlaying(false);
+                setIsVisible(false);
+                setTimeout(() => {
+                  setIndex(i);
+                  setIsVisible(true);
+                }, 150);
+              }}
+              style={{
+                height: '6px',
+                borderRadius: '3px',
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                width: i === index ? '24px' : '6px',
+                backgroundColor: i === index ? '#D4537E' : 'rgba(255, 255, 255, 0.3)',
+              }}
+              aria-label={`Ver frase ${i + 1}`}
+            />
+          ))}
         </div>
       </div>
     </div>
