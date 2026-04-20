@@ -180,10 +180,13 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
         }
 
         const { assessmentId } = await params;
+        console.log('Deleting assessment:', assessmentId);
         
         const existing = await prisma.physicalAssessment.findUnique({
             where: { id: assessmentId },
         });
+
+        console.log('Found assessment:', existing?.id);
 
         if (!existing || existing.tenantId !== payload.tenantId) {
             return NextResponse.json({ error: 'Assessment not found' }, { status: 404 });
@@ -193,8 +196,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
             where: { id: assessmentId },
         });
 
+        console.log('Deleted successfully');
         return NextResponse.json({ success: true });
     } catch (error: any) {
+        console.error('Delete error:', error);
         return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
     }
 }
