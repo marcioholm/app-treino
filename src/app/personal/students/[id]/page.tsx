@@ -23,7 +23,14 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     useEffect(() => {
         fetch(`/api/students/${id}`)
             .then(res => res.json())
-            .then(data => setStudent(data.student))
+            .then(data => {
+                const s = data.student;
+                setStudent({
+                    ...s,
+                    assessments: s.assessments || [],
+                    goals: s.goals || []
+                });
+            })
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [id]);
@@ -55,6 +62,10 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
         return <div className="p-8 text-center text-gray-500">Aluna não encontrada</div>;
     }
 
+    const hasAssessment = student.assessments?.length > 0;
+    const hasGoal = student.goals?.length > 0;
+    const canGenerateMagic = hasAssessment && hasGoal;
+
     return (
         <div className="space-y-8 max-w-5xl mx-auto">
             <div className="flex items-center gap-4">
@@ -63,6 +74,33 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                 </Link>
                 <h1 className="text-2xl font-bold text-white">Detalhes da Aluna</h1>
             </div>
+
+            {!canGenerateMagic && (
+                <div className="bg-amber-950/30 border border-amber-600/50 p-4 rounded-xl">
+                    <p className="text-amber-200 text-sm font-medium mb-2">⚠️ incomplete profile data</p>
+                    <p className="text-amber-100/70 text-xs mb-3">
+                        To generate workouts automatically, you need to add:
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                        {!hasAssessment && (
+                            <Link
+                                href={`/personal/students/${id}/assessment`}
+                                className="text-xs bg-amber-600/20 text-amber-300 px-2 py-1 rounded hover:bg-amber-600/30"
+                            >
+                                + Physical Assessment
+                            </Link>
+                        )}
+                        {!hasGoal && (
+                            <Link
+                                href={`/personal/students/${id}/assessment`}
+                                className="text-xs bg-amber-600/20 text-amber-300 px-2 py-1 rounded hover:bg-amber-600/30"
+                            >
+                                + Objective & Level
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 space-y-6">
@@ -92,10 +130,10 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                 </button>
                                 <button
                                     onClick={handleMagicGenerate}
-                                    disabled={isGenerating}
-                                    className="flex-1 sm:flex-none bg-[#D4537E] hover:bg-[#993556] disabled:bg-pink-400 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                                    disabled={isGenerating || !canGenerateMagic}
+                                    className="flex-1 sm:flex-none bg-[#D4537E] hover:bg-[#993556] disabled:bg-pink-400/50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
                                 >
-                                    {isGenerating ? 'Gerando...' : 'Gerar Treino Mágico ✨'}
+                                    {isGenerating ? 'Gerando...' : canGenerateMagic ? 'Gerar Treino Mágico ✨' : 'Need Assessment'}
                                 </button>
                             </div>
                         </div>
