@@ -40,21 +40,23 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
         const fetchSession = async () => {
             setIsLoadingSession(true);
             try {
-                // In a real flow, we'd fetch the specific session by ID or "today's"
-                // For now, let's assume the [id] is the sessionId and we fetch its details
-                const res = await fetch('/api/student/workout/today');
+                const res = await fetch(`/api/student/workout/today`);
                 const data = await res.json();
                 if (data.todaySession) {
-                    setSessionData(data.todaySession);
+                    setSessionData({ ...data.todaySession, id: sessionId });
+                } else {
+                    // Fallback: se não houver today, usa o ID da URL como workoutId
+                    setSessionData({ id: sessionId, name: 'Treino', exercises: [] });
                 }
             } catch (error) {
                 console.error('Failed to load session', error);
+                setSessionData({ id: sessionId, name: 'Treino', exercises: [] });
             } finally {
                 setIsLoadingSession(false);
             }
         };
         fetchSession();
-    }, []);
+    }, [sessionId]);
 
     // Auto-start timer on mount if not already running
     useEffect(() => {
@@ -123,38 +125,70 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     }, [currentIndex, isFinished, sessionData]);
 
     const handleFinishWorkout = async () => {
-        // Flatten logs for submission
-        const allSetLogs: any[] = [];
-        Object.entries(workoutLogs).forEach(([exIdx, sets]: [string, any]) => {
-            const exercise = sessionData.exercises[parseInt(exIdx)];
-            Object.entries(sets).forEach(([setNum, data]: [string, any]) => {
-                if (data.isCompleted) {
-                    allSetLogs.push({
-                        workoutExerciseId: exercise.id,
-                        exerciseId: exercise.exerciseId,
-                        setNumber: parseInt(setNum),
-                        load: parseFloat(data.load) || 0,
-                        reps: parseInt(data.reps) || 0
-                    });
-                }
-            });
-        });
-
         try {
-            await fetch('/api/student/workout/sessions', {
+            pauseTimer();
+            
+            const allSetLogs: any[] = [];
+            Object.entries(workoutLogs).forEach(([exIdx, sets]: [string, any]) => {
+                const exercise = sessionData.exercises[parseInt(exIdx)];
+                Object.entries(sets).forEach(([setNum, data]: [string, any]) => {
+                    if (data.isCompleted) {
+                        allSetLogs.push({
+                            workoutExerciseId: exercise.id,
+                            exerciseId: exercise.exerciseId,
+                            setNumber: parseInt(setNum),
+                            load: parseFloat(data.load) || 0,
+                            reps: parseInt(data.reps) || 0
+                        });
+                    }
+                });
+            });
+
+            // Primeiro inicia a sessão e pega o logId
+            const startRes = await fetch('/api/student/workout/log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    sessionId: sessionData.id,
-                    activeSeconds,
-                    rpeFinal: rpe,
-                    setLogs: allSetLogs
-                })
+                body: JSON.stringify({ workoutId: sessionData.id })
             });
+            
+            if (!startRes.ok) {
+                throw new Error('Failed to start workout');
+            }
+            
+            const { logId } = await startRes.json();
+
+            // Registra cada set
+            for (const setLog of allSetLogs) {
+                await fetch('/api/student/workout/log-set', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        workoutLogId: logId,
+                        workoutExerciseId: setLog.workoutExerciseId,
+                        setNumber: setLog.setNumber,
+                        reps: setLog.reps,
+                        load: setLog.load
+                    })
+                });
+            }
+
+            // Finaliza o treino
+            const endRes = await fetch('/api/student/workout/end', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ workoutLogId: logId })
+            });
+
+            const result = await endRes.json();
+
+            // Salva no localStorage para a página de conclusão
+            localStorage.setItem('lastWorkoutResult', JSON.stringify(result));
+
             resetTimer();
-            router.push('/student/today');
+            router.push(`/student/workout/complete?result=${btoa(JSON.stringify(result))}`);
         } catch (error) {
             console.error('Failed to finish workout', error);
+            router.push('/student/today');
         }
     };
 
