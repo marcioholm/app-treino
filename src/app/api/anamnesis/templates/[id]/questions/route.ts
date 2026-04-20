@@ -6,7 +6,7 @@ import { z } from 'zod';
 const questionSchema = z.object({
     sectionId: z.string().uuid(),
     text: z.string().min(1),
-    type: z.enum(['TEXT', 'NUMBER', 'BOOLEAN', 'MULTIPLE_CHOICE']),
+    type: z.enum(['TEXT', 'NUMBER', 'BOOLEAN', 'MULTIPLE_CHOICE', 'CHECKBOX']),
     required: z.boolean().default(false),
     options: z.array(z.string()).optional(),
 });

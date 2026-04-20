@@ -2,13 +2,22 @@
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 
-const questionTypes = ['TEXT', 'NUMBER', 'BOOLEAN', 'MULTIPLE_CHOICE'];
+const questionTypes = [
+    { value: 'TEXT', label: 'Texto livre' },
+    { value: 'NUMBER', label: 'Número' },
+    { value: 'BOOLEAN', label: 'Sim/Não' },
+    { value: 'MULTIPLE_CHOICE', label: 'Seleção única' },
+    { value: 'CHECKBOX', label: 'Múltipla escolha' },
+];
 
 export default function AnamnesisDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [template, setTemplate] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalSection, setModalSection] = useState<string | null>(null);
+    const [form, setForm] = useState({ text: '', type: 'TEXT', required: false, options: '' });
 
     useEffect(() => {
         fetch(`/api/anamnesis/templates/${id}`)
@@ -39,23 +48,42 @@ export default function AnamnesisDetail({ params }: { params: Promise<{ id: stri
         }
     };
 
-    const addQuestion = async (sectionId: string) => {
-        const text = prompt('Texto da pergunta:');
-        if (!text) return;
-        const type = prompt(`Tipo da pergunta (${questionTypes.join(', ')}):`);
-        if (!type || !questionTypes.includes(type)) return alert('Tipo inválido');
-        const required = confirm('Obrigatória?');
+    const openAddQuestion = (sectionId: string) => {
+        setModalSection(sectionId);
+        setForm({ text: '', type: 'TEXT', required: false, options: '' });
+        setShowModal(true);
+    };
+
+    const handleAddQuestion = async () => {
+        if (!form.text) return alert('Digite o texto da pergunta');
         
+        const qType = form.type === 'MULTIPLE_CHOICE' || form.type === 'CHECKBOX';
+        const options = qType ? form.options.split(',').map(o => o.trim()).filter(Boolean) : [];
+
+        if (qType && options.length === 0) {
+            return alert('Para seleção única ou múltipla escolha, adicione opções separadas por vírgula');
+        }
+
         setSaving(true);
         try {
             const res = await fetch(`/api/anamnesis/templates/${id}/questions`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sectionId, text, type, required })
+                body: JSON.stringify({
+                    sectionId: modalSection,
+                    text: form.text,
+                    type: form.type,
+                    required: form.required,
+                    options
+                })
             });
             if (res.ok) {
                 const data = await res.json();
                 setTemplate(data.template);
+                setShowModal(false);
+            } else {
+                const err = await res.json();
+                alert(err.error || 'Erro ao adicionar');
             }
         } finally {
             setSaving(false);
@@ -120,6 +148,79 @@ export default function AnamnesisDetail({ params }: { params: Promise<{ id: stri
                 + Nova Seção
             </button>
 
+            {showModal && (
+                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+                    <div className="bg-[#111111] border border-[#333333] rounded-xl p-6 w-full max-w-md mx-4">
+                        <h3 className="text-lg font-bold text-white mb-4">Nova Pergunta</h3>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-sm text-gray-400 block mb-1">Pergunta</label>
+                                <input
+                                    type="text"
+                                    value={form.text}
+                                    onChange={(e) => setForm({...form, text: e.target.value})}
+                                    className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white"
+                                    placeholder="Digite a pergunta..."
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="text-sm text-gray-400 block mb-1">Tipo</label>
+                                <select
+                                    value={form.type}
+                                    onChange={(e) => setForm({...form, type: e.target.value, options: ''})}
+                                    className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white"
+                                >
+                                    {questionTypes.map(t => (
+                                        <option key={t.value} value={t.value}>{t.label}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            
+                            {(form.type === 'MULTIPLE_CHOICE' || form.type === 'CHECKBOX') && (
+                                <div>
+                                    <label className="text-sm text-gray-400 block mb-1">Opções (separadas por vírgula)</label>
+                                    <input
+                                        type="text"
+                                        value={form.options}
+                                        onChange={(e) => setForm({...form, options: e.target.value})}
+                                        className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white"
+                                        placeholder="Opção 1, Opção 2, Opção 3"
+                                    />
+                                </div>
+                            )}
+                            
+                            <div className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={form.required}
+                                    onChange={(e) => setForm({...form, required: e.target.checked})}
+                                    id="required"
+                                />
+                                <label htmlFor="required" className="text-sm text-gray-300">Obrigatória</label>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-2 mt-6">
+                            <button
+                                onClick={handleAddQuestion}
+                                disabled={saving}
+                                className="flex-1 bg-[#D4537E] hover:bg-[#993556] disabled:opacity-50 text-white py-2 rounded-lg font-medium"
+                            >
+                                {saving ? 'Salvando...' : 'Adicionar'}
+                            </button>
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 border border-[#333333] text-gray-300 rounded-lg hover:bg-[#1a1a1a]"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {!template.sections?.length ? (
                 <div className="bg-[#111111] border-2 border-dashed border-[#333333] rounded-xl p-12 text-center">
                     <p className="text-gray-400">Nenhuma seção. Clique em "+ Nova Seção" para começar.</p>
@@ -152,7 +253,7 @@ export default function AnamnesisDetail({ params }: { params: Promise<{ id: stri
                                     </div>
                                 ))}
                                 <button
-                                    onClick={() => addQuestion(section.id)}
+                                    onClick={() => openAddQuestion(section.id)}
                                     className="text-[#D4537E] text-sm hover:underline"
                                 >
                                     + Adicionar pergunta
