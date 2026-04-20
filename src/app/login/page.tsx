@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { GradientButton } from '@/components/trainer/GradientButton';
 
 export default function Login() {
     const [isRegister, setIsRegister] = useState(false);
@@ -77,7 +77,7 @@ export default function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] flex flex-col lg:flex-row">
+        <div className="min-h-screen bg-background flex flex-col lg:flex-row">
             {/* Left Side - Image Section */}
             <div className="relative w-full lg:w-[45%] h-[45vh] lg:h-screen overflow-hidden">
                 <div className="absolute inset-0">
@@ -86,28 +86,28 @@ export default function Login() {
                         alt="M&K Fitness" 
                         className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/60 to-transparent lg:bg-gradient-to-r lg:from-[#0a0a0a]/80 lg:via-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-transparent lg:bg-gradient-to-r lg:from-background/80 lg:via-transparent" />
                 </div>
                 
                 {/* Logo overlay */}
                 <div className="absolute top-6 left-6 lg:top-10 lg:left-10">
                     <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-[#D4537E]">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden border-2 border-primary">
                             <img src="/logo-app.png" alt="M&K" className="w-full h-full object-cover" />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-white font-bold text-lg tracking-tight">M&K</span>
-                            <span className="text-[#D4537E] text-xs font-semibold tracking-widest uppercase">Fitness Center</span>
+                            <span className="text-primary text-xs font-semibold tracking-widest uppercase">Fitness Center</span>
                         </div>
                     </div>
                 </div>
 
                 {/* Tagline for desktop */}
                 <div className="absolute bottom-10 left-10 right-10 hidden lg:block">
-                    <h2 className="text-white text-2xl font-bold leading-tight">
+                    <h2 className="text-white text-2xl font-bold leading-tight font-display">
                         Seu espaço seguro<br/>para treinar e se cuidar.
                     </h2>
-                    <p className="text-gray-400 mt-2 text-sm">Uma comunidade de mulher para mulher.</p>
+                    <p className="text-muted-foreground mt-2 text-sm">Uma comunidade de mulher para mulher.</p>
                 </div>
             </div>
 
@@ -116,29 +116,29 @@ export default function Login() {
                 <div className="w-full max-w-md mx-auto lg:mx-0">
                     {/* Mobile tagline */}
                     <div className="lg:hidden mb-8 text-center">
-                        <h2 className="text-white text-xl font-bold">Seu espaço seguro para treinar</h2>
+                        <h2 className="text-white text-xl font-bold font-display">Seu espaço seguro para treinar</h2>
                     </div>
 
                     {/* Toggle */}
-                    <div className="flex mb-8 bg-[#111111] p-1 rounded-2xl">
+                    <div className="flex mb-8 bg-card p-1 rounded-2xl">
                         <button
                             type="button"
                             onClick={() => { setIsRegister(false); setError(''); }}
-                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${!isRegister ? 'bg-[#D4537E] text-white' : 'text-gray-400 hover:text-white'}`}
+                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${!isRegister ? 'bg-gradient-brand text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                         >
                             Login
                         </button>
                         <button
                             type="button"
                             onClick={() => { setIsRegister(true); setError(''); }}
-                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${isRegister ? 'bg-[#D4537E] text-white' : 'text-gray-400 hover:text-white'}`}
+                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all ${isRegister ? 'bg-gradient-brand text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                         >
                             Cadastrar
                         </button>
                     </div>
 
                     {error && (
-                        <div className="bg-[#1a0f14] border border-[#4a1f2f] text-[#ff4d85] p-4 rounded-xl mb-6 text-sm">
+                        <div className="bg-destructive/10 border border-destructive/30 text-destructive p-4 rounded-xl mb-6 text-sm">
                             {error}
                         </div>
                     )}
@@ -149,7 +149,7 @@ export default function Login() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Nome completo"
@@ -159,7 +159,7 @@ export default function Login() {
                                 <input
                                     type="email"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="E-mail"
@@ -169,7 +169,7 @@ export default function Login() {
                                 <input
                                     type="tel"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     value={phone}
                                     onChange={(e) => setPhone(e.target.value)}
                                     placeholder="WhatsApp"
@@ -179,7 +179,7 @@ export default function Login() {
                                 <input
                                     type="text"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none uppercase transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all uppercase"
                                     value={trainerCode}
                                     onChange={(e) => setTrainerCode(e.target.value)}
                                     placeholder="Código da personal"
@@ -189,19 +189,15 @@ export default function Login() {
                                 <input
                                     type="password"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     placeholder="Senha"
                                 />
                             </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`w-full py-4 rounded-xl font-bold text-white transition-all ${loading ? 'opacity-50 cursor-not-allowed bg-[#333]' : 'bg-[#D4537E] hover:bg-[#b8466e]'}`}
-                            >
+                            <GradientButton type="submit" className="w-full" size="lg" disabled={loading}>
                                 {loading ? 'Cadastrando...' : 'Criar conta'}
-                            </button>
+                            </GradientButton>
                         </form>
                     ) : (
                         <form onSubmit={handleLogin} className="space-y-5">
@@ -209,7 +205,7 @@ export default function Login() {
                                 <input
                                     type="email"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     placeholder="E-mail"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
@@ -219,23 +215,19 @@ export default function Login() {
                                 <input
                                     type="password"
                                     required
-                                    className="w-full p-4 bg-[#111111] border border-[#222] rounded-xl text-white placeholder-gray-500 focus:border-[#D4537E] outline-none transition-colors"
+                                    className="w-full p-4 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                                     placeholder="Senha"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                             </div>
-                            <button
-                                type="submit"
-                                disabled={loading}
-                                className={`w-full py-4 rounded-xl font-bold text-white transition-all ${loading ? 'opacity-50 cursor-not-allowed bg-[#333]' : 'bg-[#D4537E] hover:bg-[#b8466e]'}`}
-                            >
+                            <GradientButton type="submit" className="w-full" size="lg" disabled={loading}>
                                 {loading ? 'Entrando...' : 'Entrar'}
-                            </button>
+                            </GradientButton>
                         </form>
                     )}
                     
-                    <p className="text-center text-gray-600 text-xs mt-10">
+                    <p className="text-center text-muted-foreground text-xs mt-10">
                         © {new Date().getFullYear()} M&K Fitness Center
                     </p>
                 </div>

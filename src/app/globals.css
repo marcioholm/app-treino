@@ -1,56 +1,109 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Brand - M&K Fitness Center */
+  --color-primary: 333 75% 43%;
+  --color-primary-foreground: 0 0% 100%;
+  --color-primary-light: 326 80% 51%;
+  --color-primary-soft: 340 78% 94%;
+  --color-secondary: 285 69% 38%;
+  --color-secondary-foreground: 0 0% 100%;
+  --color-secondary-light: 291 64% 42%;
 
-  /* M&K Fitness Center — Brand Colors */
-  --color-primary-50: #FBEAF0;
-  --color-primary-100: #F4C0D1;
-  --color-primary-200: #ED93B1;
-  --color-primary-400: #D4537E;
-  --color-primary-500: #C4436E;
-  --color-primary-600: #993556;
-  --color-primary-700: #72243E;
-  --color-primary-900: #4B1528;
+  /* Surfaces - Dark Mode */
+  --color-background: 240 30% 8%;
+  --color-foreground: 0 0% 100%;
+  --color-surface-alt: 240 30% 10%;
+  --color-dark: 240 30% 14%;
+  --color-dark-2: 220 50% 17%;
+  --color-surface: 0 0% 8%;
+  --color-card: 0 0% 12%;
+  --color-card-foreground: 0 0% 100%;
 
-  --color-surface: #ffffff;
-  --color-surface-dark: #1a1a1a;
+  /* UI Colors */
+  --color-muted: 220 9% 20%;
+  --color-muted-foreground: 220 9% 60%;
+  --color-accent: 333 75% 43%;
+  --color-accent-foreground: 0 0% 100%;
+  --color-destructive: 4 90% 58%;
+  --color-destructive-foreground: 0 0% 100%;
+  --color-success: 122 39% 49%;
+  --color-warning: 33 100% 50%;
+  --color-border: 220 9% 20%;
+  --color-input: 220 9% 20%;
+  --color-ring: 333 75% 43%;
+  --color-popover: 0 0% 12%;
+  --color-popover-foreground: 0 0% 100%;
+
+  /* Typography */
+  --font-sans: 'Inter', sans-serif;
+  --font-display: 'Poppins', sans-serif;
+
+  /* Gradients & Shadows */
+  --gradient-brand: linear-gradient(135deg, hsl(333 75% 43%) 0%, hsl(285 69% 38%) 100%);
+  --gradient-brand-soft: linear-gradient(135deg, hsl(333 75% 43% / 0.85) 0%, hsl(285 69% 38% / 0.85) 100%);
+  --shadow-pink: 0 4px 20px hsl(333 75% 43% / 0.15);
+  --shadow-pink-lg: 0 10px 40px hsl(333 75% 43% / 0.25);
+
+  /* Sidebar */
+  --sidebar-background: 240 30% 14%;
+  --sidebar-foreground: 0 0% 100%;
+  --sidebar-primary: 333 75% 43%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 220 50% 17%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 220 50% 22%;
+  --sidebar-ring: 333 75% 43%;
+
+  /* Radius */
+  --radius: 1rem;
 }
 
-/* Force Dark Mode for M&K */
-:root {
-  --background: #000000;
-  --foreground: #ffffff;
+@layer base {
+  * { @apply border-border; }
+  html, body { 
+    @apply bg-background text-foreground; 
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3, h4, h5 { 
+    font-family: 'Poppins', sans-serif; 
+    font-weight: 700; 
+    letter-spacing: -0.01em; 
+  }
 }
 
-html, body {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
-  font-family: var(--font-sans), sans-serif;
-  background-color: #000000;
-  color: #ffffff;
-  -webkit-font-smoothing: antialiased;
+@layer utilities {
+  .font-display { font-family: 'Poppins', sans-serif; }
+  .bg-gradient-brand { background: var(--gradient-brand); }
+  .bg-gradient-brand-soft { background: var(--gradient-brand-soft); }
+  .text-gradient-brand {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .shadow-pink { box-shadow: var(--shadow-pink); }
+  .shadow-pink-lg { box-shadow: var(--shadow-pink-lg); }
+  .label-caps { font-weight: 600; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
 }
 
-/* M&K Custom Styles */
-.mk-gradient {
-  background: linear-gradient(135deg, #D4537E 0%, #993556 100%);
+/* Input fields - dark bg with pink border on focus */
+input, textarea, select {
+  background-color: hsl(0 0% 8%) !important;
+  color: hsl(0 0% 100%) !important;
+  border-color: hsl(220 9% 20%);
 }
 
-.mk-text-gradient {
-  background: linear-gradient(135deg, #D4537E 0%, #993556 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+input:focus, textarea:focus, select:focus {
+  border-color: hsl(333 75% 43%) !important;
+  outline: none;
 }
 
-/* Note: #__next is for Pages Router, not App Router */
+input::placeholder, textarea::placeholder {
+  color: hsl(220 9% 50%) !important;
+}
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
@@ -62,26 +115,10 @@ html, body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D4537E;
+  background: hsl(333 75% 43%);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #993556;
-}
-
-/* Input fields - dark bg with pink border on focus */
-input, textarea, select {
-  background-color: #111111 !important;
-  color: #ffffff !important;
-  border-color: #333333;
-}
-
-input:focus, textarea:focus, select:focus {
-  border-color: #D4537E !important;
-  outline: none;
-}
-
-input::placeholder, textarea::placeholder {
-  color: #6b7280 !important;
+  background: hsl(285 69% 38%);
 }

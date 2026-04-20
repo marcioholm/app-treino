@@ -1,12 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { useEffect } from 'react';
+import { usePathname } from 'next/navigation';
+import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 interface BottomNavItem {
   icon: React.ReactNode;
   label: string;
   href: string;
-  active?: boolean;
 }
 
 const navItems: BottomNavItem[] = [
@@ -26,7 +27,7 @@ const navItems: BottomNavItem[] = [
       </svg>
     ),
     label: 'Evolução',
-    href: '/student/analytics',
+    href: '/student/history',
   },
   {
     icon: (
@@ -49,38 +50,31 @@ const navItems: BottomNavItem[] = [
 ];
 
 function BottomNav() {
-  const [mounted, setMounted] = useState(false);
-  const [activePath, setActivePath] = useState('/student/today');
-
-  useEffect(() => {
-    setMounted(true);
-    setActivePath(window.location.pathname);
-  }, []);
-
-  if (!mounted) return null;
+  const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-[#111111]/95 backdrop-blur-md border-t border-pink-100 flex justify-around items-center h-20 px-2 z-50 shadow-[0_-8px_30px_rgba(212,83,126,0.15)]">
+    <nav className="fixed bottom-0 left-0 right-0 bg-dark/95 backdrop-blur-md border-t border-white/5 flex justify-around items-center h-20 px-2 z-50">
       {navItems.map((item) => {
-        const isActive = activePath === item.href || activePath.startsWith(item.href + '/');
+        const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
         return (
-          <a
+          <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center justify-center flex-1 h-full py-2 transition-all duration-300 relative ${
-              isActive ? 'text-[#D4537E]' : 'text-gray-400 hover:text-[#D4537E]'
-            }`}
+            className={cn(
+              "flex flex-col items-center justify-center flex-1 h-full py-2 transition-all duration-300 relative",
+              isActive ? "text-primary-light" : "text-white/50 hover:text-white"
+            )}
           >
-            <div className={`transition-all duration-300 ${isActive ? 'scale-110' : 'scale-100'}`}>
+            <div className={cn("transition-all duration-300", isActive ? "scale-110" : "scale-100")}>
               {item.icon}
             </div>
-            <span className={`text-[10px] font-medium mt-1 ${isActive ? 'text-[#D4537E]' : ''}`}>
+            <span className={cn("text-[10px] font-medium mt-1", isActive && "text-primary-light font-semibold")}>
               {item.label}
             </span>
             {isActive && (
-              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-[#D4537E] rounded-full" />
+              <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1 bg-gradient-brand rounded-full" />
             )}
-          </a>
+          </Link>
         );
       })}
     </nav>
@@ -89,7 +83,7 @@ function BottomNav() {
 
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col h-screen w-full bg-[#fafafa]">
+    <div className="flex flex-col min-h-screen w-full bg-background">
       <main className="flex-1 overflow-auto pb-24">
         {children}
       </main>

@@ -21,7 +21,6 @@ export const metadata: Metadata = {
   title: "M&K Fitness Center",
   description: "Seu espaço seguro para treinar e se cuidar. Uma comunidade de mulher para mulher.",
   manifest: "/manifest.json",
-  themeColor: "#D4537E",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
