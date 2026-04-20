@@ -115,9 +115,9 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
 
             {!canGenerateMagic && (
                 <div className="bg-amber-950/30 border border-amber-600/50 p-4 rounded-xl">
-                    <p className="text-amber-200 text-sm font-medium mb-2">⚠️ incomplete profile data</p>
+                    <p className="text-amber-200 text-sm font-medium mb-2">⚠️ Dados incompletos</p>
                     <p className="text-amber-100/70 text-xs mb-3">
-                        To generate workouts automatically, you need to add:
+                        Para gerar treinos automaticamente, você precisa adicionar:
                     </p>
                     <div className="flex flex-wrap gap-2">
                         {!hasAssessment && (
@@ -125,7 +125,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                 href={`/personal/students/${id}/assessment`}
                                 className="text-xs bg-amber-600/20 text-amber-300 px-2 py-1 rounded hover:bg-amber-600/30"
                             >
-                                + Physical Assessment
+                                + Avaliação Física
                             </Link>
                         )}
                         {!hasGoal && (
@@ -133,7 +133,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                 href={`/personal/students/${id}/assessment`}
                                 className="text-xs bg-amber-600/20 text-amber-300 px-2 py-1 rounded hover:bg-amber-600/30"
                             >
-                                + Objective & Level
+                                + Objetivo & Nível
                             </Link>
                         )}
                     </div>
@@ -230,7 +230,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                     disabled={isGenerating || !canGenerateMagic}
                                     className="flex-1 sm:flex-none bg-[#D4537E] hover:bg-[#993556] disabled:bg-pink-400/50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
                                 >
-                                    {isGenerating ? 'Gerando...' : canGenerateMagic ? 'Gerar Treino Mágico ✨' : 'Need Assessment'}
+                                    {isGenerating ? 'Gerando...' : canGenerateMagic ? 'Gerar Treino Mágico ✨' : 'Precisa Avaliação'}
                                 </button>
                             </div>
                         </div>
