@@ -35,9 +35,13 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
             if (res.ok) {
                 const data = await res.json();
                 router.push(`/personal/workouts/${data.workout?.id || 'new'}/editor?studentId=${id}`);
+            } else {
+                const err = await res.json();
+                alert(`Erro ao gerar treino: ${err.error || 'Desconhecido'}`);
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            alert(`Erro ao gerar treino: ${e.message || 'Erro de rede'}`);
         } finally {
             setIsGenerating(false);
         }

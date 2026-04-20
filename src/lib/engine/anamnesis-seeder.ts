@@ -27,9 +27,10 @@ export async function createDefaultAnamnesisTemplate(prisma: PrismaClient | any,
                                 { text: 'Se sim, descreva a lesão e as recomendações médicas.', type: 'TEXT', order: 2, required: false },
                                 { text: 'Tem algum problema cardíaco ou pressão alta?', type: 'BOOLEAN', order: 3, required: true },
                                 { text: 'Toma algum medicamento de uso contínuo?', type: 'BOOLEAN', order: 4, required: true },
-                                { text: 'Sente tonturas ou dores no peito durante exercícios?', type: 'BOOLEAN', order: 5, required: true },
-                                { text: 'Fez alguma cirurgia recente?', type: 'BOOLEAN', order: 6, required: true },
-                                { text: 'Existe alguma outra condição médica que eu deva saber?', type: 'TEXT', order: 7, required: false }
+                                { text: 'Se sim, qual?', type: 'TEXT', order: 5, required: false },
+                                { text: 'Sente tonturas ou dores no peito durante exercícios?', type: 'BOOLEAN', order: 6, required: true },
+                                { text: 'Fez alguma cirurgia recente?', type: 'BOOLEAN', order: 7, required: true },
+                                { text: 'Existe alguma outra condição médica que eu deva saber?', type: 'TEXT', order: 8, required: false }
                             ]
                         }
                     },

@@ -89,7 +89,14 @@ export default function StudentAnamnesis() {
                     <div key={section.id} className="bg-[#111111] rounded-xl shadow-sm border border-[#333333] p-5">
                         <h2 className="font-bold text-[#D4537E] mb-4 pb-2 border-b border-[#333333]">{sIdx + 1}. {section.name}</h2>
                         <div className="space-y-6">
-                            {section.questions.map((q: any) => (
+                            {section.questions.map((q: any, i: number) => {
+                                if (q.text.startsWith('Se sim,')) {
+                                    const prevQuestion = section.questions[i - 1];
+                                    const prevAnswer = answers[prevQuestion?.id]?.value;
+                                    if (prevAnswer !== 'true') return null;
+                                }
+
+                                return (
                                 <div key={q.id}>
                                     <label className="block text-sm font-medium text-white mb-2">
                                         {q.text} {q.required && <span className="text-red-500">*</span>}
@@ -123,8 +130,8 @@ export default function StudentAnamnesis() {
                                     )}
                                     {q.type === 'MULTIPLE_CHOICE' && (
                                         <div className="space-y-3">
-                                            {q.options.map((opt: string, i: number) => (
-                                                <label key={i} className="flex items-center gap-3 p-3 border border-[#333333] rounded-lg bg-black cursor-pointer hover:bg-[#1a1a1a] transition-colors">
+                                            {q.options.map((opt: string, optI: number) => (
+                                                <label key={optI} className="flex items-center gap-3 p-3 border border-[#333333] rounded-lg bg-black cursor-pointer hover:bg-[#1a1a1a] transition-colors">
                                                     <input
                                                         type="checkbox"
                                                         className="w-4 h-4 text-[#D4537E] rounded border-[#444444] focus:ring-[#D4537E]"
@@ -136,7 +143,8 @@ export default function StudentAnamnesis() {
                                         </div>
                                     )}
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 ))}
