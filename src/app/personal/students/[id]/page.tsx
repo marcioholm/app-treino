@@ -19,6 +19,9 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     const [student, setStudent] = useState<Student | null>(null);
     const [loading, setLoading] = useState(true);
     const [isGenerating, setIsGenerating] = useState(false);
+    const [editingProfile, setEditingProfile] = useState(false);
+    const [profileForm, setProfileForm] = useState({ name: '', email: '', phone: '', birthDate: '' });
+    const [savingProfile, setSavingProfile] = useState(false);
 
     useEffect(() => {
         fetch(`/api/students/${id}`)
@@ -30,10 +33,45 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                     assessments: s.assessments || [],
                     goals: s.goals || []
                 });
+                setProfileForm({
+                    name: s.user.name,
+                    email: s.user.email,
+                    phone: s.phone || '',
+                    birthDate: s.user.birthDate ? new Date(s.user.birthDate).toISOString().split('T')[0] : ''
+                });
             })
             .catch(console.error)
             .finally(() => setLoading(false));
     }, [id]);
+
+    const handleSaveProfile = async () => {
+        setSavingProfile(true);
+        try {
+            const res = await fetch(`/api/students/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: profileForm.name,
+                    email: profileForm.email,
+                    phone: profileForm.phone || null,
+                    birthDate: profileForm.birthDate || null
+                })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setStudent(data.student);
+                setEditingProfile(false);
+            } else {
+                const err = await res.json();
+                alert(err.error || 'Erro ao salvar');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('Erro ao salvar');
+        } finally {
+            setSavingProfile(false);
+        }
+    };
 
     const handleMagicGenerate = async () => {
         setIsGenerating(true);
@@ -105,15 +143,74 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-1 space-y-6">
                     <div className="bg-[#111111] p-6 rounded-xl border border-[#333333] shadow-sm">
-                        <div className="flex items-center gap-4 mb-6">
-                            <div className="w-16 h-16 bg-[#D4537E]/20 text-[#D4537E] rounded-full flex items-center justify-center text-2xl font-bold">
-                                {student.user.name.charAt(0)}
-                            </div>
-                            <div>
-                                <h2 className="font-bold text-lg text-white">{student.user.name}</h2>
-                                <p className="text-gray-400 text-sm">{student.user.email}</p>
-                            </div>
+                        <div className="flex items-center justify-between mb-4">
+                            <h3 className="text-sm font-medium text-gray-400">Dados Pessoais</h3>
+                            <button 
+                                onClick={() => setEditingProfile(!editingProfile)}
+                                className="text-[#D4537E] text-sm hover:underline"
+                            >
+                                {editingProfile ? 'Cancelar' : 'Editar'}
+                            </button>
                         </div>
+                        
+                        {editingProfile ? (
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="text-xs text-gray-400 block mb-1">Nome</label>
+                                    <input
+                                        type="text"
+                                        value={profileForm.name}
+                                        onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
+                                        className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 block mb-1">Email</label>
+                                    <input
+                                        type="email"
+                                        value={profileForm.email}
+                                        onChange={(e) => setProfileForm({...profileForm, email: e.target.value})}
+                                        className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 block mb-1">Telefone</label>
+                                    <input
+                                        type="text"
+                                        value={profileForm.phone}
+                                        onChange={(e) => setProfileForm({...profileForm, phone: e.target.value})}
+                                        className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white text-sm"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="text-xs text-gray-400 block mb-1">Data de Nascimento</label>
+                                    <input
+                                        type="date"
+                                        value={profileForm.birthDate}
+                                        onChange={(e) => setProfileForm({...profileForm, birthDate: e.target.value})}
+                                        className="w-full border border-[#444444] rounded-lg p-2 bg-black text-white text-sm"
+                                    />
+                                </div>
+                                <button
+                                    onClick={handleSaveProfile}
+                                    disabled={savingProfile}
+                                    className="w-full bg-[#D4537E] hover:bg-[#993556] disabled:opacity-50 text-white py-2 rounded-lg text-sm font-medium"
+                                >
+                                    {savingProfile ? 'Salvando...' : 'Salvar'}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-4">
+                                <div className="w-16 h-16 bg-[#D4537E]/20 text-[#D4537E] rounded-full flex items-center justify-center text-2xl font-bold">
+                                    {student.user.name.charAt(0)}
+                                </div>
+                                <div>
+                                    <h2 className="font-bold text-lg text-white">{student.user.name}</h2>
+                                    <p className="text-gray-400 text-sm">{student.user.email}</p>
+                                    {student.phone && <p className="text-gray-500 text-sm">{student.phone}</p>}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
