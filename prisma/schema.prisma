@@ -408,3 +408,16 @@ model AssessmentPhoto {
   createdAt            DateTime          @default(now())
   assessment           PhysicalAssessment @relation(fields: [physicalAssessmentId], references: [id], onDelete: Cascade)
 }
+
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  tenantId  String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  revoked   Boolean  @default(false)
+
+  @@index([token])
+  @@index([userId])
+}
