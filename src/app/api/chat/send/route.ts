@@ -14,7 +14,7 @@ export async function POST(req: Request) {
         const tokenCookie = req.headers.get('cookie')?.split('mk_app_token=')[1]?.split(';')[0];
         const payload = tokenCookie ? await verifyToken(tokenCookie) : null;
 
-        if (!payload) {
+        if (!payload || !payload.tenantId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
@@ -29,18 +29,20 @@ export async function POST(req: Request) {
             senderRole = 'STUDENT';
         }
 
-        // Get or create conversation
+        if (!studentIdToUse) {
+            return NextResponse.json({ error: 'Student ID required' }, { status: 400 });
+        }
+
         let conversation = await prisma.conversation.findUnique({
-            where: { tenantId_studentId: { tenantId: payload.tenantId!, studentId: studentIdToUse } }
+            where: { tenantId_studentId: { tenantId: payload.tenantId, studentId: studentIdToUse } }
         });
 
         if (!conversation) {
             conversation = await prisma.conversation.create({
-                data: { tenantId: payload.tenantId!, studentId: studentIdToUse }
+                data: { tenantId: payload.tenantId, studentId: studentIdToUse }
             });
         }
 
-        // Create message
         const message = await prisma.message.create({
             data: {
                 conversationId: conversation.id,

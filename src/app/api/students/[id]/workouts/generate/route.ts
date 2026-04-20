@@ -19,11 +19,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         }
 
         const tenantId = payload.tenantId;
+        let studentId = '';
 
         try {
-            const studentId = (await params).id;
+            studentId = (await params).id;
 
-            // Verify student ownership
             const student = await prisma.student.findUnique({ where: { id: studentId } });
             if (!student || student.tenantId !== tenantId) {
                 return NextResponse.json({ error: 'Student not found' }, { status: 404 });
@@ -43,14 +43,16 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
             return NextResponse.json({ workout });
         } catch (error: any) {
             console.error('Workout generation error:', error);
-            await prisma.auditLog.create({
-                data: {
-                    tenantId,
-                    userId: payload.userId,
-                    action: 'WORKOUT_GENERATION_FAILED',
-                    details: { error: error.message, studentId }
-                }
-            });
+            if (studentId) {
+                await prisma.auditLog.create({
+                    data: {
+                        tenantId,
+                        userId: payload.userId,
+                        action: 'WORKOUT_GENERATION_FAILED',
+                        details: { error: error.message, studentId }
+                    }
+                });
+            }
             return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
         }
     } catch (error: any) {
