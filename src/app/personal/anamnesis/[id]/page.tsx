@@ -2,10 +2,13 @@
 import { use, useEffect, useState } from 'react';
 import Link from 'next/link';
 
+const questionTypes = ['TEXT', 'NUMBER', 'BOOLEAN', 'MULTIPLE_CHOICE'];
+
 export default function AnamnesisDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
     const [template, setTemplate] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         fetch(`/api/anamnesis/templates/${id}`)
@@ -16,6 +19,76 @@ export default function AnamnesisDetail({ params }: { params: Promise<{ id: stri
             })
             .catch(() => setLoading(false));
     }, [id]);
+
+    const addSection = async () => {
+        const name = prompt('Nome da seção (ex: Saúde, Nutrição):');
+        if (!name) return;
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/anamnesis/templates/${id}/sections`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setTemplate(data.template);
+            }
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const addQuestion = async (sectionId: string) => {
+        const text = prompt('Texto da pergunta:');
+        if (!text) return;
+        const type = prompt(`Tipo da pergunta (${questionTypes.join(', ')}):`);
+        if (!type || !questionTypes.includes(type)) return alert('Tipo inválido');
+        const required = confirm('Obrigatória?');
+        
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/anamnesis/templates/${id}/questions`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sectionId, text, type, required })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setTemplate(data.template);
+            }
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const deleteQuestion = async (questionId: string) => {
+        if (!confirm('Excluir esta pergunta?')) return;
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/anamnesis/templates/${id}/questions/${questionId}`, { method: 'DELETE' });
+            if (res.ok) {
+                const data = await res.json();
+                setTemplate(data.template);
+            }
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const deleteSection = async (sectionId: string) => {
+        if (!confirm('Excluir toda a seção e suas perguntas?')) return;
+        setSaving(true);
+        try {
+            const res = await fetch(`/api/anamnesis/templates/${id}/sections/${sectionId}`, { method: 'DELETE' });
+            if (res.ok) {
+                const data = await res.json();
+                setTemplate(data.template);
+            }
+        } finally {
+            setSaving(false);
+        }
+    };
 
     if (loading) {
         return <div className="p-8 text-center text-gray-400">Carregando formulário...</div>;
@@ -34,51 +107,61 @@ export default function AnamnesisDetail({ params }: { params: Promise<{ id: stri
                 <div>
                     <h1 className="text-2xl font-bold text-white">{template.name}</h1>
                     <p className="text-sm text-gray-400 mt-1">
-                        {template.isDefault ? 'Este é o formulário padrão que novos alunos respondem.' : 'Formulário customizado.'}
+                        {template.isDefault ? 'Formulário padrão ativo' : 'Formulário customizado'}
                     </p>
                 </div>
             </div>
 
-            <div className="bg-[#111111] rounded-xl shadow-sm border border-[#333333] overflow-hidden">
-                {template.sections.map((section: any, idx: number) => (
-                    <div key={section.id} className="border-b border-[#333333] last:border-b-0">
-                        <div className="bg-black px-6 py-4 font-semibold text-gray-100 border-b border-[#333333]">
-                            {idx + 1}. {section.name}
-                        </div>
-                        <div className="p-6 space-y-6">
-                            {section.questions.map((q: any) => (
-                                <div key={q.id}>
-                                    <p className="text-sm font-medium text-white mb-2">
-                                        {q.text} {q.required && <span className="text-red-500">*</span>}
-                                    </p>
+            <button
+                onClick={addSection}
+                disabled={saving}
+                className="bg-[#D4537E] hover:bg-[#993556] disabled:opacity-50 text-white px-4 py-2 rounded-lg font-medium"
+            >
+                + Nova Seção
+            </button>
 
-                                    {q.type === 'TEXT' && (
-                                        <input disabled type="text" placeholder="Resposta em texto curto" className="w-full bg-black border border-[#333333] text-gray-400 p-2 rounded-lg text-sm" />
-                                    )}
-                                    {q.type === 'NUMBER' && (
-                                        <input disabled type="number" placeholder="0" className="w-32 bg-black border border-[#333333] text-gray-400 p-2 rounded-lg text-sm" />
-                                    )}
-                                    {q.type === 'BOOLEAN' && (
-                                        <div className="flex gap-4">
-                                            <label className="flex items-center gap-2 text-sm text-gray-400"><input type="radio" disabled /> Sim</label>
-                                            <label className="flex items-center gap-2 text-sm text-gray-400"><input type="radio" disabled /> Não</label>
+            {!template.sections?.length ? (
+                <div className="bg-[#111111] border-2 border-dashed border-[#333333] rounded-xl p-12 text-center">
+                    <p className="text-gray-400">Nenhuma seção. Clique em "+ Nova Seção" para começar.</p>
+                </div>
+            ) : (
+                <div className="space-y-6">
+                    {template.sections.map((section: any, idx: number) => (
+                        <div key={section.id} className="bg-[#111111] rounded-xl shadow-sm border border-[#333333] overflow-hidden">
+                            <div className="bg-black px-6 py-4 flex items-center justify-between border-b border-[#333333]">
+                                <h3 className="font-semibold text-gray-100">{idx + 1}. {section.name}</h3>
+                                <button onClick={() => deleteSection(section.id)} className="text-red-400 text-sm hover:text-red-300">
+                                    Excluir
+                                </button>
+                            </div>
+                            <div className="p-6 space-y-4">
+                                {section.questions?.length === 0 && (
+                                    <p className="text-gray-500 text-sm">Nenhuma pergunta nesta seção.</p>
+                                )}
+                                {section.questions?.map((q: any) => (
+                                    <div key={q.id} className="flex items-start justify-between gap-4">
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-white mb-1">
+                                                {q.text} {q.required && <span className="text-red-500">*</span>}
+                                            </p>
+                                            <p className="text-xs text-gray-500">Tipo: {q.type}</p>
                                         </div>
-                                    )}
-                                    {q.type === 'MULTIPLE_CHOICE' && (
-                                        <div className="space-y-2">
-                                            {q.options.map((opt: string, i: number) => (
-                                                <label key={i} className="flex items-center gap-2 text-sm text-gray-400">
-                                                    <input type="radio" disabled /> {opt}
-                                                </label>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
+                                        <button onClick={() => deleteQuestion(q.id)} className="text-red-400 text-xs hover:text-red-300">
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                                <button
+                                    onClick={() => addQuestion(section.id)}
+                                    className="text-[#D4537E] text-sm hover:underline"
+                                >
+                                    + Adicionar pergunta
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
