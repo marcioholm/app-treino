@@ -1,6 +1,23 @@
 import { NextResponse } from 'next/server';
+import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/db/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
+
+const getCachedExercises = unstable_cache(
+    async (tenantId: string | null) => {
+        return prisma.exercise.findMany({
+            where: {
+                OR: [
+                    { tenantId: null },
+                    { tenantId }
+                ]
+            },
+            orderBy: { name: 'asc' }
+        });
+    },
+    ['exercises-library'],
+    { revalidate: 300 }
+);
 
 export async function GET(req: Request) {
     try {
@@ -11,16 +28,7 @@ export async function GET(req: Request) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        // Fetch global exercises and tenant-specific ones
-        const exercises = await prisma.exercise.findMany({
-            where: {
-                OR: [
-                    { tenantId: null },
-                    { tenantId: payload.tenantId }
-                ]
-            },
-            orderBy: { name: 'asc' }
-        });
+        const exercises = await getCachedExercises(payload.tenantId);
 
         return NextResponse.json({ exercises });
     } catch (error: any) {

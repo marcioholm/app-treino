@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
 import { sendPushNotification } from '@/lib/push';
+import { z } from 'zod';
+
+const messageSchema = z.object({
+    content: z.string().min(1).max(2000),
+    studentId: z.string().uuid().optional(),
+});
 
 export async function POST(req: Request) {
     try {
@@ -13,7 +19,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { content, studentId } = body;
+        const { content, studentId } = messageSchema.parse(body);
 
         let studentIdToUse = studentId;
         let senderRole = payload.role as string;

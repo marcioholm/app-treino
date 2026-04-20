@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db/prisma';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { signToken } from '@/lib/auth/jwt';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 const loginSchema = z.object({
     email: z.string().email(),
@@ -11,14 +12,13 @@ const loginSchema = z.object({
 
 export async function POST(req: Request) {
     try {
-        const dbUrl = process.env.DATABASE_URL;
-        console.log('DATABASE_URL exists:', !!dbUrl);
-        console.log('DATABASE_URL (masked):', dbUrl ? dbUrl.replace(/:[^:]+@/, ':****@') : 'undefined');
-        
         const body = await req.json();
         const { email, password } = loginSchema.parse(body);
 
-        console.log('Attempting login for:', email);
+        const ipKey = `login:${email}`;
+        if (!checkRateLimit(ipKey, 'login')) {
+            return NextResponse.json({ error: 'Muitas tentativas. Tente novamente em 1 minuto' }, { status: 429 });
+        }
 
         const user = await prisma.user.findUnique({
             where: { email },

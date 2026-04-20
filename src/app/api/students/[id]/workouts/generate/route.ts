@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { generateWorkout } from '@/lib/engine/workout-generator';
 import { verifyToken } from '@/lib/auth/jwt';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -10,6 +11,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
         if (!payload) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const ipKey = `generate:${payload.userId}`;
+        if (!checkRateLimit(ipKey, 'generate')) {
+            return NextResponse.json({ error: 'Muitas tentativas. Tente novamente em 1 minuto' }, { status: 429 });
         }
 
         const tenantId = payload.tenantId;
@@ -25,7 +31,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
             const workout = await generateWorkout({ studentId });
 
-            // Optional: Log audit
             await prisma.auditLog.create({
                 data: {
                     tenantId,
@@ -37,6 +42,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
             return NextResponse.json({ workout });
         } catch (error: any) {
+            console.error('Workout generation error:', error);
+            await prisma.auditLog.create({
+                data: {
+                    tenantId,
+                    userId: payload.userId,
+                    action: 'WORKOUT_GENERATION_FAILED',
+                    details: { error: error.message, studentId }
+                }
+            });
             return NextResponse.json({ error: error.message || 'Internal Server Error' }, { status: 500 });
         }
     } catch (error: any) {

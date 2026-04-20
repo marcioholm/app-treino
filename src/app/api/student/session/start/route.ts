@@ -1,14 +1,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
+import { z } from 'zod';
+
+const startSessionSchema = z.object({
+    sessionId: z.string().uuid(),
+});
 
 export async function POST(req: Request) {
     const studentId = req.headers.get('x-student-id');
     if (!studentId) return NextResponse.json({ error: 'Unauthorized access. Student only.' }, { status: 401 });
 
     try {
-        const { sessionId } = await req.json();
+        const body = await req.json();
+        const { sessionId } = startSessionSchema.parse(body);
 
-        // Ensure session exists and belongs to student
         const session = await prisma.workoutSession.findUnique({
             where: { id: sessionId },
             include: { workout: true }
@@ -18,7 +23,6 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Session not found' }, { status: 404 });
         }
 
-        // Start a new log
         const workoutLog = await prisma.workoutLog.create({
             data: {
                 sessionId,
@@ -29,7 +33,10 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json({ logId: workoutLog.id, startedAt: workoutLog.startedAt });
-    } catch (err) {
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 });
+        }
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
     }
 }

@@ -1,6 +1,16 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
+import { z } from 'zod';
+
+const checkInSchema = z.object({
+    weight: z.number().positive(),
+    energy: z.number().min(1).max(10),
+    sleep: z.number().min(1).max(10),
+    soreness: z.number().min(1).max(10),
+    motivation: z.number().min(1).max(10),
+    notes: z.string().optional(),
+});
 
 export async function POST(req: Request) {
     try {
@@ -12,7 +22,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { weight, energy, sleep, soreness, motivation, notes } = body;
+        const { weight, energy, sleep, soreness, motivation, notes } = checkInSchema.parse(body);
 
         const student = await prisma.student.findUnique({
             where: { userId: payload.userId }
