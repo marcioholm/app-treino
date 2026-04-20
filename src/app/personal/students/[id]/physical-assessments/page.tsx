@@ -31,14 +31,18 @@ export default function PhysicalAssessmentsPage({ params }: { params: Promise<{ 
     }, [studentId]);
 
     const handleDelete = async (assessmentId: string) => {
-        if (!confirm('Tem certeza que deseja excluir esta avaliação?')) return;
+        if (!confirm('Tem certeza que deseja excluir esta avaliação? Esta ação não pode ser desfeita.')) return;
         try {
             const res = await fetch(`/api/students/${studentId}/physical-assessments/${assessmentId}`, { method: 'DELETE' });
+            const data = await res.json();
             if (res.ok) {
                 setAssessments(assessments.filter(a => a.id !== assessmentId));
+            } else {
+                alert(data.error || 'Erro ao excluir');
             }
-        } catch (e) {
+        } catch (e: any) {
             console.error(e);
+            alert(e.message || 'Erro ao excluir');
         }
     };
 
