@@ -8,17 +8,18 @@ datasource db {
 }
 
 model Tenant {
-  id                 String              @id @default(cuid())
-  name               String
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  anamnesisTemplates AnamnesisTemplate[]
-  conversations      Conversation[]
-  exercises          Exercise[]
-  notifications      Notification[]
-  students           Student[]
-  users              User[]
-  workouts           Workout[]
+  id                   String              @id @default(cuid())
+  name                 String
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  anamnesisTemplates   AnamnesisTemplate[]
+  conversations       Conversation[]
+  exercises           Exercise[]
+  notifications       Notification[]
+  students            Student[]
+  users               User[]
+  workouts            Workout[]
+  physicalAssessments PhysicalAssessment[]
 }
 
 model User {
@@ -48,7 +49,8 @@ model Student {
   createdAt          DateTime              @default(now())
   updatedAt          DateTime              @updatedAt
   anamnesisAnswers AnamnesisAnswer[]
-  assessments      Assessment[]
+  assessments       Assessment[]
+  physicalAssessments PhysicalAssessment[]
   conversations    Conversation[]
   progressions     ExerciseProgression[]
   goals            Goal[]
@@ -333,4 +335,76 @@ enum Modality {
 enum ExerciseType {
   STRENGTH
   CARDIO
+}
+
+model PhysicalAssessment {
+  id                  String   @id @default(cuid())
+  studentId            String
+  tenantId            String
+  date               DateTime @default(now())
+  label              String  @default("Avaliação Inicial")
+  weight             Float?
+  height             Float?
+  bmi                Float?
+  age                Int?
+
+  // Bioimpedance
+  bioimpedanceDevice  String?
+  conditions         String?
+  fatPercent         Float?
+  fatMassKg         Float?
+  leanMassKg        Float?
+  muscleMassKg      Float?
+  waterPercent      Float?
+  boneMassKg        Float?
+  basalMetabolism   Int?
+  metabolicAge     Int?
+
+  // Goals
+  fatGoalPercent     Float?
+  muscleGoalKg      Float?
+  weightGoalKg      Float?
+
+  // Notes
+  notes             String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  student           Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  tenant            Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  bodyMeasurements  BodyMeasurement[]
+  photos            AssessmentPhoto[]
+}
+
+model BodyMeasurement {
+  id                    String            @id @default(cuid())
+  physicalAssessmentId  String
+  neckCm                Float?
+  shoulderCm           Float?
+  chestCm             Float?
+  waistCm             Float?
+  abdomenCm           Float?
+  hipCm               Float?
+  rightArmCm           Float?
+  leftArmCm           Float?
+  rightArmContractedCm Float?
+  leftArmContractedCm Float?
+  rightForearmCm      Float?
+  leftForearmCm       Float?
+  rightThighCm        Float?
+  leftThighCm         Float?
+  rightCalfCm        Float?
+  leftCalfCm         Float?
+  notes               String?
+  createdAt           DateTime          @default(now())
+  assessment         PhysicalAssessment @relation(fields: [physicalAssessmentId], references: [id], onDelete: Cascade)
+}
+
+model AssessmentPhoto {
+  id                  String            @id @default(cuid())
+  physicalAssessmentId String
+  type                 String            // frente, lateral_direita, lateral_esquerda, costas
+  url                  String
+  createdAt            DateTime          @default(now())
+  assessment           PhysicalAssessment @relation(fields: [physicalAssessmentId], references: [id], onDelete: Cascade)
 }

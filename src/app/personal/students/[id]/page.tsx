@@ -216,6 +216,15 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
 
                 <div className="lg:col-span-2 space-y-6">
                     <div className="bg-[#111111] p-6 rounded-xl border border-[#333333] shadow-sm">
+                        <Link
+                            href={`/personal/students/${id}/physical-assessments`}
+                            className="block w-full text-center border border-[#333333] hover:bg-black text-gray-300 py-3 rounded-lg font-medium transition-colors mb-4"
+                        >
+                            Avaliações Físicas
+                        </Link>
+                    </div>
+
+                    <div className="bg-[#111111] p-6 rounded-xl border border-[#333333] shadow-sm">
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                             <h2 className="text-lg font-bold text-white">Treinos</h2>
                             <div className="flex gap-2 w-full sm:w-auto">
