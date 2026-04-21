@@ -71,7 +71,7 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
                 label: form.label,
                 weight: form.weight ? parseFloat(form.weight) : null,
                 height: form.height ? parseFloat(form.height) : null,
-                bmi: bmiValue ? parseFloat(bmiValue) : null,
+                bmi: bmiValue ?? null,
             };
 
             if (form.age) payload.age = parseInt(form.age);
