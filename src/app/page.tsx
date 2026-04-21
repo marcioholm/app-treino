@@ -126,19 +126,19 @@ export default function LandingPage() {
               <span className="text-sm text-primary-foreground font-medium">Comunidade feminina de fitness</span>
             </div>
             
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 md:mb-6">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] mb-6 animate-fade-up">
               Seu espaço seguro para{' '}
               <span className="text-gradient-brand">treinar e evoluir</span>
             </h1>
             
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10">
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-up stagger-1">
               Uma comunidade de mulher para mulher. Treinos personalizados, 
               acompanhamento profissional e tecnologia de ponta.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up stagger-2">
               <Link href="/login?register=true">
-                <GradientButton size="lg" className="w-full sm:w-auto">
+                <GradientButton size="lg" className="w-full sm:w-auto shadow-pink-lg">
                   Criar Conta Grátis
                 </GradientButton>
               </Link>

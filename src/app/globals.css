@@ -3,38 +3,38 @@
 
 @theme {
   /* Brand - M&K Fitness Center */
-  --color-primary: 333 75% 43%;
-  --color-primary-foreground: 0 0% 100%;
-  --color-primary-light: 326 80% 51%;
-  --color-primary-soft: 340 78% 94%;
-  --color-secondary: 285 69% 38%;
-  --color-secondary-foreground: 0 0% 100%;
-  --color-secondary-light: 291 64% 42%;
+  --color-primary: hsl(333 75% 43%);
+  --color-primary-foreground: hsl(0 0% 100%);
+  --color-primary-light: hsl(326 80% 51%);
+  --color-primary-soft: hsl(340 78% 94%);
+  --color-secondary: hsl(285 69% 38%);
+  --color-secondary-foreground: hsl(0 0% 100%);
+  --color-secondary-light: hsl(291 64% 42%);
 
   /* Surfaces - Premium Deep Dark */
-  --color-background: 230 25% 4%;
-  --color-foreground: 210 20% 98%;
-  --color-surface-alt: 230 25% 6%;
-  --color-dark: 230 25% 8%;
-  --color-dark-2: 230 25% 10%;
-  --color-surface: 230 25% 5%;
-  --color-card: 230 25% 7%;
-  --color-card-foreground: 210 20% 98%;
+  --color-background: hsl(230 25% 4%);
+  --color-foreground: hsl(210 20% 98%);
+  --color-surface-alt: hsl(230 25% 6%);
+  --color-dark: hsl(230 25% 8%);
+  --color-dark-2: hsl(230 25% 10%);
+  --color-surface: hsl(230 25% 5%);
+  --color-card: hsl(230 25% 7%);
+  --color-card-foreground: hsl(210 20% 98%);
 
   /* UI Colors */
-  --color-muted: 230 20% 15%;
-  --color-muted-foreground: 210 10% 60%;
-  --color-accent: 333 75% 43%;
-  --color-accent-foreground: 0 0% 100%;
-  --color-destructive: 4 90% 58%;
-  --color-destructive-foreground: 0 0% 100%;
-  --color-success: 145 60% 45%;
-  --color-warning: 38 95% 55%;
-  --color-border: 230 20% 12%;
-  --color-input: 230 20% 12%;
-  --color-ring: 333 75% 43%;
-  --color-popover: 230 25% 7%;
-  --color-popover-foreground: 210 20% 98%;
+  --color-muted: hsl(230 20% 15%);
+  --color-muted-foreground: hsl(210 10% 60%);
+  --color-accent: hsl(333 75% 43%);
+  --color-accent-foreground: hsl(0 0% 100%);
+  --color-destructive: hsl(4 90% 58%);
+  --color-destructive-foreground: hsl(0 0% 100%);
+  --color-success: hsl(145 60% 45%);
+  --color-warning: hsl(38 95% 55%);
+  --color-border: hsl(230 20% 12%);
+  --color-input: hsl(230 20% 12%);
+  --color-ring: hsl(333 75% 43%);
+  --color-popover: hsl(230 25% 7%);
+  --color-popover-foreground: hsl(210 20% 98%);
 
   /* Typography */
   --font-sans: 'Inter', sans-serif;
@@ -42,10 +42,10 @@
 
   /* Gradients & Shadows */
   --gradient-brand: linear-gradient(135deg, hsl(333 75% 43%) 0%, hsl(285 69% 38%) 100%);
-  --gradient-brand-soft: linear-gradient(135deg, hsl(333 75% 43% / 0.85) 0%, hsl(285 69% 38% / 0.85) 100%);
+  --gradient-brand-soft: linear-gradient(135deg, hsla(333, 75%, 43%, 0.85) 0%, hsla(285, 69%, 38%, 0.85) 100%);
   --gradient-surface: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0) 100%);
-  --shadow-pink: 0 4px 24px -1px hsl(333 75% 43% / 0.2);
-  --shadow-pink-lg: 0 10px 48px -1px hsl(333 75% 43% / 0.35);
+  --shadow-pink: 0 4px 24px -1px hsla(333, 75%, 43%, 0.2);
+  --shadow-pink-lg: 0 10px 48px -1px hsla(333, 75%, 43%, 0.35);
 
   /* Radius */
   --radius: 1.15rem;
@@ -53,17 +53,15 @@
 
 @layer base {
   * { @apply border-border; }
-  html, body { 
-    @apply bg-background text-foreground; 
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
+  html {
+     color-scheme: dark;
+  }
+  body { 
+    @apply bg-background text-foreground font-sans antialiased; 
     scroll-behavior: smooth;
   }
   h1, h2, h3, h4, h5 { 
-    font-family: 'Outfit', sans-serif; 
-    font-weight: 700; 
-    letter-spacing: -0.02em; 
-    @apply text-foreground;
+    @apply font-display font-bold tracking-tight text-foreground;
   }
 }
 
@@ -72,10 +70,14 @@
   .bg-gradient-brand { background: var(--gradient-brand); }
   .bg-gradient-brand-soft { background: var(--gradient-brand-soft); }
   .bg-glass {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+    background: hsla(0, 0%, 100%, 0.03);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsla(0, 0%, 100%, 0.08);
   }
   .bg-glass-dark {
-    @apply bg-black/40 backdrop-blur-xl border border-white/5;
+    background: hsla(230, 25%, 2%, 0.7);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsla(0, 0%, 100%, 0.05);
   }
   .text-gradient-brand {
     background: var(--gradient-brand);
@@ -85,7 +87,9 @@
   }
   .shadow-pink { box-shadow: var(--shadow-pink); }
   .shadow-pink-lg { box-shadow: var(--shadow-pink-lg); }
-  .label-caps { font-weight: 700; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-muted-foreground); }
+  .label-caps { 
+    @apply text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground;
+  }
 
   /* Animations */
   .animate-fade-up {
@@ -94,13 +98,10 @@
   .animate-fade-in {
     animation: fade-in 0.4s ease-out forwards;
   }
-  .stagger-1 { animation-delay: 0.1s; }
-  .stagger-2 { animation-delay: 0.2s; }
-  .stagger-3 { animation-delay: 0.3s; }
 }
 
 @keyframes fade-up {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -109,36 +110,20 @@
   to { opacity: 1; }
 }
 
-/* Input fields - dark bg with pink border on focus */
+/* Forms */
 input, textarea, select {
-  background-color: hsl(0 0% 8%) !important;
-  color: hsl(0 0% 100%) !important;
-  border-color: hsl(220 9% 20%);
+  @apply bg-dark-2/50 border-white/5 text-white rounded-xl px-4 py-3 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all;
 }
 
-input:focus, textarea:focus, select:focus {
-  border-color: hsl(333 75% 43%) !important;
-  outline: none;
-}
-
-input::placeholder, textarea::placeholder {
-  color: hsl(220 9% 50%) !important;
+input::placeholder {
+  @apply text-muted-foreground/40;
 }
 
 /* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: hsl(333 75% 43%);
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { 
+  background: hsl(333 75% 43% / 0.3);
   border-radius: 3px;
 }
-
-::-webkit-scrollbar-thumb:hover {
-  background: hsl(285 69% 38%);
-}
+::-webkit-scrollbar-thumb:hover { background: hsl(333 75% 43% / 0.5); }

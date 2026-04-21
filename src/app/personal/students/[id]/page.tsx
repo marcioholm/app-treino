@@ -97,7 +97,14 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     };
 
     if (loading) {
-        return <div className="p-8 text-center text-muted-foreground">Carregando...</div>;
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="size-12 rounded-2xl bg-white/5 border border-white/10 animate-spin" />
+                    <p className="text-muted-foreground font-bold animate-pulse">Carregando atleta...</p>
+                </div>
+            </div>
+        );
     }
 
     if (!student) {
@@ -110,7 +117,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     
     const latestAssessment = student.assessments[0];
     const goal = student.goals[0];
-    const initials = student.user.name.split(' ').map(n => n[0]).slice(0, 2).join('');
+    const initials = student.user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 
     const tabs = ['Treino atual', 'Histórico', 'Avaliação física', 'Evolução'];
 
@@ -127,77 +134,86 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     ];
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className="min-h-screen bg-background pb-20 selection:bg-primary/30">
             {/* Profile Header */}
-            <section className="relative overflow-hidden pt-12 pb-24">
+            <section className="relative overflow-hidden pt-12 pb-24 animate-fade-in">
                 {/* Background Decor */}
-                <div className="absolute top-0 right-0 w-[40%] h-[100%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
-                <div className="absolute bottom-0 left-0 w-[30%] h-[80%] bg-secondary/5 rounded-full blur-[100px]" />
+                <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[120px] -z-10" />
+                <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-secondary/5 rounded-full blur-[100px] -z-10" />
                 
                 <div className="container mx-auto px-4 md:px-6 relative z-10">
-                    <Link href="/personal/students" className="inline-flex items-center gap-2 text-muted-foreground hover:text-white transition-colors mb-10 group">
+                    <Link href="/personal/students" className="inline-flex items-center gap-2.5 text-muted-foreground hover:text-white transition-all mb-12 group p-2 rounded-xl hover:bg-white/5">
                         <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="font-bold text-sm tracking-tight">Voltar para alunas</span>
+                        <span className="font-black text-[10px] uppercase tracking-widest">Painel de Alunas</span>
                     </Link>
 
-                    <div className="flex flex-col md:flex-row gap-8 items-start md:items-end">
+                    <div className="flex flex-col md:flex-row gap-10 items-start md:items-end animate-fade-up">
                         <div className="relative group">
-                            <div className="size-32 md:size-40 rounded-[2.5rem] bg-glass-dark grid place-items-center font-display font-black text-5xl text-primary-light ring-4 ring-white/5 shadow-pink-lg transition-transform group-hover:scale-105 duration-500">
+                            <div className="size-36 md:size-44 rounded-[2.5rem] bg-glass-dark grid place-items-center font-display font-black text-5xl text-primary-light ring-4 ring-white/5 shadow-pink-lg transition-all group-hover:scale-105 group-hover:rotate-1 duration-500 overflow-hidden relative">
                                 {initials}
+                                <div className="absolute inset-0 bg-gradient-brand opacity-0 group-hover:opacity-10 transition-opacity" />
                             </div>
-                            <button className="absolute -bottom-2 -right-2 size-10 rounded-2xl bg-gradient-brand grid place-items-center shadow-pink border-4 border-background text-white hover:scale-110 transition-transform">
-                                <Camera size={18} />
+                            <button className="absolute -bottom-3 -right-3 size-12 rounded-2xl bg-gradient-brand grid place-items-center shadow-pink-lg border-4 border-background text-white hover:scale-110 active:scale-95 transition-all">
+                                <Camera size={20} strokeWidth={2.5} />
                             </button>
                         </div>
 
                         <div className="flex-1 min-w-0">
                             {editingProfile ? (
-                                <div className="flex flex-col gap-4 max-w-md">
+                                <div className="flex flex-col gap-4 max-w-md animate-fade-in">
                                     <input
                                         type="text"
                                         value={profileForm.name}
                                         onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-display text-2xl font-bold focus:border-primary-light outline-none"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-display text-3xl font-black focus:border-primary-light outline-none shadow-inner"
                                     />
                                     <div className="flex gap-3">
                                         <GradientButton size="sm" onClick={handleSaveProfile} disabled={savingProfile}>
-                                            {savingProfile ? 'Salvando...' : 'Salvar Alterações'}
+                                            {savingProfile ? 'Processando...' : 'Salvar Atleta'}
                                         </GradientButton>
-                                        <GradientButton size="sm" variant="ghost" onClick={() => setEditingProfile(false)}>
+                                        <button onClick={() => setEditingProfile(false)} className="px-6 py-2.5 text-sm font-bold text-muted-foreground hover:text-white transition-colors">
                                             Cancelar
-                                        </GradientButton>
+                                        </button>
                                     </div>
                                 </div>
                             ) : (
                                 <>
-                                    <div className="flex items-center gap-4 mb-3">
-                                        <h1 className="font-display text-4xl md:text-5xl font-black text-white tracking-tight">{student.user.name}</h1>
-                                        <button onClick={() => setEditingProfile(true)} className="size-10 rounded-xl bg-white/5 grid place-items-center text-muted-foreground hover:text-white hover:bg-white/10 transition-all">
-                                            <PencilLine size={18} />
+                                    <div className="flex items-center gap-4 mb-4">
+                                        <h1 className="font-display text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">{student.user.name}</h1>
+                                        <button onClick={() => setEditingProfile(true)} className="size-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center text-muted-foreground hover:text-primary-light hover:bg-white/10 transition-all hover:scale-110">
+                                            <PencilLine size={20} />
                                         </button>
                                     </div>
-                                    <div className="flex flex-wrap gap-2.5">
+                                    <div className="flex flex-wrap gap-3">
                                         {goal ? (
                                             <>
-                                                <span className="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary-light uppercase tracking-wider">{goal.objective}</span>
-                                                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground">Nível {goal.level}</span>
-                                                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground">{goal.daysPerWeek}x semana</span>
+                                                <div className="px-5 py-2 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-2">
+                                                    <Target size={14} className="text-primary-light" />
+                                                    <span className="text-[11px] font-black text-primary-light uppercase tracking-widest">{goal.objective}</span>
+                                                </div>
+                                                <div className="px-5 py-2 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2">
+                                                    <Activity size={14} className="text-secondary-light" />
+                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">Nível {goal.level}</span>
+                                                </div>
+                                                <div className="px-5 py-2 rounded-2xl bg-white/5 border border-white/10 flex items-center gap-2">
+                                                    <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest">{goal.daysPerWeek}x / semana</span>
+                                                </div>
                                             </>
                                         ) : (
-                                            <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground italic">Sem objetivo definido</span>
+                                            <span className="px-5 py-2 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold text-muted-foreground italic uppercase tracking-widest">Sem metas ativas</span>
                                         )}
                                     </div>
                                 </>
                             )}
                         </div>
 
-                        <div className="flex gap-3 w-full md:w-auto">
-                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic} className="flex-1 md:flex-none">
-                                <Sparkles size={18} className="text-primary-light" /> IA Workout
+                        <div className="flex gap-4 w-full md:w-auto">
+                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic} className="flex-1 md:flex-none h-14 px-8 border-white/5 text-sm font-black tracking-tight">
+                                <Sparkles size={20} className="text-primary-light mr-2" /> IA SmartWorkout
                             </GradientButton>
-                            <GradientButton variant="outline" className="flex-1 md:flex-none">
-                                <FileDown size={18} /> Relatório
-                            </GradientButton>
+                            <button className="flex-1 md:flex-none size-14 rounded-2xl bg-white/5 border border-white/5 grid place-items-center text-white hover:bg-white/10 hover:border-white/20 transition-all group">
+                                <FileDown size={22} className="group-hover:translate-y-0.5 transition-transform" />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -205,12 +221,14 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
 
             {/* Tab Navigation */}
             <div className="container mx-auto px-4 md:px-6">
-                <div className="flex gap-1.5 overflow-x-auto bg-white/5 p-1.5 rounded-[1.5rem] border border-white/10 no-scrollbar">
+                <div className="flex gap-2 overflow-x-auto bg-white/[0.03] p-2 rounded-[2rem] border border-white/5 no-scrollbar backdrop-blur-3xl shadow-2xl">
                     {tabs.map((t, i) => (
                         <button key={t} onClick={() => setTab(i)}
                             className={cn(
-                                "flex-1 px-8 h-12 rounded-2xl text-sm font-bold whitespace-nowrap transition-all duration-300",
-                                tab === i ? "bg-gradient-brand text-white shadow-pink translate-y-0" : "text-muted-foreground hover:text-white hover:bg-white/5"
+                                "flex-1 min-w-[140px] px-8 h-14 rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-500",
+                                tab === i 
+                                    ? "bg-gradient-brand text-white shadow-pink-lg scale-[1.02] relative z-10" 
+                                    : "text-muted-foreground hover:text-white hover:bg-white/5"
                             )}>
                             {t}
                         </button>
@@ -219,18 +237,18 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
             </div>
 
             {tab === 2 && (
-                <div className="container mx-auto px-4 md:px-6 mt-12 pb-24 space-y-12">
+                <div className="container mx-auto px-4 md:px-6 mt-16 pb-32 space-y-16 animate-fade-up">
                     {/* Metrics Dashboard */}
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                         <MetricCard 
-                            label="Peso" 
+                            label="Peso Corporal" 
                             value={latestAssessment?.weight || '—'} 
                             unit="kg" 
                             iconName="scale" 
                             invertColor 
                         />
                         <MetricCard 
-                            label="Gordura" 
+                            label="Percentual Gordura" 
                             value={latestAssessment?.bodyFatPercentage || '—'} 
                             unit="%" 
                             iconName="target" 
@@ -243,7 +261,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                             iconName="activity" 
                         />
                         <MetricCard 
-                            label="Cintura" 
+                            label="Circunf. Cintura" 
                             value={latestAssessment?.waist || '—'} 
                             unit="cm" 
                             iconName="ruler" 
@@ -251,55 +269,73 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                         />
                     </div>
 
-                    {/* Measurements Table Card */}
-                    <div className="bg-glass rounded-[2rem] overflow-hidden border-white/5">
-                        <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                    {/* Detailed Composition */}
+                    <div className="group bg-glass rounded-[3rem] overflow-hidden border-white/5 hover:border-white/10 transition-all duration-700 shadow-2xl relative">
+                        {/* Inner Gradient Blur */}
+                        <div className="absolute top-0 right-0 size-64 bg-primary/5 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/10 transition-colors" />
+                        
+                        <div className="px-10 py-10 border-b border-white/5 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white/[0.01]">
                             <div>
-                                <h3 className="font-display font-bold text-xl text-white">Composição Corporal</h3>
-                                <p className="text-xs text-muted-foreground font-medium mt-1 uppercase tracking-widest">Medidas e Perímetros</p>
+                                <h3 className="font-display font-black text-3xl text-white tracking-tight">Composição Corporal</h3>
+                                <p className="label-caps mt-2 opacity-60">Análise detalhada de perímetros e massa</p>
                             </div>
                             {latestAssessment && (
-                                <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
-                                    Avaliado em: {new Date(latestAssessment.createdAt).toLocaleDateString('pt-BR')}
+                                <div className="flex items-center gap-4">
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Última Atualização</span>
+                                        <span className="text-sm font-bold text-white">{new Date(latestAssessment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                                    </div>
+                                    <div className="size-12 rounded-2xl bg-success/10 border border-success/20 grid place-items-center text-success">
+                                        <Activity size={20} />
+                                    </div>
                                 </div>
                             )}
                         </div>
                         <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-y md:divide-y-0 divide-white/5">
                             {measures.map(([k, v]) => (
-                                <div key={k} className="px-8 py-8 hover:bg-white/[0.02] transition-colors">
-                                    <div className="label-caps mb-3">{k}</div>
-                                    <div className="font-display font-black text-2xl text-white tracking-tight">{v}</div>
+                                <div key={k} className="px-10 py-12 hover:bg-white/[0.03] transition-all group/measure cursor-default">
+                                    <div className="label-caps mb-4 group-hover/measure:text-primary-light transition-colors">{k}</div>
+                                    <div className="font-display font-black text-3xl text-white tracking-tighter group-hover/measure:scale-110 origin-left transition-transform duration-500">{v}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Quick Access Actions */}
-                    <div className="flex gap-4 p-4 rounded-3xl bg-white/5 border border-white/10">
-                        <Link href={`/personal/students/${id}/physical-assessments`} className="flex-1 text-center">
-                            <GradientButton variant="ghost" className="w-full font-bold">
-                                Ver Histórico Completo
-                            </GradientButton>
-                        </Link>
-                        <Link href={`/personal/students/${id}/physical-assessments/nova`} className="flex-1">
-                            <GradientButton className="w-full">
-                                Realizar Nova Avaliação
-                            </GradientButton>
-                        </Link>
+                    {/* Actions Panel */}
+                    <div className="flex flex-col md:flex-row items-center gap-6 p-8 rounded-[2.5rem] bg-glass-dark border border-white/5 shadow-2xl">
+                        <div className="flex-1 text-center md:text-left">
+                            <h4 className="font-display text-xl font-black text-white">Evolução Contínua</h4>
+                            <p className="text-muted-foreground text-sm font-medium mt-1">Mantenha os dados atualizados para melhores resultados gerados pela IA.</p>
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-4 w-full md:w-auto">
+                            <Link href={`/personal/students/${id}/physical-assessments`} className="flex-1 md:flex-none">
+                                <GradientButton variant="outline" className="w-full h-14 px-8 border-white/10 font-bold">
+                                    Histórico Completo
+                                </GradientButton>
+                            </Link>
+                            <Link href={`/personal/students/${id}/physical-assessments/nova`} className="flex-1 md:flex-none">
+                                <GradientButton className="w-full h-14 px-10 shadow-pink-lg font-black text-sm tracking-tight scale-105 hover:scale-110 active:scale-95 transition-all">
+                                    Nova Avaliação Física
+                                </GradientButton>
+                            </Link>
+                        </div>
                     </div>
                 </div>
             )}
 
             {tab !== 2 && (
-                <div className="container mx-auto px-4 md:px-6 mt-16 pb-24">
-                    <div className="bg-glass-dark rounded-[2.5rem] p-16 md:p-24 border-white/5 text-center backdrop-blur-3xl">
-                        <div className="size-20 rounded-3xl bg-white/5 grid place-items-center mx-auto mb-8 text-muted-foreground">
-                            <Activity size={40} className="opacity-20" />
+                <div className="container mx-auto px-4 md:px-6 mt-20 pb-32">
+                    <div className="bg-glass-dark rounded-[3rem] p-20 md:p-32 border-white/5 text-center backdrop-blur-3xl shadow-pink">
+                        <div className="size-24 rounded-[2rem] bg-primary/5 border border-primary/10 grid place-items-center mx-auto mb-10 text-primary-light/50 group">
+                            <Sparkles size={48} className="animate-pulse" />
                         </div>
-                        <h3 className="font-display text-3xl font-black text-white mb-4 tracking-tight">Em Construção</h3>
-                        <p className="text-muted-foreground text-lg max-w-sm mx-auto leading-relaxed">
-                            A aba <span className="text-primary-light font-bold">"{tabs[tab]}"</span> está sendo aperfeiçoada para oferecer a melhor experiência possível.
+                        <h3 className="font-display text-4xl font-black text-white mb-6 tracking-tight">Recurso Premium</h3>
+                        <p className="text-muted-foreground text-xl max-w-lg mx-auto leading-relaxed">
+                            A aba <span className="text-gradient-brand font-black">"{tabs[tab]}"</span> está sendo otimizada pela nossa IA para entregar insights de nível profissional.
                         </p>
+                        <div className="mt-10">
+                            <GradientButton variant="outline" className="h-12 px-8 border-white/5 text-xs font-black uppercase tracking-widest">Notificar quando pronto</GradientButton>
+                        </div>
                     </div>
                 </div>
             )}

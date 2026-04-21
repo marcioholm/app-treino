@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronDown, LogOut, Dumbbell, Users, BarChart3, MessageSquare } from 'lucide-react';
+import { ChevronDown, LogOut, Dumbbell, Users, BarChart3, MessageSquare, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PersonalLayoutProps {
@@ -34,98 +34,112 @@ export default function PersonalLayout({ children, trainerName = 'Personal' }: P
     };
 
     return (
-        <div className="min-h-screen bg-surface-alt">
-            {/* Header */}
-            <header className="sticky top-0 z-40 bg-dark text-white border-b border-white/5">
-                <div className="container mx-auto flex items-center h-16 gap-6 px-4 md:px-6">
-                    <Link href="/personal/dashboard" className="flex items-center gap-2">
-                        <div className="size-10 rounded-full bg-gradient-brand grid place-items-center ring-2 ring-primary-light">
-                            <span className="font-display font-bold text-white">M&K</span>
+        <div className="min-h-screen bg-background text-foreground selection:bg-primary/30">
+            {/* Header / Sidebar for desktop would be nice, but sticking to header for now with premium polish */}
+            <header className="sticky top-0 z-40 bg-background/50 backdrop-blur-xl border-b border-white/5">
+                <div className="container mx-auto flex items-center h-20 gap-8 px-4 md:px-6">
+                    <Link href="/personal/dashboard" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
+                        <div className="size-11 rounded-2xl bg-gradient-brand grid place-items-center shadow-pink ring-1 ring-white/10">
+                            <span className="font-display font-black text-white text-lg tracking-tighter">M&K</span>
                         </div>
-                        <span className="font-display font-bold hidden sm:inline">M&K Fitness</span>
+                        <div className="hidden sm:flex flex-col leading-none">
+                            <span className="font-display font-black text-white tracking-tight">Fitness Center</span>
+                            <span className="text-[10px] font-bold text-primary-light uppercase tracking-widest mt-0.5">Trainer OS</span>
+                        </div>
                     </Link>
                     
-                    <nav className="hidden md:flex items-center gap-1 ml-4">
+                    <nav className="hidden md:flex items-center gap-1.5 ml-4">
                         {links.map(l => {
                             const Icon = l.icon;
                             const isActive = pathname.startsWith(l.href);
                             return (
                                 <Link key={l.href} href={l.href}
                                     className={cn(
-                                        "px-4 h-10 flex items-center gap-2 rounded-lg text-sm font-semibold transition",
-                                        isActive ? "bg-white/10 text-white" : "text-white/70 hover:text-white hover:bg-white/5"
+                                        "px-5 h-11 flex items-center gap-2.5 rounded-2xl text-sm font-bold transition-all duration-300",
+                                        isActive 
+                                            ? "bg-white/5 text-primary-light shadow-sm ring-1 ring-white/5" 
+                                            : "text-muted-foreground hover:text-white hover:bg-white/[0.03]"
                                     )}>
-                                    <Icon size={16} />
+                                    <Icon size={18} strokeWidth={isActive ? 2.5 : 2} />
                                     {l.label}
                                 </Link>
                             );
                         })}
                     </nav>
                     
-                    <div className="ml-auto relative">
-                        <button onClick={() => setUserMenuOpen(o => !o)} className="flex items-center gap-2 hover:bg-white/5 rounded-xl pl-2 pr-3 h-11 transition">
-                            <div className="size-9 rounded-full bg-gradient-brand grid place-items-center font-bold text-sm ring-2 ring-primary-light">{initials}</div>
-                            <span className="hidden sm:flex flex-col items-start leading-tight">
-                                <span className="text-sm font-semibold">{trainerName}</span>
-                                <span className="text-[11px] text-white/60">Personal Trainer</span>
-                            </span>
-                            <ChevronDown size={16} className="text-white/60" />
-                        </button>
+                    <div className="ml-auto flex items-center gap-4">
+                        <div className="hidden sm:block h-8 w-px bg-white/5 mx-2" />
                         
-                        {userMenuOpen && (
-                            <div className="absolute right-0 mt-2 w-48 rounded-xl bg-card text-foreground shadow-pink-lg border border-border overflow-hidden">
-                                <Link href="/personal/code" className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-primary-soft">
-                                    <Users size={16} /> Meu Código
-                                </Link>
-                                <button onClick={handleLogout} className="w-full flex items-center gap-2 px-4 py-3 text-sm hover:bg-primary-soft text-left">
-                                    <LogOut size={16} /> Sair
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                        <div className="relative">
+                            <button 
+                                onClick={() => setUserMenuOpen(o => !o)} 
+                                className="flex items-center gap-3 hover:bg-white/5 rounded-2xl p-1.5 transition-all outline-none"
+                            >
+                                <div className="size-10 rounded-xl bg-glass border border-white/10 flex items-center justify-center font-display font-black text-sm text-primary-light transition-transform hover:rotate-3">
+                                    {initials}
+                                </div>
+                                <div className="hidden lg:flex flex-col items-start leading-none gap-1">
+                                    <span className="text-sm font-bold text-white pr-2">{trainerName}</span>
+                                    <span className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">Master Coach</span>
+                                </div>
+                                <ChevronDown size={14} className={cn("text-muted-foreground transition-transform duration-300", userMenuOpen && "rotate-180")} />
+                            </button>
+                            
+                            {userMenuOpen && (
+                                <div className="absolute right-0 mt-3 w-56 rounded-[1.5rem] bg-glass-dark border border-white/10 shadow-2xl py-2 animate-fade-in overflow-hidden backdrop-blur-3xl">
+                                    <Link href="/personal/code" className="flex items-center gap-3 px-5 py-3.5 text-sm font-bold text-white hover:bg-white/5 transition-colors">
+                                        <Users size={18} className="text-primary-light" /> 
+                                        <span>Meu Código</span>
+                                    </Link>
+                                    <div className="h-px bg-white/5 mx-4 my-1" />
+                                    <button onClick={handleLogout} className="w-full flex items-center gap-3 px-5 py-3.5 text-sm font-bold text-red-400 hover:bg-red-500/10 transition-colors text-left">
+                                        <LogOut size={18} /> 
+                                        <span>Sair do OS</span>
+                                    </button>
+                                </div>
+                            )}
+                        </div>
 
-                    {/* Mobile menu button */}
-                    <button 
-                        onClick={() => setMobileMenuOpen(true)}
-                        className="md:hidden p-2 hover:bg-white/5 rounded-lg"
-                    >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+                        {/* Mobile menu button */}
+                        <button 
+                            onClick={() => setMobileMenuOpen(true)}
+                            className="md:hidden size-11 rounded-2xl bg-white/5 grid place-items-center text-white border border-white/5 transition-all active:scale-95"
+                        >
+                            <Menu size={24} />
+                        </button>
+                    </div>
                 </div>
             </header>
 
             {/* Main content */}
-            <main className="container mx-auto px-4 md:px-6 py-8">
+            <main className="container mx-auto px-4 md:px-6 py-10 relative overflow-hidden">
+                {/* Background Decor */}
+                <div className="fixed top-0 right-0 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none -z-10" />
+                <div className="fixed bottom-0 left-0 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+                
                 {children}
             </main>
 
-            {/* Mobile Menu */}
+            {/* Mobile Menu Overlay */}
             {mobileMenuOpen && (
-                <div className="fixed inset-0 z-50 md:hidden">
-                    <div 
-                        className="absolute inset-0 bg-black/50"
-                        onClick={() => setMobileMenuOpen(false)}
-                    />
-                    <div className="absolute left-0 top-0 bottom-0 w-64 bg-card border-r border-border p-4 overflow-y-auto">
-                        <div className="flex items-center justify-between mb-6">
-                            <div className="flex items-center gap-2">
-                                <div className="size-10 rounded-full bg-gradient-brand grid place-items-center">
-                                    <span className="font-display font-bold text-white text-sm">M&K</span>
+                <div className="fixed inset-0 z-50 md:hidden bg-background/95 backdrop-blur-xl animate-fade-in">
+                    <div className="flex flex-col h-full p-8">
+                        <div className="flex items-center justify-between mb-12">
+                            <div className="flex items-center gap-3">
+                                <div className="size-11 rounded-2xl bg-gradient-brand grid place-items-center">
+                                    <span className="font-display font-black text-white text-lg">M&K</span>
                                 </div>
-                                <span className="font-display font-bold">M&K Fitness</span>
+                                <span className="font-display font-black text-white text-xl">Fitness OS</span>
                             </div>
                             <button 
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="text-muted-foreground p-2"
+                                className="size-11 rounded-2xl bg-white/5 grid place-items-center text-white"
                             >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                </svg>
+                                <X size={24} />
                             </button>
                         </div>
-                        <nav className="space-y-1">
+                        
+                        <nav className="flex flex-col gap-4">
                             {links.map(l => {
                                 const Icon = l.icon;
                                 const isActive = pathname.startsWith(l.href);
@@ -135,28 +149,21 @@ export default function PersonalLayout({ children, trainerName = 'Personal' }: P
                                         href={l.href} 
                                         onClick={() => setMobileMenuOpen(false)}
                                         className={cn(
-                                            "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition",
-                                            isActive ? "bg-gradient-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
+                                            "flex items-center gap-4 px-6 py-5 rounded-[2rem] text-lg font-black transition-all",
+                                            isActive 
+                                                ? "bg-gradient-brand text-white shadow-pink-lg" 
+                                                : "bg-white/5 text-muted-foreground active:scale-95"
                                         )}>
-                                        <Icon size={18} />
+                                        <Icon size={22} strokeWidth={2.5} />
                                         {l.label}
                                     </Link>
                                 );
                             })}
                         </nav>
-                        <div className="mt-8 pt-4 border-t border-border">
-                            <Link 
-                                href="/personal/code" 
-                                onClick={() => setMobileMenuOpen(false)}
-                                className="flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground hover:text-foreground"
-                            >
-                                <Users size={18} /> Meu Código
-                            </Link>
-                            <button 
-                                onClick={handleLogout}
-                                className="w-full flex items-center gap-3 px-4 py-3 text-sm text-muted-foreground hover:text-foreground"
-                            >
-                                <LogOut size={18} /> Sair
+                        
+                        <div className="mt-auto pt-8 flex flex-col gap-4">
+                            <button onClick={handleLogout} className="flex items-center justify-center gap-3 w-full py-5 rounded-[2rem] bg-red-500/10 text-red-400 font-black text-lg">
+                                <LogOut size={22} /> Sair do Treinador OS
                             </button>
                         </div>
                     </div>

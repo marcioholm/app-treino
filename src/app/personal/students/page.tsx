@@ -108,33 +108,23 @@ export default function StudentsList() {
                 </div>
 
                 {loading ? (
-                    <div className="p-8 text-center text-muted-foreground">Carregando alunas...</div>
-                ) : (
-                    <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {studentsWithCards.map(student => (
-                            <StudentCard key={student.id} aluna={student} />
-                        ))}
-                    </div>
-                )}
-
-                {loading ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="h-64 rounded-[2rem] bg-white/5 animate-pulse" />
+                        {[1, 2, 3, 4, 5, 6].map(i => (
+                            <div key={i} className="h-64 rounded-[2.5rem] bg-white/5 animate-pulse" />
                         ))}
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-up">
                         {studentsWithCards.map(student => (
                             <StudentCard key={student.id} aluna={student} />
                         ))}
                         
                         {studentsWithCards.length === 0 && (
-                            <div className="col-span-full py-12">
+                            <div className="col-span-full py-20 relative z-10">
                                 <EmptyState 
                                     icon={Users}
                                     title="Nenhuma aluna encontrada"
-                                    description={searchQuery ? "Tente buscar por um termo diferente." : "Comece cadastrando sua primeira aluna no botão acima."}
+                                    description={searchQuery ? "Tente buscar por um termo diferente." : "Sua academia ainda está vazia. Que tal cadastrar sua primeira aluna?"}
                                 />
                             </div>
                         )}

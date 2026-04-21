@@ -37,27 +37,41 @@ export default function MetricCard({ label, value, unit, delta, deltaLabel, inve
   const Icon = iconName ? iconMap[iconName] : null;
   
   return (
-    <div className="bg-glass rounded-2xl p-5 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] group">
-      <div className="flex items-start justify-between mb-4">
-        <span className="label-caps">{label}</span>
+    <div className="bg-glass rounded-[2rem] p-6 transition-all duration-500 hover:bg-white/[0.05] border-white/5 hover:border-white/10 group flex flex-col justify-between h-full min-h-[160px] relative overflow-hidden">
+      {/* Background Glow */}
+      <div className="absolute -top-12 -right-12 size-32 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors" />
+      
+      <div className="flex items-center justify-between relative z-10">
+        <span className="label-caps opacity-60 group-hover:opacity-100 transition-opacity">{label}</span>
         {Icon && (
-          <span className="grid place-items-center size-10 rounded-xl bg-primary-soft/10 text-primary transition-transform group-hover:scale-110">
-            <Icon size={20} />
-          </span>
+          <div className="size-11 rounded-2xl bg-white/5 flex items-center justify-center text-primary-light ring-1 ring-white/5 transition-all group-hover:ring-white/20 group-hover:scale-110">
+            <Icon size={20} strokeWidth={2.5} />
+          </div>
         )}
       </div>
-      <div className="flex items-baseline gap-1.5">
-        <span className="font-display text-4xl font-bold tracking-tight text-foreground">{value}</span>
-        {unit && <span className="text-sm font-medium text-muted-foreground">{unit}</span>}
-      </div>
-      {delta !== undefined && (
-        <div className={cn("mt-3 inline-flex items-center gap-1.5 text-xs font-bold px-2 py-1 rounded-full",
-          good ? "bg-success/10 text-success" : isUp || isDown ? "bg-destructive/10 text-destructive" : "bg-white/5 text-muted-foreground")}>
-          {isUp && <ArrowUp size={14} />}
-          {isDown && <ArrowDown size={14} />}
-          {Math.abs(delta).toFixed(1)} {deltaLabel ?? ""}
+
+      <div className="mt-4 relative z-10">
+        <div className="flex items-baseline gap-1.5 flex-wrap">
+          <span className="font-display text-4xl font-black text-white tracking-tight drop-shadow-sm">{value}</span>
+          {unit && <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest translate-y-[-2px]">{unit}</span>}
         </div>
-      )}
+        
+        {delta !== undefined && (
+          <div className={cn(
+            "mt-4 inline-flex items-center gap-1.5 text-[11px] font-black px-3 py-1.5 rounded-xl border transition-all",
+            good 
+              ? "bg-green-500/10 text-green-400 border-green-500/20" 
+              : isUp || isDown 
+                ? "bg-red-500/10 text-red-400 border-red-500/20" 
+                : "bg-white/5 text-muted-foreground border-white/10"
+          )}>
+            <div className={cn("size-1.5 rounded-full", good ? "bg-green-400" : "bg-red-400")} />
+            {isUp && <ArrowUp size={12} strokeWidth={3} />}
+            {isDown && <ArrowDown size={12} strokeWidth={3} />}
+            {Math.abs(delta).toFixed(1)}{unit === '%' ? '' : ' '} {deltaLabel ?? ""}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

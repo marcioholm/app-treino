@@ -118,18 +118,18 @@ export default async function PersonalDashboard() {
     return (
         <div className="min-h-screen bg-background pb-24">
             {/* Hero Section */}
-            <section className="relative overflow-hidden pt-12 pb-20">
+            <section className="relative overflow-hidden pt-12 pb-20 animate-fade-in">
                 {/* Background Blobs */}
                 <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
                 <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-[100px]" />
                 
                 <div className="container mx-auto px-4 md:px-6 relative z-10">
-                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 animate-fade-up">
                         <div>
-                            <h1 className="font-display text-4xl md:text-5xl font-black tracking-tight text-white">
+                            <h1 className="font-display text-4xl md:text-5xl font-black tracking-tight text-white leading-[1.1]">
                                 Olá, <span className="text-gradient-brand">{trainer?.name?.split(' ')[0] || 'Personal'}</span> 👋
                             </h1>
-                            <p className="text-muted-foreground mt-3 text-lg font-medium">
+                            <p className="text-muted-foreground mt-4 text-lg font-medium max-w-md">
                                 Você tem <span className="text-white font-bold">{pendingAssessments}</span> alunas aguardando avaliação.
                             </p>
                         </div>
@@ -146,8 +146,8 @@ export default async function PersonalDashboard() {
             </section>
 
             {/* Metrics */}
-            <section className="container mx-auto px-4 md:px-6 -mt-6">
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <section className="container mx-auto px-4 md:px-6 -mt-8 relative z-20 animate-fade-up stagger-1">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                     <MetricCard label="Alunas ativas" value={students.length} iconName="users" delta={2} deltaLabel="vs mês passado" />
                     <MetricCard label="Treinos gerados" value={38} unit="/mês" iconName="dumbbell" delta={5} />
                     <MetricCard label="Avaliações" value={students.filter(s => s.assessments.length > 0).length} iconName="clipboard" delta={3} />
