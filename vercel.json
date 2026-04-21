@@ -1,5 +1,5 @@
 {
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "project": "app-treino-pwa"
+  "framework": "nextjs"
 }
