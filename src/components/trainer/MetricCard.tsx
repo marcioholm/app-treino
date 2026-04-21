@@ -37,22 +37,22 @@ export default function MetricCard({ label, value, unit, delta, deltaLabel, inve
   const Icon = iconName ? iconMap[iconName] : null;
   
   return (
-    <div className="rounded-2xl bg-card p-5 shadow-pink border border-border/40 transition hover:shadow-pink-lg">
-      <div className="flex items-start justify-between mb-3">
-        <span className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">{label}</span>
+    <div className="bg-glass rounded-2xl p-5 transition-all duration-300 hover:border-white/20 hover:bg-white/[0.08] group">
+      <div className="flex items-start justify-between mb-4">
+        <span className="label-caps">{label}</span>
         {Icon && (
-          <span className="grid place-items-center size-9 rounded-xl bg-primary-soft text-primary">
-            <Icon size={18} />
+          <span className="grid place-items-center size-10 rounded-xl bg-primary-soft/10 text-primary transition-transform group-hover:scale-110">
+            <Icon size={20} />
           </span>
         )}
       </div>
-      <div className="flex items-baseline gap-1">
-        <span className="font-display text-3xl font-bold text-foreground">{value}</span>
-        {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
+      <div className="flex items-baseline gap-1.5">
+        <span className="font-display text-4xl font-bold tracking-tight text-foreground">{value}</span>
+        {unit && <span className="text-sm font-medium text-muted-foreground">{unit}</span>}
       </div>
       {delta !== undefined && (
-        <div className={cn("mt-2 inline-flex items-center gap-1 text-xs font-semibold",
-          good ? "text-success" : isUp || isDown ? "text-destructive" : "text-muted-foreground")}>
+        <div className={cn("mt-3 inline-flex items-center gap-1.5 text-xs font-bold px-2 py-1 rounded-full",
+          good ? "bg-success/10 text-success" : isUp || isDown ? "bg-destructive/10 text-destructive" : "bg-white/5 text-muted-foreground")}>
           {isUp && <ArrowUp size={14} />}
           {isDown && <ArrowDown size={14} />}
           {Math.abs(delta).toFixed(1)} {deltaLabel ?? ""}

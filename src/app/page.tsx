@@ -152,16 +152,16 @@ export default function LandingPage() {
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 md:gap-8 mt-12 md:mt-16 pt-8 md:pt-12 border-t border-white/10">
               <div>
-                <div className="font-display text-2xl md:text-4xl font-bold text-white">500+</div>
-                <div className="text-xs md:text-sm text-muted-foreground mt-1">Alunas.ativas</div>
+                <div className="font-display text-2xl md:text-5xl font-bold text-white">500+</div>
+                <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary-light mt-2">Alunas Ativas</div>
               </div>
               <div>
-                <div className="font-display text-2xl md:text-4xl font-bold text-white">98%</div>
-                <div className="text-xs md:text-sm text-muted-foreground mt-1">Satisfaction</div>
+                <div className="font-display text-2xl md:text-5xl font-bold text-white">98%</div>
+                <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary-light mt-2">Satisfação</div>
               </div>
               <div>
-                <div className="font-display text-2xl md:text-4xl font-bold text-white">50+</div>
-                <div className="text-xs md:text-sm text-muted-foreground mt-1">Personal trainers</div>
+                <div className="font-display text-2xl md:text-5xl font-bold text-white">50+</div>
+                <div className="text-[10px] md:text-xs font-bold uppercase tracking-widest text-primary-light mt-2">Personais</div>
               </div>
             </div>
           </div>
@@ -193,13 +193,13 @@ export default function LandingPage() {
             {features.map((feature, i) => (
               <div 
                 key={i}
-                className="group p-6 rounded-2xl bg-card border border-border/40 hover:border-primary/30 transition-all duration-300 hover:shadow-pink-lg"
+                className="group p-8 rounded-3xl bg-glass-dark border border-white/5 hover:border-primary/30 transition-all duration-500 hover:shadow-pink-lg hover:-translate-y-2"
               >
-                <div className="w-12 h-12 rounded-xl bg-gradient-brand grid place-items-center text-white mb-4 group-hover:scale-110 transition-transform">
+                <div className="w-14 h-14 rounded-2xl bg-gradient-brand grid place-items-center text-white mb-6 group-hover:scale-110 transition-transform shadow-pink">
                   {feature.icon}
                 </div>
-                <h3 className="font-display font-bold text-lg mb-2">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+                <h3 className="font-display font-bold text-xl mb-3 text-white">{feature.title}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground opacity-80 group-hover:opacity-100 transition-opacity">{feature.description}</p>
               </div>
             ))}
           </div>
@@ -240,17 +240,20 @@ export default function LandingPage() {
 
           <div className="grid md:grid-cols-3 gap-6">
             {testimonials.map((t, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-card border border-border/40">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="size-12 rounded-full bg-gradient-brand grid place-items-center font-bold text-white">
+              <div key={i} className="p-8 rounded-3xl bg-glass border border-white/5 relative group transition-all duration-300 hover:bg-white/[0.08]">
+                <div className="absolute top-6 right-8 text-primary/10 group-hover:text-primary/20 transition-colors">
+                  <svg className="w-12 h-12 fill-current" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9124 16 16.017 16H19.017C19.5693 16 20.017 15.5523 20.017 15V9C20.017 8.44772 19.5693 8 19.017 8H15.017C14.4647 8 14.017 8.44772 14.017 9V12C14.017 12.5523 13.5693 13 13.017 13H11.017V21H14.017ZM5.01695 21V18C5.01695 16.8954 5.91238 16 7.01695 16H10.017C10.5693 16 11.017 15.5523 11.017 15V9C11.017 8.44772 10.5693 8 10.017 8H6.01695C5.46467 8 5.01695 8.44772 5.01695 9V12C5.01695 12.5523 4.56923 13 4.01695 13H2.01695V21H5.01695Z" /></svg>
+                </div>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="size-14 rounded-2xl bg-gradient-brand grid place-items-center font-display font-bold text-xl text-white shadow-pink">
                     {t.avatar}
                   </div>
                   <div>
-                    <div className="font-semibold">{t.name}</div>
-                    <div className="text-xs text-muted-foreground">{t.role}</div>
+                    <div className="font-display font-bold text-white">{t.name}</div>
+                    <div className="text-xs font-semibold text-primary-light uppercase tracking-wider">{t.role}</div>
                   </div>
                 </div>
-                <p className="text-muted-foreground">&ldquo;{t.text}&rdquo;</p>
+                <p className="text-muted-foreground leading-relaxed italic">&ldquo;{t.text}&rdquo;</p>
               </div>
             ))}
           </div>

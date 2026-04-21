@@ -116,12 +116,32 @@ export default async function PersonalDashboard() {
     }));
 
     return (
-        <div className="min-h-screen bg-surface-alt pb-16">
-            {/* Hero */}
-            <section className="bg-gradient-brand text-white">
-                <div className="container mx-auto px-4 md:px-6 py-8">
-                    <h1 className="font-display text-2xl md:text-3xl font-bold">Olá, {trainer?.name?.split(' ')[0] || 'Personal'} 👋</h1>
-                    <p className="text-white/85 mt-1">Você tem <strong>{pendingAssessments}</strong> alunas com dados incompletos.</p>
+        <div className="min-h-screen bg-background pb-24">
+            {/* Hero Section */}
+            <section className="relative overflow-hidden pt-12 pb-20">
+                {/* Background Blobs */}
+                <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px]" />
+                <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/10 rounded-full blur-[100px]" />
+                
+                <div className="container mx-auto px-4 md:px-6 relative z-10">
+                    <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div>
+                            <h1 className="font-display text-4xl md:text-5xl font-black tracking-tight text-white">
+                                Olá, <span className="text-gradient-brand">{trainer?.name?.split(' ')[0] || 'Personal'}</span> 👋
+                            </h1>
+                            <p className="text-muted-foreground mt-3 text-lg font-medium">
+                                Você tem <span className="text-white font-bold">{pendingAssessments}</span> alunas aguardando avaliação.
+                            </p>
+                        </div>
+                        <div className="flex gap-3">
+                            <GradientButton size="md" variant="outline">
+                                <Activity size={18} /> Relatórios
+                            </GradientButton>
+                            <GradientButton size="md">
+                                <Plus size={18} /> Nova Aluna
+                            </GradientButton>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -152,29 +172,38 @@ export default async function PersonalDashboard() {
                 </section>
             )}
 
-            {/* Students */}
-            <section className="container mx-auto px-4 md:px-6 mt-10">
-                <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
+            {/* Students Grid */}
+            <section className="container mx-auto px-4 md:px-6 mt-16">
+                <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
                     <div>
-                        <h2 className="font-display text-2xl font-bold">Suas alunas</h2>
-                        <p className="text-sm text-muted-foreground">Acompanhe a evolução de quem treina com você</p>
+                        <h2 className="font-display text-3xl font-black tracking-tight text-white">Suas Alunas</h2>
+                        <p className="text-muted-foreground font-medium mt-1">Acompanhe a evolução e o engajamento</p>
                     </div>
-                    <div className="flex gap-2">
-                        <Link href="/personal/students"><GradientButton variant="outline">Ver todas</GradientButton></Link>
-                        <GradientButton><Plus size={16} /> Nova aluna</GradientButton>
-                    </div>
+                    <Link href="/personal/students">
+                        <GradientButton variant="ghost" className="text-primary-light font-bold">
+                            Ver todas as alunas &rarr;
+                        </GradientButton>
+                    </Link>
                 </div>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {studentsWithAdherence.slice(0, 6).map(student => (
                         <StudentCard key={student.id} aluna={student} />
                     ))}
                 </div>
             </section>
 
-            {/* Activity */}
-            <section className="container mx-auto px-4 md:px-6 mt-10 pb-16">
-                <h2 className="font-display text-2xl font-bold mb-5">Atividade recente</h2>
-                <WorkoutTimeline items={activityItems} />
+            {/* Activity Timeline */}
+            <section className="container mx-auto px-4 md:px-6 mt-20 pb-24">
+                <div className="flex items-center gap-3 mb-10">
+                    <div className="size-10 rounded-xl bg-primary/10 grid place-items-center text-primary-light">
+                        <Activity size={22} />
+                    </div>
+                    <h2 className="font-display text-3xl font-black tracking-tight text-white">Atividade Recente</h2>
+                </div>
+                <div className="bg-glass rounded-[2rem] p-8 md:p-12">
+                    <WorkoutTimeline items={activityItems} />
+                </div>
             </section>
         </div>
     );

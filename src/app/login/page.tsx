@@ -94,52 +94,55 @@ function LoginForm() {
     return (
         <div className="min-h-screen bg-background flex">
             {/* Left Side - Branding */}
-            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-                <div className="absolute inset-0 bg-dark">
-                    {/* Background gradient circles */}
-                    <div className="absolute top-0 -left-20 w-[400px] h-[400px] bg-primary/30 rounded-full blur-[120px]" />
-                    <div className="absolute bottom-0 -right-20 w-[500px] h-[500px] bg-secondary/30 rounded-full blur-[150px]" />
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px]" />
-                </div>
+            <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-surface">
+                {/* Background gradient backgrounds */}
+                <div className="absolute top-[-10%] left-[-10%] w-[70%] h-[70%] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-secondary/20 rounded-full blur-[140px] animate-pulse" style={{ animationDelay: '2s' }} />
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(230_25%_4%)_80%)]" />
                 
-                <div className="relative z-10 flex flex-col justify-center items-center w-full p-12">
-                    {/* Logo */}
-                    <div className="mb-8">
-                        <div className="size-20 rounded-2xl bg-gradient-brand grid place-items-center ring-4 ring-primary-light/30 shadow-pink-lg">
-                            <span className="font-display font-bold text-white text-2xl">M&K</span>
-                        </div>
-                    </div>
-
-                    <h1 className="font-display text-4xl font-bold text-white text-center mb-4">
-                        M&K Fitness
-                    </h1>
-                    <p className="text-white/70 text-lg text-center max-w-md mb-12">
-                        Seu espaço seguro para treinar e se cuidar. Uma comunidade de mulher para mulher.
-                    </p>
-
-                    {/* Benefits */}
-                    <div className="space-y-4">
-                        {[
-                            'Treinos personalizados com IA',
-                            'Acompanhamento profissional',
-                            'Comunidade feminina'
-                        ].map((benefit, i) => (
-                            <div key={i} className="flex items-center gap-3 text-white/80">
-                                <div className="size-6 rounded-full bg-primary/20 grid place-items-center">
-                                    <svg className="w-4 h-4 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                </div>
-                                <span>{benefit}</span>
+                <div className="relative z-10 flex flex-col justify-center items-center w-full p-16">
+                    {/* Floating Branding Card */}
+                    <div className="bg-glass-dark p-12 rounded-[2.5rem] border-white/5 shadow-pink-lg text-center backdrop-blur-3xl">
+                        <div className="mb-10 flex justify-center">
+                            <div className="size-24 rounded-[1.5rem] bg-gradient-brand grid place-items-center ring-4 ring-primary-light/20 shadow-pink">
+                                <span className="font-display font-black text-white text-3xl">M&K</span>
                             </div>
-                        ))}
+                        </div>
+
+                        <h1 className="font-display text-5xl font-black text-white mb-6 tracking-tight">
+                            Treine com <span className="text-gradient-brand">Propósito</span>.
+                        </h1>
+                        <p className="text-muted-foreground text-lg max-w-sm mx-auto mb-12 leading-relaxed">
+                            A plataforma definitiva para personal trainers e atletas que buscam a excelência.
+                        </p>
+
+                        <div className="flex flex-col gap-5 text-left max-w-xs mx-auto">
+                            {[
+                                { title: 'Inteligência Artificial', desc: 'Treinos gerados sob medida.' },
+                                { title: 'Gestão Inteligente', desc: 'Acompanhamento em tempo real.' }
+                            ].map((item, i) => (
+                                <div key={i} className="flex gap-4 group">
+                                    <div className="size-10 rounded-xl bg-primary/10 grid place-items-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+                                        <svg className="w-5 h-5 text-primary-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-white font-bold text-sm tracking-tight">{item.title}</span>
+                                        <span className="text-muted-foreground text-xs">{item.desc}</span>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
 
             {/* Right Side - Form */}
-            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-10 bg-surface-alt">
-                <div className="w-full max-w-md">
+            <div className="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-10">
+                <div className="w-full max-w-md relative">
+                    {/* Glow background behind form */}
+                    <div className="absolute -inset-10 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
                     {/* Mobile Logo */}
                     <div className="lg:hidden flex flex-col items-center mb-8">
                         <div className="size-14 rounded-xl bg-gradient-brand grid place-items-center ring-2 ring-primary-light mb-3">
@@ -149,36 +152,36 @@ function LoginForm() {
                     </div>
 
                     {/* Header */}
-                    <div className="text-center mb-8">
-                        <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                            {isRegister ? 'Criar conta' : 'Bem-vinda de volta'}
+                    <div className="text-center mb-10">
+                        <h2 className="font-display text-4xl font-black text-white mb-3 tracking-tight">
+                            {isRegister ? 'Criar conta' : 'Acesse o App'}
                         </h2>
-                        <p className="text-muted-foreground">
-                            {isRegister ? 'Preencha seus dados para começar' : 'Entre com sua conta para continuar'}
+                        <p className="text-muted-foreground font-medium">
+                            {isRegister ? 'O seu corpo dos sonhos começa aqui.' : 'Entre para continuar evoluindo.'}
                         </p>
                     </div>
 
                     {/* Toggle */}
-                    <div className="flex mb-8 bg-card border border-border p-1 rounded-2xl">
+                    <div className="flex mb-10 bg-white/5 border border-white/10 p-1.5 rounded-2xl backdrop-blur-md">
                         <button
                             type="button"
                             onClick={() => { setIsRegister(false); setError(''); }}
                             className={cn(
-                                "flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all",
-                                !isRegister ? 'bg-gradient-brand text-primary-foreground shadow-pink' : 'text-muted-foreground hover:text-foreground'
+                                "flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300",
+                                !isRegister ? 'bg-gradient-brand text-white shadow-pink translate-y-0' : 'text-muted-foreground hover:text-white'
                             )}
                         >
-                            Login
+                            Já sou aluna
                         </button>
                         <button
                             type="button"
                             onClick={() => { setIsRegister(true); setError(''); }}
                             className={cn(
-                                "flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all",
-                                isRegister ? 'bg-gradient-brand text-primary-foreground shadow-pink' : 'text-muted-foreground hover:text-foreground'
+                                "flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300",
+                                isRegister ? 'bg-gradient-brand text-white shadow-pink translate-y-0' : 'text-muted-foreground hover:text-white'
                             )}
                         >
-                            Cadastrar
+                            Quero treinar
                         </button>
                     </div>
 

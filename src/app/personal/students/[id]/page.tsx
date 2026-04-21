@@ -127,74 +127,90 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     ];
 
     return (
-        <div className="min-h-screen bg-surface-alt pb-16">
-            {/* Profile header */}
-            <section className="relative bg-dark text-white">
-                <div className="absolute inset-0 bg-gradient-brand opacity-70" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.15),transparent_60%)]" />
-                <div className="container mx-auto px-4 md:px-6 py-10 relative">
-                    <Link href="/personal/students" className="inline-flex items-center gap-2 text-white/70 hover:text-white mb-6">
-                        <ArrowLeft size={16} /> Voltar
+        <div className="min-h-screen bg-background pb-20">
+            {/* Profile Header */}
+            <section className="relative overflow-hidden pt-12 pb-24">
+                {/* Background Decor */}
+                <div className="absolute top-0 right-0 w-[40%] h-[100%] bg-primary/10 rounded-full blur-[120px] animate-pulse" />
+                <div className="absolute bottom-0 left-0 w-[30%] h-[80%] bg-secondary/5 rounded-full blur-[100px]" />
+                
+                <div className="container mx-auto px-4 md:px-6 relative z-10">
+                    <Link href="/personal/students" className="inline-flex items-center gap-2 text-muted-foreground hover:text-white transition-colors mb-10 group">
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                        <span className="font-bold text-sm tracking-tight">Voltar para alunas</span>
                     </Link>
-                    <div className="flex flex-col md:flex-row gap-6 items-start md:items-end">
-                        <div className="size-24 rounded-2xl bg-card text-primary grid place-items-center font-display font-bold text-3xl ring-4 ring-primary-light shadow-pink-lg">
-                            {initials}
+
+                    <div className="flex flex-col md:flex-row gap-8 items-start md:items-end">
+                        <div className="relative group">
+                            <div className="size-32 md:size-40 rounded-[2.5rem] bg-glass-dark grid place-items-center font-display font-black text-5xl text-primary-light ring-4 ring-white/5 shadow-pink-lg transition-transform group-hover:scale-105 duration-500">
+                                {initials}
+                            </div>
+                            <button className="absolute -bottom-2 -right-2 size-10 rounded-2xl bg-gradient-brand grid place-items-center shadow-pink border-4 border-background text-white hover:scale-110 transition-transform">
+                                <Camera size={18} />
+                            </button>
                         </div>
-                        <div className="flex-1">
+
+                        <div className="flex-1 min-w-0">
                             {editingProfile ? (
-                                <div className="flex gap-4 flex-wrap">
+                                <div className="flex flex-col gap-4 max-w-md">
                                     <input
                                         type="text"
                                         value={profileForm.name}
                                         onChange={(e) => setProfileForm({...profileForm, name: e.target.value})}
-                                        className="bg-white/10 border border-white/30 rounded-lg px-3 py-2 text-white"
+                                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white font-display text-2xl font-bold focus:border-primary-light outline-none"
                                     />
-                                    <button onClick={handleSaveProfile} disabled={savingProfile} className="bg-white/20 px-4 py-2 rounded-lg">
-                                        {savingProfile ? 'Salvando...' : 'Salvar'}
-                                    </button>
-                                    <button onClick={() => setEditingProfile(false)} className="text-white/70 px-4 py-2">Cancelar</button>
+                                    <div className="flex gap-3">
+                                        <GradientButton size="sm" onClick={handleSaveProfile} disabled={savingProfile}>
+                                            {savingProfile ? 'Salvando...' : 'Salvar Alterações'}
+                                        </GradientButton>
+                                        <GradientButton size="sm" variant="ghost" onClick={() => setEditingProfile(false)}>
+                                            Cancelar
+                                        </GradientButton>
+                                    </div>
                                 </div>
                             ) : (
                                 <>
-                                    <h1 className="font-display text-3xl font-bold">{student.user.name}</h1>
-                                    <div className="flex flex-wrap gap-2 mt-3">
-                                        {goal && (
+                                    <div className="flex items-center gap-4 mb-3">
+                                        <h1 className="font-display text-4xl md:text-5xl font-black text-white tracking-tight">{student.user.name}</h1>
+                                        <button onClick={() => setEditingProfile(true)} className="size-10 rounded-xl bg-white/5 grid place-items-center text-muted-foreground hover:text-white hover:bg-white/10 transition-all">
+                                            <PencilLine size={18} />
+                                        </button>
+                                    </div>
+                                    <div className="flex flex-wrap gap-2.5">
+                                        {goal ? (
                                             <>
-                                                <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-semibold">{goal.objective}</span>
-                                                <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-semibold">Nível {goal.level}</span>
-                                                <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-semibold">{goal.daysPerWeek}x semana</span>
+                                                <span className="px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-xs font-bold text-primary-light uppercase tracking-wider">{goal.objective}</span>
+                                                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground">Nível {goal.level}</span>
+                                                <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground">{goal.daysPerWeek}x semana</span>
                                             </>
+                                        ) : (
+                                            <span className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground italic">Sem objetivo definido</span>
                                         )}
-                                        {!goal && <span className="px-3 py-1 rounded-full bg-white/15 backdrop-blur text-xs font-semibold">Sem objetivo definido</span>}
                                     </div>
                                 </>
                             )}
                         </div>
-                        <div className="flex gap-2 flex-wrap">
-                            {!editingProfile && (
-                                <GradientButton variant="ghost-light" onClick={() => setEditingProfile(true)}>
-                                    <PencilLine size={16} /> Editar
-                                </GradientButton>
-                            )}
-                            <GradientButton variant="ghost-light" onClick={handleMagicGenerate} disabled={!canGenerateMagic}>
-                                <Sparkles size={16} /> Gerar treino
+
+                        <div className="flex gap-3 w-full md:w-auto">
+                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic} className="flex-1 md:flex-none">
+                                <Sparkles size={18} className="text-primary-light" /> IA Workout
                             </GradientButton>
-                            <GradientButton variant="ghost-light">
-                                <FileDown size={16} /> PDF
+                            <GradientButton variant="outline" className="flex-1 md:flex-none">
+                                <FileDown size={18} /> Relatório
                             </GradientButton>
                         </div>
                     </div>
                 </div>
             </section>
 
-            {/* Tabs */}
-            <div className="container mx-auto px-4 md:px-6 mt-6">
-                <div className="flex gap-1 overflow-x-auto bg-card rounded-2xl p-1.5 shadow-pink border border-border/40">
+            {/* Tab Navigation */}
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="flex gap-1.5 overflow-x-auto bg-white/5 p-1.5 rounded-[1.5rem] border border-white/10 no-scrollbar">
                     {tabs.map((t, i) => (
                         <button key={t} onClick={() => setTab(i)}
                             className={cn(
-                                "px-4 h-11 rounded-xl text-sm font-semibold whitespace-nowrap transition",
-                                tab === i ? "bg-gradient-brand text-primary-foreground shadow-pink" : "text-muted-foreground hover:text-foreground"
+                                "flex-1 px-8 h-12 rounded-2xl text-sm font-bold whitespace-nowrap transition-all duration-300",
+                                tab === i ? "bg-gradient-brand text-white shadow-pink translate-y-0" : "text-muted-foreground hover:text-white hover:bg-white/5"
                             )}>
                             {t}
                         </button>
@@ -203,68 +219,71 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
             </div>
 
             {tab === 2 && (
-                <div className="container mx-auto px-4 md:px-6 mt-8 pb-16 space-y-8">
-                    {/* Metrics */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="container mx-auto px-4 md:px-6 mt-12 pb-24 space-y-12">
+                    {/* Metrics Dashboard */}
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                         <MetricCard 
                             label="Peso" 
-                            value={latestAssessment?.weight || '-'} 
+                            value={latestAssessment?.weight || '—'} 
                             unit="kg" 
                             iconName="scale" 
                             invertColor 
                         />
                         <MetricCard 
-                            label="% Gordura" 
-                            value={latestAssessment?.bodyFatPercentage || '-'} 
+                            label="Gordura" 
+                            value={latestAssessment?.bodyFatPercentage || '—'} 
                             unit="%" 
                             iconName="target" 
                             invertColor 
                         />
                         <MetricCard 
-                            label="Massa muscular" 
-                            value={latestAssessment?.muscleMass || '-'} 
+                            label="Massa Magra" 
+                            value={latestAssessment?.muscleMass || '—'} 
                             unit="kg" 
                             iconName="activity" 
                         />
                         <MetricCard 
                             label="Cintura" 
-                            value={latestAssessment?.waist || '-'} 
+                            value={latestAssessment?.waist || '—'} 
                             unit="cm" 
                             iconName="ruler" 
                             invertColor 
                         />
                     </div>
 
-                    {/* Measurements table */}
-                    <div className="rounded-2xl bg-card shadow-pink border border-border/40 overflow-hidden">
-                        <div className="p-5 border-b border-border/40 flex items-center justify-between">
-                            <h3 className="font-display font-bold text-lg">Medidas corporais</h3>
+                    {/* Measurements Table Card */}
+                    <div className="bg-glass rounded-[2rem] overflow-hidden border-white/5">
+                        <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                            <div>
+                                <h3 className="font-display font-bold text-xl text-white">Composição Corporal</h3>
+                                <p className="text-xs text-muted-foreground font-medium mt-1 uppercase tracking-widest">Medidas e Perímetros</p>
+                            </div>
                             {latestAssessment && (
-                                <span className="text-xs text-muted-foreground">
-                                    Última: {new Date(latestAssessment.createdAt).toLocaleDateString('pt-BR')}
-                                </span>
+                                <div className="px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                    Avaliado em: {new Date(latestAssessment.createdAt).toLocaleDateString('pt-BR')}
+                                </div>
                             )}
                         </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-px bg-border/40">
+                        <div className="grid grid-cols-2 lg:grid-cols-6 divide-x divide-y md:divide-y-0 divide-white/5">
                             {measures.map(([k, v]) => (
-                                <div key={k} className="bg-card px-4 py-3">
-                                    <div className="text-[11px] uppercase tracking-wider text-muted-foreground font-semibold">{k}</div>
-                                    <div className="font-display font-bold text-lg">{v}</div>
+                                <div key={k} className="px-8 py-8 hover:bg-white/[0.02] transition-colors">
+                                    <div className="label-caps mb-3">{k}</div>
+                                    <div className="font-display font-black text-2xl text-white tracking-tight">{v}</div>
                                 </div>
                             ))}
                         </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-4">
-                        <Link href={`/personal/students/${id}/physical-assessments`}>
-                            <GradientButton variant="outline">
-                                Ver Histórico de Avaliações
+                    {/* Quick Access Actions */}
+                    <div className="flex gap-4 p-4 rounded-3xl bg-white/5 border border-white/10">
+                        <Link href={`/personal/students/${id}/physical-assessments`} className="flex-1 text-center">
+                            <GradientButton variant="ghost" className="w-full font-bold">
+                                Ver Histórico Completo
                             </GradientButton>
                         </Link>
-                        <Link href={`/personal/students/${id}/physical-assessments/nova`}>
-                            <GradientButton>
-                                Nova Avaliação
+                        <Link href={`/personal/students/${id}/physical-assessments/nova`} className="flex-1">
+                            <GradientButton className="w-full">
+                                Realizar Nova Avaliação
                             </GradientButton>
                         </Link>
                     </div>
@@ -272,9 +291,15 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
             )}
 
             {tab !== 2 && (
-                <div className="container mx-auto px-4 md:px-6 mt-12 pb-16">
-                    <div className="rounded-2xl bg-card shadow-pink border border-border/40 p-12 text-center">
-                        <p className="text-muted-foreground">Aba "{tabs[tab]}" — conteúdo em construção.</p>
+                <div className="container mx-auto px-4 md:px-6 mt-16 pb-24">
+                    <div className="bg-glass-dark rounded-[2.5rem] p-16 md:p-24 border-white/5 text-center backdrop-blur-3xl">
+                        <div className="size-20 rounded-3xl bg-white/5 grid place-items-center mx-auto mb-8 text-muted-foreground">
+                            <Activity size={40} className="opacity-20" />
+                        </div>
+                        <h3 className="font-display text-3xl font-black text-white mb-4 tracking-tight">Em Construção</h3>
+                        <p className="text-muted-foreground text-lg max-w-sm mx-auto leading-relaxed">
+                            A aba <span className="text-primary-light font-bold">"{tabs[tab]}"</span> está sendo aperfeiçoada para oferecer a melhor experiência possível.
+                        </p>
                     </div>
                 </div>
             )}
