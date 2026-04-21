@@ -21,16 +21,30 @@ export async function generateWorkout({ studentId }: GenerateParams) {
             anamnesisAnswers: {
                 include: { question: true }
             },
+            physicalAssessments: { orderBy: { date: 'desc' }, take: 1 },
             tenant: true
         }
     } as any);
 
-    if (!student || !(student as any).goals.length || !(student as any).assessments.length) {
-        throw new Error('Student, Goal or Assessment missing.');
+    if (!student || !(student as any).goals.length) {
+        throw new Error('Student or Goal missing.');
     }
 
     const goal = (student as any).goals[0];
-    const assessment = (student as any).assessments[0];
+    const simpleAssessment = (student as any).assessments[0];
+    const physicalAssessment = (student as any).physicalAssessments[0];
+
+    if (!simpleAssessment && !physicalAssessment) {
+        throw new Error('Student assessment missing. Please record at least one weight/height measurement.');
+    }
+
+    const weight = physicalAssessment?.weight || simpleAssessment?.weight;
+    const height = physicalAssessment?.height || simpleAssessment?.height;
+
+    if (!weight || !height) {
+        throw new Error('Weight or Height missing in latest assessment.');
+    }
+
     const answers = (student as any).anamnesisAnswers as AnamnesisAnswerPayload[] || [];
 
     // Extract key metrics from Anamnesis if available
@@ -55,8 +69,8 @@ export async function generateWorkout({ studentId }: GenerateParams) {
     const hasInjuries = injuries?.answerText === 'true';
 
     // BMI Math (peso / altura^2)
-    const heightM = assessment.height > 3 ? assessment.height / 100 : assessment.height; // handle cm or m
-    const bmi = assessment.weight / (heightM * heightM);
+    const heightM = height > 3 ? height / 100 : height; // handle cm or m
+    const bmi = weight / (heightM * heightM);
 
     // Fetch all exercises available for this tenant (and globals)
     const allExercises = await prisma.exercise.findMany({
