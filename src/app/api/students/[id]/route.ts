@@ -26,6 +26,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
             goals: {
                 orderBy: { createdAt: 'desc' },
                 take: 1
+            },
+            physicalAssessments: {
+                orderBy: { date: 'desc' },
+                include: { bodyMeasurements: true },
+                take: 5
             }
         }
     });
@@ -93,7 +98,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             include: {
                 user: { select: { name: true, email: true, birthDate: true } },
                 assessments: { orderBy: { createdAt: 'desc' }, take: 5 },
-                goals: { orderBy: { createdAt: 'desc' }, take: 1 }
+                goals: { orderBy: { createdAt: 'desc' }, take: 1 },
+                physicalAssessments: {
+                    orderBy: { date: 'desc' },
+                    include: { bodyMeasurements: true },
+                    take: 5
+                }
             }
         });
 

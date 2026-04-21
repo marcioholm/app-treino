@@ -2,17 +2,21 @@
 import { use, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft, Scale, Ruler, Activity, Target, Save, ChevronDown, ChevronUp, Sparkles, Binary } from 'lucide-react';
+import GradientButton from '@/components/trainer/GradientButton';
 import { calculateBMI, classifyBMI } from '@/lib/body-calculator';
+import { cn } from '@/lib/utils';
 
 export default function NewPhysicalAssessment({ params }: { params: Promise<{ id: string }> }) {
     const { id: studentId } = use(params);
     const router = useRouter();
     const [saving, setSaving] = useState(false);
-    const [showBioimpedance, setShowBioimpedance] = useState(false);
+    const [showBioimpedance, setShowBioimpedance] = useState(true);
     const [showMeasurements, setShowMeasurements] = useState(false);
+    
     const [form, setForm] = useState({
         date: new Date().toISOString().split('T')[0],
-        label: 'Avaliação Inicial',
+        label: 'Avaliação Periódica',
         weight: '',
         height: '',
         age: '',
@@ -31,6 +35,7 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
         weightGoalKg: '',
         notes: '',
     });
+
     const [measurements, setMeasurements] = useState({
         neckCm: '',
         shoulderCm: '',
@@ -50,11 +55,11 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
         leftCalfCm: '',
     });
 
-    const bmi = calculateBMI(
+    const bmiValue = calculateBMI(
         form.weight ? parseFloat(form.weight) : null,
         form.height ? parseFloat(form.height) : null
     );
-    const bmiClass = classifyBMI(bmi);
+    const bmiClass = classifyBMI(bmiValue);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -64,10 +69,11 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
             const payload: any = {
                 date: form.date,
                 label: form.label,
+                weight: form.weight ? parseFloat(form.weight) : null,
+                height: form.height ? parseFloat(form.height) : null,
+                bmi: bmiValue ? parseFloat(bmiValue) : null,
             };
 
-            if (form.weight) payload.weight = parseFloat(form.weight);
-            if (form.height) payload.height = parseFloat(form.height);
             if (form.age) payload.age = parseInt(form.age);
             
             if (showBioimpedance) {
@@ -116,233 +122,208 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
         }
     };
 
-    const inputClass = "w-full border border-[#444444] rounded-lg p-2.5 bg-black text-white outline-none focus:border-[#D4537E]";
+    const inputWrapper = "space-y-2";
+    const labelStyle = "px-4 text-[10px] font-black text-muted-foreground uppercase tracking-widest";
+    const inputStyle = "w-full px-6 py-4 bg-white/5 border border-white/5 rounded-2xl text-white font-bold focus:border-primary-light focus:bg-white/[0.08] transition-all outline-none placeholder:text-white/20 placeholder:font-medium";
 
     return (
-        <div className="space-y-6 max-w-3xl mx-auto">
-            <div className="flex items-center gap-4">
-                <Link href={`/personal/students/${studentId}/physical-assessments`} className="text-gray-400 hover:text-gray-400">
-                    &larr; Voltar
-                </Link>
-                <h1 className="text-2xl font-bold text-white">Nova Avaliação Física</h1>
-            </div>
+        <div className="min-h-screen bg-background pb-32">
+            {/* Header */}
+            <section className="relative overflow-hidden pt-12 pb-12">
+                <div className="container mx-auto px-4 md:px-6 relative z-10">
+                    <Link href={`/personal/students/${studentId}/physical-assessments`} className="inline-flex items-center gap-2.5 text-muted-foreground hover:text-white transition-all mb-10 group p-2 rounded-xl hover:bg-white/5">
+                        <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+                        <span className="font-black text-[10px] uppercase tracking-widest">Ver Histórico</span>
+                    </Link>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Dados Gerais */}
-                <div className="bg-[#111111] border border-[#333333] rounded-xl p-6">
-                    <h2 className="text-lg font-bold text-white mb-4">Dados Gerais</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <h1 className="font-display text-4xl md:text-5xl font-black text-white tracking-tighter animate-fade-up">Registro de <span className="text-gradient-brand">Métricas</span></h1>
+                </div>
+            </section>
+
+            <form onSubmit={handleSubmit} className="container mx-auto px-4 md:px-6 space-y-10 animate-fade-up stagger-1">
+                {/* Basic Info Container */}
+                <div className="bg-glass rounded-[2.5rem] p-10 border border-white/5 shadow-2xl space-y-10">
+                    <div className="flex items-center gap-4">
+                        <div className="size-12 rounded-2xl bg-primary/10 border border-primary/20 grid place-items-center text-primary-light">
+                            <Activity size={24} />
+                        </div>
                         <div>
-                            <label className="text-sm text-gray-400 block mb-1">Data da avaliação</label>
+                            <h2 className="font-display text-2xl font-black text-white tracking-tight">Dados Vitais</h2>
+                            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Informações Básicas da Atleta</p>
+                        </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className={inputWrapper}>
+                            <label className={labelStyle}>Data do Registro</label>
                             <input
                                 type="date"
                                 required
                                 value={form.date}
-                                max={new Date().toISOString().split('T')[0]}
                                 onChange={(e) => setForm({...form, date: e.target.value})}
-                                className={inputClass}
+                                className={cn(inputStyle, "appearance-none")}
                             />
                         </div>
-                        <div>
-                            <label className="text-sm text-gray-400 block mb-1">Rótulo</label>
+                        <div className={inputWrapper}>
+                            <label className={labelStyle}>Identificador</label>
                             <input
                                 type="text"
                                 value={form.label}
                                 onChange={(e) => setForm({...form, label: e.target.value})}
-                                placeholder="Avaliação Inicial"
-                                className={inputClass}
+                                placeholder="E.g. Janeiro 2026"
+                                className={inputStyle}
                             />
                         </div>
-                        <div>
-                            <label className="text-sm text-gray-400 block mb-1">Peso (kg)</label>
+                        <div className={inputWrapper}>
+                            <label className={labelStyle}>Peso Atual (kg)</label>
                             <input
                                 type="number"
                                 step="0.01"
+                                required
                                 value={form.weight}
                                 onChange={(e) => setForm({...form, weight: e.target.value})}
-                                placeholder="65.50"
-                                className={inputClass}
+                                placeholder="00.0"
+                                className={inputStyle}
                             />
                         </div>
-                        <div>
-                            <label className="text-sm text-gray-400 block mb-1">Altura (cm)</label>
+                        <div className={inputWrapper}>
+                            <label className={labelStyle}>Altura (cm)</label>
                             <input
                                 type="number"
                                 step="0.1"
+                                required
                                 value={form.height}
                                 onChange={(e) => setForm({...form, height: e.target.value})}
-                                placeholder="165.0"
-                                className={inputClass}
+                                placeholder="000"
+                                className={inputStyle}
                             />
                         </div>
-                        {bmi && (
-                            <div className="md:col-span-2 bg-[#1a1a1a] p-4 rounded-lg">
-                                <p className="text-gray-400 text-sm">IMC calculado</p>
-                                <p className="text-2xl font-bold text-white">
-                                    {bmi} — {bmiClass}
-                                </p>
-                            </div>
-                        )}
                     </div>
+
+                    {bmiValue && (
+                        <div className="bg-white/5 border border-white/5 rounded-3xl p-8 flex items-center justify-between group overflow-hidden relative">
+                            <div className="absolute top-0 right-0 size-32 bg-primary/10 rounded-full blur-[60px] -z-10 group-hover:bg-primary/20 transition-colors" />
+                            <div>
+                                <p className="text-[10px] font-black text-primary-light uppercase tracking-widest mb-1.5">IMC Analítico</p>
+                                <div className="flex items-baseline gap-3">
+                                    <span className="font-display text-4xl font-black text-white leading-none">{bmiValue}</span>
+                                    <span className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{bmiClass}</span>
+                                </div>
+                            </div>
+                            <Binary size={40} className="text-white/5" />
+                        </div>
+                    )}
                 </div>
 
-                {/* Bioimpedância */}
-                <div className="bg-[#111111] border border-[#333333] rounded-xl p-6">
+                {/* Bioimpedance Section */}
+                <div className="bg-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
                     <button
                         type="button"
                         onClick={() => setShowBioimpedance(!showBioimpedance)}
-                        className="flex items-center justify-between w-full"
+                        className="flex items-center justify-between w-full p-10 hover:bg-white/[0.02] transition-colors"
                     >
-                        <h2 className="text-lg font-bold text-white">Bioimpedância</h2>
-                        <span className="text-gray-400">{showBioimpedance ? '−' : '+'}</span>
+                        <div className="flex items-center gap-4">
+                            <div className="size-12 rounded-2xl bg-secondary/10 border border-secondary/20 grid place-items-center text-secondary-light">
+                                <Target size={24} strokeWidth={2.5} />
+                            </div>
+                            <div className="text-left">
+                                <h2 className="font-display text-2xl font-black text-white tracking-tight">Bioimpedância</h2>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Métricas de Composição</p>
+                            </div>
+                        </div>
+                        <div className="size-10 rounded-xl bg-white/5 grid place-items-center text-muted-foreground">
+                            {showBioimpedance ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                        </div>
                     </button>
                     
                     {showBioimpedance && (
-                        <div className="mt-4 space-y-4">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Aparelho</label>
+                        <div className="px-10 pb-10 space-y-10 animate-fade-in">
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <div className={inputWrapper}>
+                                    <label className={labelStyle}>Equipamento Utilizado</label>
                                     <input
                                         type="text"
                                         value={form.bioimpedanceDevice}
                                         onChange={(e) => setForm({...form, bioimpedanceDevice: e.target.value})}
-                                        placeholder="InBody 270"
-                                        className={inputClass}
+                                        placeholder="Ex: InBody 270"
+                                        className={inputStyle}
                                     />
                                 </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Condições</label>
+                                <div className={inputWrapper}>
+                                    <label className={labelStyle}>Condições Pré-Exame</label>
                                     <input
                                         type="text"
                                         value={form.conditions}
                                         onChange={(e) => setForm({...form, conditions: e.target.value})}
-                                        placeholder="Jejum de 4h"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">% Gordura</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={form.fatPercent}
-                                        onChange={(e) => setForm({...form, fatPercent: e.target.value})}
-                                        placeholder="28.50"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Massa Gordura (kg)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={form.fatMassKg}
-                                        onChange={(e) => setForm({...form, fatMassKg: e.target.value})}
-                                        placeholder="18.52"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Massa Magra (kg)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={form.leanMassKg}
-                                        onChange={(e) => setForm({...form, leanMassKg: e.target.value})}
-                                        placeholder="46.98"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Massa Muscular (kg)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={form.muscleMassKg}
-                                        onChange={(e) => setForm({...form, muscleMassKg: e.target.value})}
-                                        placeholder="44.30"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">% Água Corporal</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={form.waterPercent}
-                                        onChange={(e) => setForm({...form, waterPercent: e.target.value})}
-                                        placeholder="52.40"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Massa Óssea (kg)</label>
-                                    <input
-                                        type="number"
-                                        step="0.01"
-                                        value={form.boneMassKg}
-                                        onChange={(e) => setForm({...form, boneMassKg: e.target.value})}
-                                        placeholder="2.40"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Metabolismo Basal (kcal)</label>
-                                    <input
-                                        type="number"
-                                        value={form.basalMetabolism}
-                                        onChange={(e) => setForm({...form, basalMetabolism: e.target.value})}
-                                        placeholder="1420"
-                                        className={inputClass}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="text-sm text-gray-400 block mb-1">Idade Metabólica</label>
-                                    <input
-                                        type="number"
-                                        value={form.metabolicAge}
-                                        onChange={(e) => setForm({...form, metabolicAge: e.target.value})}
-                                        placeholder="35"
-                                        className={inputClass}
+                                        placeholder="Ex: Jejum 4h, sem cafeína"
+                                        className={inputStyle}
                                     />
                                 </div>
                             </div>
 
-                            {/* Metas */}
-                            <div className="pt-4 border-t border-[#333333]">
-                                <h3 className="text-white font-medium mb-3">Metas</h3>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="text-sm text-gray-400 block mb-1">Meta % Gordura</label>
+                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                                {[
+                                    { k: 'fatPercent', l: '% Gordura', p: '00.0' },
+                                    { k: 'fatMassKg', l: 'Massa Gorda (kg)', p: '00.0' },
+                                    { k: 'leanMassKg', l: 'Massa Magra (kg)', p: '00.0' },
+                                    { k: 'muscleMassKg', l: 'Massa Muscular (kg)', p: '00.0' },
+                                    { k: 'waterPercent', l: '% Água Corporal', p: '00.0' },
+                                    { k: 'boneMassKg', l: 'Massa Óssea (kg)', p: '0.0' },
+                                    { k: 'basalMetabolism', l: 'Metab. Basal (kcal)', p: '0000' },
+                                    { k: 'metabolicAge', l: 'Idade Metabólica', p: '00' },
+                                ].map((field) => (
+                                    <div key={field.k} className={inputWrapper}>
+                                        <label className={labelStyle}>{field.l}</label>
+                                        <input
+                                            type="number"
+                                            step="0.01"
+                                            value={(form as any)[field.k]}
+                                            onChange={(e) => setForm({...form, [field.k]: e.target.value})}
+                                            placeholder={field.p}
+                                            className={inputStyle}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Goals for this Athlete */}
+                            <div className="pt-10 border-t border-white/5">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <Sparkles size={18} className="text-primary-light" />
+                                    <h3 className="font-display text-xl font-bold text-white tracking-tight uppercase tracking-wider text-xs">Metas Definidas</h3>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className={inputWrapper}>
+                                        <label className={labelStyle}>Meta % Gordura</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             value={form.fatGoalPercent}
                                             onChange={(e) => setForm({...form, fatGoalPercent: e.target.value})}
-                                            placeholder="22.00"
-                                            className={inputClass}
+                                            placeholder="Ex: 22.0"
+                                            className={cn(inputStyle, "border-primary/20 bg-primary/5")}
                                         />
                                     </div>
-                                    <div>
-                                        <label className="text-sm text-gray-400 block mb-1">Meta Massa Muscular</label>
+                                    <div className={inputWrapper}>
+                                        <label className={labelStyle}>Meta Massa Muscular</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             value={form.muscleGoalKg}
                                             onChange={(e) => setForm({...form, muscleGoalKg: e.target.value})}
-                                            placeholder="50.00"
-                                            className={inputClass}
+                                            placeholder="Ex: 52.0"
+                                            className={cn(inputStyle, "border-primary/20 bg-primary/5")}
                                         />
                                     </div>
-                                    <div>
-                                        <label className="text-sm text-gray-400 block mb-1">Meta Peso</label>
+                                    <div className={inputWrapper}>
+                                        <label className={labelStyle}>Meta de Peso Final</label>
                                         <input
                                             type="number"
                                             step="0.01"
                                             value={form.weightGoalKg}
                                             onChange={(e) => setForm({...form, weightGoalKg: e.target.value})}
-                                            placeholder="62.00"
-                                            className={inputClass}
+                                            placeholder="Ex: 65.0"
+                                            className={cn(inputStyle, "border-primary/20 bg-primary/5")}
                                         />
                                     </div>
                                 </div>
@@ -351,234 +332,115 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
                     )}
                 </div>
 
-                {/* Medidas Corporais */}
-                <div className="bg-[#111111] border border-[#333333] rounded-xl p-6">
+                {/* Measurements Section */}
+                <div className="bg-glass rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
                     <button
                         type="button"
                         onClick={() => setShowMeasurements(!showMeasurements)}
-                        className="flex items-center justify-between w-full"
+                        className="flex items-center justify-between w-full p-10 hover:bg-white/[0.02] transition-colors"
                     >
-                        <h2 className="text-lg font-bold text-white">Medidas Corporais</h2>
-                        <span className="text-gray-400">{showMeasurements ? '−' : '+'}</span>
+                        <div className="flex items-center gap-4">
+                            <div className="size-12 rounded-2xl bg-success/10 border border-success/20 grid place-items-center text-success">
+                                <Ruler size={24} strokeWidth={2.5} />
+                            </div>
+                            <div className="text-left">
+                                <h2 className="font-display text-2xl font-black text-white tracking-tight">Medidas Perimétricas</h2>
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mt-0.5">Perímetros e Circunferências</p>
+                            </div>
+                        </div>
+                        <div className="size-10 rounded-xl bg-white/5 grid place-items-center text-muted-foreground">
+                            {showMeasurements ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+                        </div>
                     </button>
                     
                     {showMeasurements && (
-                        <div className="mt-4 space-y-4">
-                            <div>
-                                <h3 className="text-gray-400 text-sm mb-2">Tronco</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Pescoço</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.neckCm}
-                                            onChange={(e) => setMeasurements({...measurements, neckCm: e.target.value})}
-                                            placeholder="33.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Ombro</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.shoulderCm}
-                                            onChange={(e) => setMeasurements({...measurements, shoulderCm: e.target.value})}
-                                            placeholder="100.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Peitoral</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.chestCm}
-                                            onChange={(e) => setMeasurements({...measurements, chestCm: e.target.value})}
-                                            placeholder="90.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Cintura</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.waistCm}
-                                            onChange={(e) => setMeasurements({...measurements, waistCm: e.target.value})}
-                                            placeholder="72.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Abdômen</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.abdomenCm}
-                                            onChange={(e) => setMeasurements({...measurements, abdomenCm: e.target.value})}
-                                            placeholder="80.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Quadril</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.hipCm}
-                                            onChange={(e) => setMeasurements({...measurements, hipCm: e.target.value})}
-                                            placeholder="98.0"
-                                            className={inputClass}
-                                        />
+                        <div className="px-10 pb-10 space-y-12 animate-fade-in">
+                            {[
+                                { 
+                                    group: 'Tronco Superior', 
+                                    fields: [
+                                        { k: 'neckCm', l: 'Pescoço' },
+                                        { k: 'shoulderCm', l: 'Ombro' },
+                                        { k: 'chestCm', l: 'Peitoral' },
+                                        { k: 'waistCm', l: 'Cintura (Umbilical)' },
+                                        { k: 'abdomenCm', l: 'Abdômen' },
+                                        { k: 'hipCm', l: 'Quadril' }
+                                    ]
+                                },
+                                { 
+                                    group: 'Membros Superiores', 
+                                    fields: [
+                                        { k: 'rightArmCm', l: 'Braço D (Relax)' },
+                                        { k: 'leftArmCm', l: 'Braço E (Relax)' },
+                                        { k: 'rightArmContractedCm', l: 'Braço D (Contraído)' },
+                                        { k: 'leftArmContractedCm', l: 'Braço E (Contraído)' },
+                                        { k: 'rightForearmCm', l: 'Antebraço D' },
+                                        { k: 'leftForearmCm', l: 'Antebraço E' }
+                                    ]
+                                },
+                                { 
+                                    group: 'Membros Inferiores', 
+                                    fields: [
+                                        { k: 'rightThighCm', l: 'Coxa D' },
+                                        { k: 'leftThighCm', l: 'Coxa E' },
+                                        { k: 'rightCalfCm', l: 'Panturrilha D' },
+                                        { k: 'leftCalfCm', l: 'Panturrilha E' }
+                                    ]
+                                }
+                            ].map((group) => (
+                                <div key={group.group} className="space-y-6">
+                                    <div className="label-caps opacity-50 px-4">{group.group}</div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+                                        {group.fields.map((f) => (
+                                            <div key={f.k} className={inputWrapper}>
+                                                <label className={cn(labelStyle, "px-2")}>{f.l}</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.1"
+                                                    value={(measurements as any)[f.k]}
+                                                    onChange={(e) => setMeasurements({...measurements, [f.k]: e.target.value})}
+                                                    placeholder="00.0"
+                                                    className={cn(inputStyle, "px-4 py-3 text-sm h-12")}
+                                                />
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
-                            </div>
-
-                            <div>
-                                <h3 className="text-gray-400 text-sm mb-2">Braços</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Braço D (relax)</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.rightArmCm}
-                                            onChange={(e) => setMeasurements({...measurements, rightArmCm: e.target.value})}
-                                            placeholder="29.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Braço E (relax)</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.leftArmCm}
-                                            onChange={(e) => setMeasurements({...measurements, leftArmCm: e.target.value})}
-                                            placeholder="28.5"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Braço D (cont)</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.rightArmContractedCm}
-                                            onChange={(e) => setMeasurements({...measurements, rightArmContractedCm: e.target.value})}
-                                            placeholder="32.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Braço E (cont)</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.leftArmContractedCm}
-                                            onChange={(e) => setMeasurements({...measurements, leftArmContractedCm: e.target.value})}
-                                            placeholder="31.5"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Antebraço D</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.rightForearmCm}
-                                            onChange={(e) => setMeasurements({...measurements, rightForearmCm: e.target.value})}
-                                            placeholder="26.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Antebraço E</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.leftForearmCm}
-                                            onChange={(e) => setMeasurements({...measurements, leftForearmCm: e.target.value})}
-                                            placeholder="25.5"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div>
-                                <h3 className="text-gray-400 text-sm mb-2">Pernas</h3>
-                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Coxa D</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.rightThighCm}
-                                            onChange={(e) => setMeasurements({...measurements, rightThighCm: e.target.value})}
-                                            placeholder="55.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Coxa E</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.leftThighCm}
-                                            onChange={(e) => setMeasurements({...measurements, leftThighCm: e.target.value})}
-                                            placeholder="54.5"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Panturrilha D</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.rightCalfCm}
-                                            onChange={(e) => setMeasurements({...measurements, rightCalfCm: e.target.value})}
-                                            placeholder="36.0"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="text-xs text-gray-500 block mb-1">Panturrilha E</label>
-                                        <input
-                                            type="number"
-                                            step="0.1"
-                                            value={measurements.leftCalfCm}
-                                            onChange={(e) => setMeasurements({...measurements, leftCalfCm: e.target.value})}
-                                            placeholder="35.5"
-                                            className={inputClass}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
+                            ))}
                         </div>
                     )}
                 </div>
 
-                {/* Observações */}
-                <div className="bg-[#111111] border border-[#333333] rounded-xl p-6">
-                    <h2 className="text-lg font-bold text-white mb-4">Observações</h2>
+                {/* Notes Container */}
+                <div className="bg-glass rounded-[2.5rem] p-10 border border-white/5 shadow-2xl space-y-6">
+                    <label className={labelStyle}>Observações & Anotações Técnicas</label>
                     <textarea
                         value={form.notes}
                         onChange={(e) => setForm({...form, notes: e.target.value})}
-                        placeholder="Observações gerais..."
-                        className={`${inputClass} h-32`}
+                        placeholder="Descreva nuances observadas, assimetrias ou feedback da atleta..."
+                        className={cn(inputStyle, "min-h-[160px] py-6 resize-none")}
                     />
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={saving}
-                    className="w-full bg-[#D4537E] hover:bg-[#993556] disabled:opacity-50 text-white font-bold py-3 rounded-xl"
-                >
-                    {saving ? 'Salvando...' : 'Salvar Avaliação'}
-                </button>
+                {/* Submit Actions */}
+                <div className="flex flex-col md:flex-row items-center justify-end gap-6 pt-10">
+                    <Link href={`/personal/students/${studentId}/physical-assessments`} className="font-bold text-muted-foreground hover:text-white transition-colors px-6">
+                        Cancelar Alterações
+                    </Link>
+                    <GradientButton 
+                        type="submit" 
+                        size="lg" 
+                        disabled={saving}
+                        className="w-full md:w-auto h-16 px-16 shadow-pink-lg text-lg"
+                    >
+                        {saving ? (
+                            <Activity className="animate-spin mr-3" />
+                        ) : (
+                            <Save className="mr-3" />
+                        )}
+                        {saving ? 'Registrando...' : 'Finalizar Avaliação'}
+                    </GradientButton>
+                </div>
             </form>
         </div>
     );

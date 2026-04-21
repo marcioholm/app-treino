@@ -8,11 +8,32 @@ import GradientButton from '@/components/trainer/GradientButton';
 import MetricCard from '@/components/trainer/MetricCard';
 import { cn } from '@/lib/utils';
 
+interface Assessment {
+    weight: number;
+    height: number;
+    bmi: number | null;
+    createdAt: string;
+}
+
+interface PhysicalAssessment {
+    date: string;
+    weight: number | null;
+    height: number | null;
+    bmi: number | null;
+    fatPercent: number | null;
+    muscleMassKg: number | null;
+    bodyMeasurements: {
+        waistCm: number | null;
+    }[];
+    createdAt: string;
+}
+
 interface Student {
     id: string;
     phone: string | null;
     user: { name: string; email: string; birthDate: string | null };
-    assessments: { weight: number; height: number; bmi: number; bodyFatPercentage: number; muscleMass: number; waist: number; createdAt: string }[];
+    assessments: Assessment[];
+    physicalAssessments: PhysicalAssessment[];
     goals: { objective: string; level: string; daysPerWeek: number }[];
 }
 
@@ -35,6 +56,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                 setStudent({
                     ...s,
                     assessments: s.assessments || [],
+                    physicalAssessments: s.physicalAssessments || [],
                     goals: s.goals || []
                 });
                 setProfileForm({
@@ -78,6 +100,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     };
 
     const handleMagicGenerate = async () => {
+        if (isGenerating) return;
         setIsGenerating(true);
         try {
             const res = await fetch(`/api/students/${id}/workouts/generate`, { method: 'POST' });
@@ -111,26 +134,42 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
         return <div className="p-8 text-center text-muted-foreground">Aluna não encontrada</div>;
     }
 
-    const hasAssessment = student.assessments?.length > 0;
+    // Combined Data Logic
+    const latestSimple = student.assessments?.[0];
+    const latestPhysical = student.physicalAssessments?.[0];
+    
+    // Prioritize physical assessment for core stats if it's more recent
+    const mainWeight = latestPhysical?.weight || latestSimple?.weight || null;
+    const mainHeight = latestPhysical?.height || latestSimple?.height || null;
+    const mainBmi = latestPhysical?.bmi || latestSimple?.bmi || null;
+    
+    const fatPercent = latestPhysical?.fatPercent || null;
+    const muscleMass = latestPhysical?.muscleMassKg || null;
+    const waist = latestPhysical?.bodyMeasurements?.[0]?.waistCm || null;
+    
+    const lastUpdateDate = latestPhysical?.createdAt || latestSimple?.createdAt || null;
+
+    const hasAssessment = student.assessments?.length > 0 || student.physicalAssessments?.length > 0;
     const hasGoal = student.goals?.length > 0;
     const canGenerateMagic = hasAssessment && hasGoal;
     
-    const latestAssessment = student.assessments[0];
     const goal = student.goals[0];
     const initials = student.user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 
     const tabs = ['Treino atual', 'Histórico', 'Avaliação física', 'Evolução'];
 
-    const measures = latestAssessment ? [
-        ['Peso', `${latestAssessment.weight} kg`],
-        ['Altura', `${latestAssessment.height} cm`],
-        ['IMC', `${latestAssessment.bmi}`],
-        ['% Gordura', `${latestAssessment.bodyFatPercentage}%`],
-        ['Massa muscular', `${latestAssessment.muscleMass} kg`],
-        ['Cintura', `${latestAssessment.waist} cm`],
-    ] : [
-        ['Peso', '-'], ['Altura', '-'], ['IMC', '-'],
-        ['% Gordura', '-'], ['Massa muscular', '-'], ['Cintura', '-'],
+    const formatBmi = (val: number | null) => {
+        if (!val) return '—';
+        return Number(val).toFixed(1);
+    };
+
+    const measures = [
+        ['Peso', mainWeight ? `${mainWeight} kg` : '—'],
+        ['Altura', mainHeight ? `${mainHeight} cm` : '—'],
+        ['IMC', formatBmi(mainBmi)],
+        ['% Gordura', fatPercent ? `${fatPercent}%` : '—'],
+        ['Massa muscular', muscleMass ? `${muscleMass} kg` : '—'],
+        ['Cintura', waist ? `${waist} cm` : '—'],
     ];
 
     return (
@@ -208,8 +247,9 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                         </div>
 
                         <div className="flex gap-4 w-full md:w-auto">
-                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic} className="flex-1 md:flex-none h-14 px-8 border-white/5 text-sm font-black tracking-tight">
-                                <Sparkles size={20} className="text-primary-light mr-2" /> IA SmartWorkout
+                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic || isGenerating} className="flex-1 md:flex-none h-14 px-8 border-white/5 text-sm font-black tracking-tight">
+                                <Sparkles size={20} className={cn("text-primary-light mr-2", isGenerating && "animate-spin")} /> 
+                                {isGenerating ? 'Gerando...' : 'IA SmartWorkout'}
                             </GradientButton>
                             <button className="flex-1 md:flex-none size-14 rounded-2xl bg-white/5 border border-white/5 grid place-items-center text-white hover:bg-white/10 hover:border-white/20 transition-all group">
                                 <FileDown size={22} className="group-hover:translate-y-0.5 transition-transform" />
@@ -242,27 +282,27 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                     <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                         <MetricCard 
                             label="Peso Corporal" 
-                            value={latestAssessment?.weight || '—'} 
+                            value={mainWeight || '—'} 
                             unit="kg" 
                             iconName="scale" 
                             invertColor 
                         />
                         <MetricCard 
                             label="Percentual Gordura" 
-                            value={latestAssessment?.bodyFatPercentage || '—'} 
+                            value={fatPercent || '—'} 
                             unit="%" 
                             iconName="target" 
                             invertColor 
                         />
                         <MetricCard 
                             label="Massa Magra" 
-                            value={latestAssessment?.muscleMass || '—'} 
+                            value={muscleMass || '—'} 
                             unit="kg" 
                             iconName="activity" 
                         />
                         <MetricCard 
                             label="Circunf. Cintura" 
-                            value={latestAssessment?.waist || '—'} 
+                            value={waist || '—'} 
                             unit="cm" 
                             iconName="ruler" 
                             invertColor 
@@ -279,11 +319,11 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                 <h3 className="font-display font-black text-3xl text-white tracking-tight">Composição Corporal</h3>
                                 <p className="label-caps mt-2 opacity-60">Análise detalhada de perímetros e massa</p>
                             </div>
-                            {latestAssessment && (
+                            {lastUpdateDate && (
                                 <div className="flex items-center gap-4">
                                     <div className="flex flex-col items-end">
                                         <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest">Última Atualização</span>
-                                        <span className="text-sm font-bold text-white">{new Date(latestAssessment.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
+                                        <span className="text-sm font-bold text-white">{new Date(lastUpdateDate).toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' })}</span>
                                     </div>
                                     <div className="size-12 rounded-2xl bg-success/10 border border-success/20 grid place-items-center text-success">
                                         <Activity size={20} />
