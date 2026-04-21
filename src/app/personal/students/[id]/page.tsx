@@ -3,7 +3,7 @@ import { use } from 'react';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Camera, FileDown, PencilLine, Sparkles, Activity, Scale, Target, Ruler, ArrowLeft, ArrowDown, ArrowUp } from 'lucide-react';
+import { Camera, FileDown, PencilLine, Sparkles, Activity, Scale, Target, Ruler, ArrowLeft, ArrowDown, ArrowUp, ClipboardList, CheckCircle2 } from 'lucide-react';
 import GradientButton from '@/components/trainer/GradientButton';
 import MetricCard from '@/components/trainer/MetricCard';
 import { cn } from '@/lib/utils';
@@ -28,12 +28,23 @@ interface PhysicalAssessment {
     createdAt: string;
 }
 
+interface AnamnesisAnswer {
+    question: { 
+        text: string; 
+        type: string;
+        section: { name: string };
+    };
+    answerText: string | null;
+    answerArray: string[];
+}
+
 interface Student {
     id: string;
     phone: string | null;
     user: { name: string; email: string; birthDate: string | null };
     assessments: Assessment[];
     physicalAssessments: PhysicalAssessment[];
+    anamnesisAnswers: AnamnesisAnswer[];
     goals: { objective: string; level: string; daysPerWeek: number }[];
 }
 
@@ -57,6 +68,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                     ...s,
                     assessments: s.assessments || [],
                     physicalAssessments: s.physicalAssessments || [],
+                    anamnesisAnswers: s.anamnesisAnswers || [],
                     goals: s.goals || []
                 });
                 setProfileForm({
@@ -85,7 +97,10 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
             });
             if (res.ok) {
                 const data = await res.json();
-                setStudent(data.student);
+                setStudent({
+                    ...data.student,
+                    anamnesisAnswers: data.student.anamnesisAnswers || []
+                });
                 setEditingProfile(false);
             } else {
                 const err = await res.json();
@@ -156,7 +171,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     const goal = student.goals[0];
     const initials = student.user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
 
-    const tabs = ['Treino atual', 'Histórico', 'Avaliação física', 'Evolução'];
+    const tabs = ['Treino atual', 'Histórico', 'Avaliação física', 'Anamnese'];
 
     const formatBmi = (val: number | null) => {
         if (!val) return '—';
@@ -171,6 +186,14 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
         ['Massa muscular', muscleMass ? `${muscleMass} kg` : '—'],
         ['Cintura', waist ? `${waist} cm` : '—'],
     ];
+
+    // Group Anamnesis by Section
+    const anamnesisBySection: Record<string, AnamnesisAnswer[]> = {};
+    student.anamnesisAnswers.forEach(ans => {
+        const sectionName = ans.question.section.name;
+        if (!anamnesisBySection[sectionName]) anamnesisBySection[sectionName] = [];
+        anamnesisBySection[sectionName].push(ans);
+    });
 
     return (
         <div className="min-h-screen bg-background pb-20 selection:bg-primary/30">
@@ -247,7 +270,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                         </div>
 
                         <div className="flex gap-4 w-full md:w-auto">
-                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic || isGenerating} className="flex-1 md:flex-none h-14 px-8 border-white/5 text-sm font-black tracking-tight">
+                            <GradientButton variant="outline" onClick={handleMagicGenerate} disabled={!canGenerateMagic || isGenerating} className="flex-1 md:flex-none h-14 px-8 border-white/5 text-sm font-black tracking-tight flex items-center justify-center">
                                 <Sparkles size={20} className={cn("text-primary-light mr-2", isGenerating && "animate-spin")} /> 
                                 {isGenerating ? 'Gerando...' : 'IA SmartWorkout'}
                             </GradientButton>
@@ -276,6 +299,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                 </div>
             </div>
 
+            {/* Tab Content: Physical Assessment */}
             {tab === 2 && (
                 <div className="container mx-auto px-4 md:px-6 mt-16 pb-32 space-y-16 animate-fade-up">
                     {/* Metrics Dashboard */}
@@ -295,7 +319,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                             invertColor 
                         />
                         <MetricCard 
-                            label="Massa Magra" 
+                            label="Massa Muscular" 
                             value={muscleMass || '—'} 
                             unit="kg" 
                             iconName="activity" 
@@ -363,7 +387,55 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                 </div>
             )}
 
-            {tab !== 2 && (
+            {/* Tab Content: Anamnesis */}
+            {tab === 3 && (
+                <div className="container mx-auto px-4 md:px-6 mt-16 pb-32 animate-fade-up">
+                    {Object.keys(anamnesisBySection).length === 0 ? (
+                        <div className="bg-glass-dark rounded-[3rem] p-24 text-center border border-white/5">
+                            <div className="size-20 rounded-[2rem] bg-white/5 grid place-items-center mx-auto mb-8 text-muted-foreground/30">
+                                <ClipboardList size={40} />
+                            </div>
+                            <h3 className="font-display text-2xl font-black text-white mb-2">Anamnese não preenchida</h3>
+                            <p className="text-muted-foreground max-w-xs mx-auto">A aluna ainda não respondeu as perguntas iniciais de saúde e objetivos.</p>
+                        </div>
+                    ) : (
+                        <div className="grid gap-10">
+                            {Object.entries(anamnesisBySection).map(([section, answers]) => (
+                                <div key={section} className="bg-glass rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl transition-all hover:border-white/10 group">
+                                    <div className="px-10 py-8 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+                                        <h3 className="font-display font-black text-2xl text-white tracking-tight">{section}</h3>
+                                        <div className="size-10 rounded-xl bg-success/10 border border-success/20 grid place-items-center text-success">
+                                            <CheckCircle2 size={20} />
+                                        </div>
+                                    </div>
+                                    <div className="divide-y divide-white/5">
+                                        {answers.map((ans, idx) => (
+                                            <div key={idx} className="px-10 py-8 hover:bg-white/[0.02] transition-all grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="text-sm font-bold text-muted-foreground leading-relaxed uppercase tracking-widest text-[10px] opacity-60">{ans.question.text}</div>
+                                                <div className="text-lg font-bold text-white tracking-tight">
+                                                    {ans.question.type === 'BOOLEAN' ? (
+                                                        <span className={cn(
+                                                            "px-4 py-1 rounded-lg text-xs font-black uppercase tracking-widest",
+                                                            ans.answerText === 'true' ? "bg-red-500/10 text-red-400 border border-red-500/20" : "bg-success/10 text-success border border-success/20"
+                                                        )}>
+                                                            {ans.answerText === 'true' ? 'Sim' : 'Não'}
+                                                        </span>
+                                                    ) : (
+                                                        ans.answerText || ans.answerArray.join(', ') || '—'
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+
+            {/* Default Placeholder for other tabs */}
+            {tab < 2 && (
                 <div className="container mx-auto px-4 md:px-6 mt-20 pb-32">
                     <div className="bg-glass-dark rounded-[3rem] p-20 md:p-32 border-white/5 text-center backdrop-blur-3xl shadow-pink">
                         <div className="size-24 rounded-[2rem] bg-primary/5 border border-primary/10 grid place-items-center mx-auto mb-10 text-primary-light/50 group">

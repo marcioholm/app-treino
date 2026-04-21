@@ -31,6 +31,12 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                 orderBy: { date: 'desc' },
                 include: { bodyMeasurements: true },
                 take: 5
+            },
+            anamnesisAnswers: {
+                include: {
+                    question: { include: { section: true } }
+                },
+                orderBy: { createdAt: 'desc' }
             }
         }
     });
@@ -103,6 +109,12 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
                     orderBy: { date: 'desc' },
                     include: { bodyMeasurements: true },
                     take: 5
+                },
+                anamnesisAnswers: {
+                    include: {
+                        question: { include: { section: true } }
+                    },
+                    orderBy: { createdAt: 'desc' }
                 }
             }
         });

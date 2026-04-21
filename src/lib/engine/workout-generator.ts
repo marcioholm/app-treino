@@ -47,26 +47,52 @@ export async function generateWorkout({ studentId }: GenerateParams) {
 
     const answers = (student as any).anamnesisAnswers as AnamnesisAnswerPayload[] || [];
 
-    // Extract key metrics from Anamnesis if available
+    // --- ENHANCED ANAMNESIS PARSING ---
     let dynamicDays = goal.daysPerWeek;
     let dynamicObjective = goal.objective;
+    let specialNotes: string[] = [];
 
-    // Find objective answer
-    const objAnswer = answers.find(a => a.question.text.includes('objetivo'));
-    if (objAnswer && objAnswer.answerArray.length > 0) {
-        const sel = objAnswer.answerArray[0].toLowerCase();
+    // 1. Parse Objective from Anamnesis
+    const objectiveQuestion = answers.find(a => 
+        a.question.text.toLowerCase().includes('principal objetivo')
+    );
+    if (objectiveQuestion && objectiveQuestion.answerArray.length > 0) {
+        const sel = objectiveQuestion.answerArray[0].toLowerCase();
         if (sel.includes('emagrecimento')) dynamicObjective = Objective.EMAGRECIMENTO;
-        if (sel.includes('hipertrofia')) dynamicObjective = Objective.HIPERTROFIA;
-        if (sel.includes('condicionamento')) dynamicObjective = Objective.DEFINICAO;
+        else if (sel.includes('hipertrofia')) dynamicObjective = Objective.HIPERTROFIA;
+        else if (sel.includes('condicionamento')) dynamicObjective = Objective.DEFINICAO;
     }
 
-    const daysAnswer = answers.find(a => a.question.text.includes('dias por semana'));
-    if (daysAnswer && daysAnswer.answerText) {
-        dynamicDays = parseInt(daysAnswer.answerText, 10) || dynamicDays;
+    // 2. Parse Frequency
+    const daysQuestion = answers.find(a => 
+        a.question.text.toLowerCase().includes('quantos dias por semana')
+    );
+    if (daysQuestion && daysQuestion.answerText) {
+        const parsed = parseInt(daysQuestion.answerText, 10);
+        if (!isNaN(parsed)) dynamicDays = parsed;
     }
 
-    const injuries = answers.find(a => a.question.text.includes('lesão') && a.question.type === 'BOOLEAN');
-    const hasInjuries = injuries?.answerText === 'true';
+    // 3. Parse Health Restrictions
+    const injuryQuestion = answers.find(a => 
+        a.question.text.toLowerCase().includes('lesão articular') && a.question.type === 'BOOLEAN'
+    );
+    const hasInjuries = injuryQuestion?.answerText === 'true';
+    if (hasInjuries) specialNotes.push("Atenção: Relato de lesão articular.");
+
+    const heartQuestion = answers.find(a => 
+        a.question.text.toLowerCase().includes('problema cardíaco') && a.question.type === 'BOOLEAN'
+    );
+    const hasHeartIssue = heartQuestion?.answerText === 'true';
+    if (hasHeartIssue) specialNotes.push("Atenção: Condição cardíaca relatada.");
+
+    // 4. Parse Medications
+    const medQuestion = answers.find(a => a.question.text.toLowerCase().includes('medicamento de uso contínuo'));
+    if (medQuestion?.answerText === 'true') {
+        const medDetail = answers.find(a => a.question.text.toLowerCase().includes('se sim, qual?'));
+        if (medDetail?.answerText) specialNotes.push(`Medicação: ${medDetail.answerText}`);
+    }
+
+    // --- GENERATION LOGIC ---
 
     // BMI Math (peso / altura^2)
     const heightM = height > 3 ? height / 100 : height; // handle cm or m
@@ -85,13 +111,15 @@ export async function generateWorkout({ studentId }: GenerateParams) {
     // Filter out restricted tags
     const validExercises = allExercises.filter(ex => {
         if (!goal.hasGymAccess && ex.modality === Modality.GYM) return false;
-        // Check static restrictions
+        
+        // Static restrictions
         for (const tag of ex.tags) {
             if (goal.restrictions.includes(tag)) return false;
         }
 
-        // Dynamic restrictions from anamnesis (Simplified: if injuries, avoid high impact/composto if severe)
+        // Dynamic restrictions from anamnesis
         if (hasInjuries && ex.tags.includes('impacto')) return false;
+        if (hasHeartIssue && ex.tags.includes('alta_intensidade')) return false;
 
         return true;
     });
@@ -114,18 +142,16 @@ export async function generateWorkout({ studentId }: GenerateParams) {
     }
 
     // Distribution
-    const days = dynamicDays;
+    const days = Math.min(Math.max(dynamicDays, 1), 6); // Cap 1-6
     let splits: { name: string, groups: string[] }[] = [];
 
     if (days <= 3) {
-        // Full Body or Upper/Lower (if 3 days we can do Full A/B/C)
         splits = [
             { name: 'Full Body A', groups: ['Peito', 'Costas', 'Pernas', 'Ombros', 'Core'] },
             { name: 'Full Body B', groups: ['Pernas', 'Peito', 'Costas', 'Braços', 'Cardio'] },
             { name: 'Full Body C', groups: ['Costas', 'Pernas', 'Ombros', 'Core', 'Cardio'] }
         ].slice(0, days);
     } else if (days === 4) {
-        // Upper / Lower A/B
         splits = [
             { name: 'Upper A', groups: ['Peito', 'Costas', 'Ombros', 'Braços'] },
             { name: 'Lower A', groups: ['Pernas', 'Core', 'Cardio'] },
@@ -133,14 +159,13 @@ export async function generateWorkout({ studentId }: GenerateParams) {
             { name: 'Lower B', groups: ['Pernas', 'Core', 'Cardio'] },
         ];
     } else {
-        // 5 or 6 days -> PPL + UL
         splits = [
-            { name: 'Push', groups: ['Peito', 'Ombros', 'Braços'] }, // Triceps inferred later
-            { name: 'Pull', groups: ['Costas', 'Braços'] }, // Biceps
+            { name: 'Push', groups: ['Peito', 'Ombros', 'Braços'] },
+            { name: 'Pull', groups: ['Costas', 'Braços'] },
             { name: 'Legs', groups: ['Pernas', 'Core'] },
             { name: 'Upper', groups: ['Peito', 'Costas', 'Ombros', 'Braços'] },
             { name: 'Lower', groups: ['Pernas', 'Core', 'Cardio'] },
-            { name: 'Full/Cardio', groups: ['Cardio', 'Core'] },
+            { name: 'Full Focus', groups: ['Cardio', 'Core', 'Pernas'] },
         ].slice(0, days);
     }
 
@@ -156,14 +181,13 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                     tenantId: student.tenantId,
                     studentId: student.id,
                     name: workoutName,
-                    notes: `Gerado auto via IA (IMC: ${bmi.toFixed(1)})`,
+                    notes: `Gerado auto via IA. Objetivo: ${dynamicObjective}. IMC: ${bmi.toFixed(1)}.\n${specialNotes.join('\n')}`,
                     published: false
                 }
             });
 
             // 2. Create Sessions and Exercises
             let sessionOrder = 0;
-
             for (const split of splits) {
                 const session = await tx.workoutSession.create({
                     data: {
@@ -178,13 +202,9 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                 const usedExerciseIds = new Set<string>();
 
                 for (const group of split.groups) {
-                    // Pick 1 compound and a few accessories based on volume multiplier
                     const groupExercises = validExercises.filter(ex => ex.group === group && !usedExerciseIds.has(ex.id));
-
                     if (groupExercises.length === 0) continue;
 
-                    // Simplified logic: Pick random or specific ones
-                    // Usually, `composto` tag decides.
                     const compounds = groupExercises.filter(ex => ex.tags.includes('composto'));
                     const accessories = groupExercises.filter(ex => !ex.tags.includes('composto'));
 
@@ -192,13 +212,13 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                     if (compounds.length > 0) {
                         toAdd.push(compounds[Math.floor(Math.random() * compounds.length)]);
                     } else if (groupExercises.length > 0) {
-                        toAdd.push(groupExercises[Math.floor(Math.random() * groupExercises.length)]); // fallback
+                        toAdd.push(groupExercises[Math.floor(Math.random() * groupExercises.length)]);
                     }
 
                     const numAccessories = Math.max(1, Math.floor(2 * volumeMultiplier));
                     for (let a = 0; a < numAccessories; a++) {
                         if (accessories.length > a) {
-                            toAdd.push(accessories[a]); // Randomize in real world, just picking sequentially here
+                            toAdd.push(accessories[a]);
                         }
                     }
 
@@ -207,7 +227,7 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                         usedExerciseIds.add(ex.id);
 
                         let sets = goal.level === Level.INICIANTE ? 2 : 3;
-                        if (goal.objective === Objective.HIPERTROFIA && goal.level !== Level.INICIANTE) sets = 4;
+                        if (dynamicObjective === Objective.HIPERTROFIA && goal.level !== Level.INICIANTE) sets = 4;
 
                         await tx.workoutExercise.create({
                             data: {
@@ -227,6 +247,7 @@ export async function generateWorkout({ studentId }: GenerateParams) {
             return workout;
         });
     } catch (e) {
+        console.error(e);
         throw new Error("Failed to create workout in database.");
     }
 
