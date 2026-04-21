@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
-import { GradientButton } from '@/components/trainer/GradientButton';
-import { StudentCard } from '@/components/trainer/StudentCard';
+import GradientButton from '@/components/trainer/GradientButton';
+import StudentCard from '@/components/trainer/StudentCard';
 
 export default function StudentsList() {
     const [students, setStudents] = useState<any[]>([]);

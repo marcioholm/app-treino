@@ -2,7 +2,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Dumbbell, Users, ClipboardCheck, BarChart3 } from "lucide-react";
+import { ChevronDown, LogOut, Dumbbell, Users, BarChart3 } from "lucide-react";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const links = [
   { href: "/personal/dashboard", label: "Dashboard", icon: BarChart3 },
@@ -15,7 +21,7 @@ interface TrainerHeaderProps {
   trainerName?: string;
 }
 
-export function TrainerHeader({ trainerName = "Personal" }: TrainerHeaderProps) {
+export default function TrainerHeader({ trainerName = "Personal" }: TrainerHeaderProps) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
@@ -46,9 +52,10 @@ export function TrainerHeader({ trainerName = "Personal" }: TrainerHeaderProps) 
             const isActive = pathname.startsWith(l.href);
             return (
               <Link key={l.href} href={l.href}
-                className={`px-4 h-10 flex items-center gap-2 rounded-lg text-sm font-semibold transition ${
+                className={cn(
+                  "px-4 h-10 flex items-center gap-2 rounded-lg text-sm font-semibold transition",
                   isActive ? "bg-white/10 text-white" : "text-white/70 hover:text-white hover:bg-white/5"
-                }`}>
+                )}>
                 <Icon size={16} />
                 {l.label}
               </Link>

@@ -1,13 +1,18 @@
 'use client';
 import { ButtonHTMLAttributes, forwardRef } from "react";
-import { cn } from "@/lib/utils";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "solid" | "outline" | "ghost-light" | "ghost";
   size?: "md" | "lg" | "sm";
 }
 
-export const GradientButton = forwardRef<HTMLButtonElement, Props>(
+const GradientButton = forwardRef<HTMLButtonElement, Props>(
   ({ className, variant = "solid", size = "md", children, ...props }, ref) => {
     const base = "inline-flex items-center justify-center gap-2 font-semibold tracking-wide rounded-xl transition-all duration-200 disabled:opacity-50 disabled:pointer-events-none";
     const sizes = { sm: "h-9 px-3 text-xs", md: "h-11 px-5 text-sm", lg: "h-[52px] px-6 text-[15px]" };
@@ -25,3 +30,5 @@ export const GradientButton = forwardRef<HTMLButtonElement, Props>(
   }
 );
 GradientButton.displayName = "GradientButton";
+
+export default GradientButton;

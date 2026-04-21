@@ -4,10 +4,10 @@ import { verifyToken } from '@/lib/auth/jwt';
 import { prisma } from '@/lib/db/prisma';
 import { generateTrainerAlerts } from '@/lib/engine/alerts';
 import { Activity, Dumbbell, ClipboardCheck, Users, Plus } from 'lucide-react';
-import { GradientButton } from '@/components/trainer/GradientButton';
-import { MetricCard } from '@/components/trainer/MetricCard';
-import { StudentCard } from '@/components/trainer/StudentCard';
-import { WorkoutTimeline } from '@/components/trainer/WorkoutTimeline';
+import GradientButton from '@/components/trainer/GradientButton';
+import MetricCard from '@/components/trainer/MetricCard';
+import StudentCard from '@/components/trainer/StudentCard';
+import WorkoutTimeline from '@/components/trainer/WorkoutTimeline';
 
 export default async function PersonalDashboard() {
     const cookieStore = await cookies();

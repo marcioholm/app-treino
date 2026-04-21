@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Camera, FileDown, PencilLine, Sparkles, Activity, Scale, Target, Ruler, ArrowLeft, ArrowDown, ArrowUp } from 'lucide-react';
-import { GradientButton } from '@/components/trainer/GradientButton';
-import { MetricCard } from '@/components/trainer/MetricCard';
+import GradientButton from '@/components/trainer/GradientButton';
+import MetricCard from '@/components/trainer/MetricCard';
 import { cn } from '@/lib/utils';
 
 interface Student {

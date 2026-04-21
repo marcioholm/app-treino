@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
-import { GradientButton } from '@/components/trainer/GradientButton';
+import GradientButton from '@/components/trainer/GradientButton';
 
 const features = [
   {

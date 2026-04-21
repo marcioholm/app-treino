@@ -2,8 +2,13 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { GradientButton } from '@/components/trainer/GradientButton';
-import { cn } from '@/lib/utils';
+import GradientButton from '@/components/trainer/GradientButton';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 function LoginForm() {
     const [isRegister, setIsRegister] = useState(false);

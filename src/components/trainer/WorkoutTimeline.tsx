@@ -1,6 +1,11 @@
 'use client';
 import { AlertTriangle, Check, ClipboardList, Trophy, LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 const iconMap: Record<string, { icon: LucideIcon; color: string }> = {
   check: { icon: Check, color: "bg-success text-white" },
@@ -20,7 +25,7 @@ interface Props {
   items: Item[];
 }
 
-export function WorkoutTimeline({ items }: Props) {
+export default function WorkoutTimeline({ items }: Props) {
   return (
     <div className="relative">
       <div className="absolute left-[19px] top-2 bottom-2 w-0.5 bg-gradient-to-b from-primary via-primary-light to-secondary rounded-full" />

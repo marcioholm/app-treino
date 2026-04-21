@@ -1,7 +1,13 @@
 'use client';
-import { ArrowDown, ArrowUp, LucideIcon } from "lucide-react";
+import { ArrowDown, ArrowUp } from "lucide-react";
 import Link from "next/link";
-import { GradientButton } from "./GradientButton";
+import GradientButton from "./GradientButton";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface StudentCardProps {
   id: string;
@@ -17,7 +23,7 @@ interface Props {
   aluna: StudentCardProps;
 }
 
-export function StudentCard({ aluna }: Props) {
+export default function StudentCard({ aluna }: Props) {
   const initials = aluna.name.split(" ").map(n => n[0]).slice(0, 2).join("");
   const progresso = Math.min(100, Math.abs(aluna.gordura.variacao) * 15);
   

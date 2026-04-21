@@ -1,6 +1,11 @@
 'use client';
 import { ArrowDown, ArrowUp, LucideIcon } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface Props {
   label: string;
@@ -12,7 +17,7 @@ interface Props {
   icon?: LucideIcon;
 }
 
-export function MetricCard({ label, value, unit, delta, deltaLabel, invertColor, icon: Icon }: Props) {
+export default function MetricCard({ label, value, unit, delta, deltaLabel, invertColor, icon: Icon }: Props) {
   const isUp = delta !== undefined && delta > 0;
   const isDown = delta !== undefined && delta < 0;
   const good = invertColor ? isDown : isUp;
