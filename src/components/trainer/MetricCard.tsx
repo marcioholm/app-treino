@@ -1,11 +1,24 @@
 'use client';
-import { ArrowDown, ArrowUp, LucideIcon } from "lucide-react";
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { ArrowDown, ArrowUp, LucideIcon, Activity, Dumbbell, ClipboardCheck, Users, Trophy, TrendingUp, Scale, Target, Ruler } from "lucide-react";
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+const iconMap: Record<string, LucideIcon> = {
+  activity: Activity,
+  dumbbell: Dumbbell,
+  clipboard: ClipboardCheck,
+  users: Users,
+  trophy: Trophy,
+  trending: TrendingUp,
+  scale: Scale,
+  target: Target,
+  ruler: Ruler
+};
 
 interface Props {
   label: string;
@@ -14,13 +27,14 @@ interface Props {
   delta?: number;
   deltaLabel?: string;
   invertColor?: boolean;
-  icon?: LucideIcon;
+  iconName?: keyof typeof iconMap;
 }
 
-export default function MetricCard({ label, value, unit, delta, deltaLabel, invertColor, icon: Icon }: Props) {
+export default function MetricCard({ label, value, unit, delta, deltaLabel, invertColor, iconName }: Props) {
   const isUp = delta !== undefined && delta > 0;
   const isDown = delta !== undefined && delta < 0;
   const good = invertColor ? isDown : isUp;
+  const Icon = iconName ? iconMap[iconName] : null;
   
   return (
     <div className="rounded-2xl bg-card p-5 shadow-pink border border-border/40 transition hover:shadow-pink-lg">

@@ -210,27 +210,27 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                             label="Peso" 
                             value={latestAssessment?.weight || '-'} 
                             unit="kg" 
-                            icon={Scale} 
+                            iconName="scale" 
                             invertColor 
                         />
                         <MetricCard 
                             label="% Gordura" 
                             value={latestAssessment?.bodyFatPercentage || '-'} 
                             unit="%" 
-                            icon={Target} 
+                            iconName="target" 
                             invertColor 
                         />
                         <MetricCard 
                             label="Massa muscular" 
                             value={latestAssessment?.muscleMass || '-'} 
                             unit="kg" 
-                            icon={Activity} 
+                            iconName="activity" 
                         />
                         <MetricCard 
                             label="Cintura" 
                             value={latestAssessment?.waist || '-'} 
                             unit="cm" 
-                            icon={Ruler} 
+                            iconName="ruler" 
                             invertColor 
                         />
                     </div>

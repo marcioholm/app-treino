@@ -44,7 +44,7 @@ export default async function PersonalDashboard() {
 
     await generateTrainerAlerts(payload.tenantId);
 
-    const notifications = await (prisma as any).notification.findMany({
+    const notifications = await prisma.notification.findMany({
         where: { tenantId: payload.tenantId, resolved: false },
         orderBy: { createdAt: 'desc' }
     });
@@ -90,9 +90,7 @@ export default async function PersonalDashboard() {
             ultimaAvaliacao: latestAssessment 
                 ? new Date(latestAssessment.date).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
                 : 'N/A',
-            adherence,
-            assessments: student.assessments,
-            goals: student.goals
+            adherence
         };
     });
 
@@ -130,10 +128,10 @@ export default async function PersonalDashboard() {
             {/* Metrics */}
             <section className="container mx-auto px-4 md:px-6 -mt-6">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <MetricCard label="Alunas ativas" value={students.length} icon={Users} delta={2} deltaLabel="vs mês passado" />
-                    <MetricCard label="Treinos gerados" value={38} unit="/mês" icon={Dumbbell} delta={5} />
-                    <MetricCard label="Avaliações" value={students.filter(s => s.assessments.length > 0).length} icon={ClipboardCheck} delta={3} />
-                    <MetricCard label="Sessões hoje" value={activeWorkouts} icon={Activity} />
+                    <MetricCard label="Alunas ativas" value={students.length} iconName="users" delta={2} deltaLabel="vs mês passado" />
+                    <MetricCard label="Treinos gerados" value={38} unit="/mês" iconName="dumbbell" delta={5} />
+                    <MetricCard label="Avaliações" value={students.filter(s => s.assessments.length > 0).length} iconName="clipboard" delta={3} />
+                    <MetricCard label="Sessões hoje" value={activeWorkouts} iconName="activity" />
                 </div>
             </section>
 

@@ -36,7 +36,7 @@ export async function generateTrainerAlerts(tenantId: string) {
         // System Rule 1: Inactive > 3 days
         if (!lastLog || lastLog.createdAt < threeDaysAgo) {
             // Student is inactive. Check if we already have an unresolved alert.
-            const existingAlert = await (prisma as any).notification.findFirst({
+            const existingAlert = await prisma.notification.findFirst({
                 where: {
                     tenantId,
                     type: 'INACTIVE_STUDENT',
@@ -46,7 +46,7 @@ export async function generateTrainerAlerts(tenantId: string) {
             });
 
             if (!existingAlert) {
-                await (prisma as any).notification.create({
+                await prisma.notification.create({
                     data: {
                         tenantId,
                         title: 'Atenção: Aluno Inativo',
