@@ -1,13 +1,13 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Send } from 'lucide-react';
+import GradientButton from '@/components/trainer/GradientButton';
 
 export default function StudentChat() {
     const [messages, setMessages] = useState<any[]>([]);
     const [newMessage, setNewMessage] = useState('');
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
-    const router = useRouter();
 
     useEffect(() => {
         fetchMessages();
@@ -34,7 +34,6 @@ export default function StudentChat() {
         const contentSent = newMessage;
         setNewMessage('');
         
-        // Optimistic UI update
         const tempId = `temp-${Date.now()}`;
         setMessages(prev => [...prev, {
             id: tempId,
@@ -60,22 +59,22 @@ export default function StudentChat() {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-full">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="flex items-center justify-center h-full bg-background">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
             </div>
         );
     }
 
     return (
-        <div className="flex flex-col h-full max-w-md mx-auto">
-            <div className="p-4 border-b border-[#333333] bg-[#111111]">
-                <h1 className="text-lg font-bold text-white">Mensagens</h1>
-                <p className="text-sm text-gray-400">Fale com seu personal</p>
+        <div className="flex flex-col h-full max-w-md mx-auto bg-background">
+            <div className="p-4 border-b border-border bg-card">
+                <h1 className="font-display text-lg font-bold text-foreground">Mensagens</h1>
+                <p className="text-sm text-muted-foreground">Fale com seu personal</p>
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
                 {messages.length === 0 ? (
-                    <div className="text-center text-gray-400 py-8">
+                    <div className="text-center text-muted-foreground py-8">
                         <p>Nenhuma mensagem ainda.</p>
                         <p className="text-sm">Envie uma mensagem para começar a conversa!</p>
                     </div>
@@ -86,14 +85,14 @@ export default function StudentChat() {
                             className={`flex ${msg.senderRole === 'STUDENT' ? 'justify-end' : 'justify-start'}`}
                         >
                             <div
-                                className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+                                className={`max-w-[75%] rounded-2xl px-4 py-3 ${
                                     msg.senderRole === 'STUDENT'
-                                        ? 'bg-[#D4537E] text-white'
-                                        : 'bg-[#1a1a1a] text-white'
+                                        ? 'bg-gradient-brand text-primary-foreground'
+                                        : 'bg-card border border-border text-foreground'
                                 }`}
                             >
                                 <p className="text-sm">{msg.content}</p>
-                                <p className={`text-[10px] mt-1 ${msg.senderRole === 'STUDENT' ? 'text-blue-200' : 'text-gray-400'}`}>
+                                <p className={`text-[10px] mt-1 ${msg.senderRole === 'STUDENT' ? 'text-white/70' : 'text-muted-foreground'}`}>
                                     {new Date(msg.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                 </p>
                             </div>
@@ -102,22 +101,22 @@ export default function StudentChat() {
                 )}
             </div>
 
-            <form onSubmit={sendMessage} className="p-4 border-t border-[#333333] bg-[#111111]">
+            <form onSubmit={sendMessage} className="p-4 border-t border-border bg-card">
                 <div className="flex gap-2">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Digite sua mensagem..."
-                        className="flex-1 px-4 py-3 border border-[#444444] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#D4537E] focus:border-transparent"
+                        className="flex-1 px-4 py-3 bg-background border border-border rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none text-foreground placeholder:text-muted-foreground"
                     />
-                    <button
+                    <GradientButton 
                         type="submit"
                         disabled={sending || !newMessage.trim()}
-                        className="bg-[#D4537E] hover:bg-[#993556] disabled:opacity-50 text-white px-4 py-2 rounded-xl font-medium transition-colors"
+                        className="px-4"
                     >
-                        Enviar
-                    </button>
+                        <Send size={18} />
+                    </GradientButton>
                 </div>
             </form>
         </div>
