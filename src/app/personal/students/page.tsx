@@ -4,7 +4,7 @@ import Link from 'next/link';
 import GradientButton from '@/components/trainer/GradientButton';
 import StudentCard from '@/components/trainer/StudentCard';
 import EmptyState from '@/components/ui/EmptyState';
-import { Users } from 'lucide-react';
+import { Users, Plus } from 'lucide-react';
 
 export default function StudentsList() {
     const [students, setStudents] = useState<any[]>([]);
