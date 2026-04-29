@@ -88,7 +88,7 @@ model Goal {
 model Exercise {
   id               String                @id @default(cuid())
   tenantId         String?
-  name             String
+  name             String                @unique
   group            String
   subgroup         String?
   modality         Modality
@@ -101,6 +101,10 @@ model Exercise {
   description      String?
   imageUrl         String?
   videoUrl         String?
+  level            String?   // iniciante, intermediário, avançado
+  defaultSets      Int?      @default(3)
+  defaultReps      String?   @default("12")
+  defaultRest      Int?      @default(60)
   tenant           Tenant?               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   progressions     ExerciseProgression[]
   workoutExercises WorkoutExercise[]
@@ -354,7 +358,7 @@ model PhysicalAssessment {
   fatPercent         Float?
   fatMassKg         Float?
   leanMassKg        Float?
-  muscleMassKg      Float?
+  muscleMassPercent Float?
   waterPercent      Float?
   boneMassKg        Float?
   basalMetabolism   Int?

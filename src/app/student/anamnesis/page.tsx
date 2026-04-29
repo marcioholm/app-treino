@@ -85,12 +85,12 @@ export default function StudentAnamnesis() {
             </header>
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                {template.sections.map((section: any, sIdx: number) => (
+                {template?.sections?.map((section: any, sIdx: number) => (
                     <div key={section.id} className="bg-[#111111] rounded-xl shadow-sm border border-[#333333] p-5">
                         <h2 className="font-bold text-[#D4537E] mb-4 pb-2 border-b border-[#333333]">{sIdx + 1}. {section.name}</h2>
                         <div className="space-y-6">
-                            {section.questions.map((q: any, i: number) => {
-                                if (q.text.startsWith('Se sim,')) {
+                            {section?.questions?.map((q: any, i: number) => {
+                                if (q.text?.startsWith('Se sim,')) {
                                     const prevQuestion = section.questions[i - 1];
                                     const prevAnswer = answers[prevQuestion?.id]?.value;
                                     if (prevAnswer !== 'true') return null;

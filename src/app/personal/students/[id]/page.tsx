@@ -72,10 +72,10 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                     goals: s.goals || []
                 });
                 setProfileForm({
-                    name: s.user.name,
-                    email: s.user.email,
-                    phone: s.phone || '',
-                    birthDate: s.user.birthDate ? new Date(s.user.birthDate).toISOString().split('T')[0] : ''
+                    name: s?.user?.name || '',
+                    email: s?.user?.email || '',
+                    phone: s?.phone || '',
+                    birthDate: s?.user?.birthDate ? new Date(s.user.birthDate).toISOString().split('T')[0] : ''
                 });
             })
             .catch(console.error)
@@ -159,17 +159,17 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     const mainBmi = latestPhysical?.bmi || latestSimple?.bmi || null;
     
     const fatPercent = latestPhysical?.fatPercent || null;
-    const muscleMass = latestPhysical?.muscleMassKg || null;
+    const muscleMass = latestPhysical?.muscleMassPercent || null;
     const waist = latestPhysical?.bodyMeasurements?.[0]?.waistCm || null;
     
     const lastUpdateDate = latestPhysical?.createdAt || latestSimple?.createdAt || null;
 
-    const hasAssessment = student.assessments?.length > 0 || student.physicalAssessments?.length > 0;
+    const hasAssessment = student.physicalAssessments?.length > 0;
     const hasGoal = student.goals?.length > 0;
     const canGenerateMagic = hasAssessment && hasGoal;
     
-    const goal = student.goals[0];
-    const initials = student.user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase();
+    const goal = student.goals?.[0];
+    const initials = student.user?.name ? student.user.name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase() : '??';
 
     const tabs = ['Treino atual', 'Histórico', 'Avaliação física', 'Anamnese'];
 
@@ -190,7 +190,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
     // Group Anamnesis by Section
     const anamnesisBySection: Record<string, AnamnesisAnswer[]> = {};
     student.anamnesisAnswers.forEach(ans => {
-        const sectionName = ans.question.section.name;
+        const sectionName = ans?.question?.section?.name || 'Geral';
         if (!anamnesisBySection[sectionName]) anamnesisBySection[sectionName] = [];
         anamnesisBySection[sectionName].push(ans);
     });
@@ -241,7 +241,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                             ) : (
                                 <>
                                     <div className="flex items-center gap-4 mb-4">
-                                        <h1 className="font-display text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">{student.user.name}</h1>
+                                        <h1 className="font-display text-5xl md:text-6xl font-black text-white tracking-tighter drop-shadow-2xl">{student.user?.name || 'Aluna'}</h1>
                                         <button onClick={() => setEditingProfile(true)} className="size-11 rounded-2xl bg-white/5 border border-white/10 grid place-items-center text-muted-foreground hover:text-primary-light hover:bg-white/10 transition-all hover:scale-110">
                                             <PencilLine size={20} />
                                         </button>
@@ -411,9 +411,9 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                     <div className="divide-y divide-white/5">
                                         {answers.map((ans, idx) => (
                                             <div key={idx} className="px-10 py-8 hover:bg-white/[0.02] transition-all grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div className="text-sm font-bold text-muted-foreground leading-relaxed uppercase tracking-widest text-[10px] opacity-60">{ans.question.text}</div>
+                                                <div className="text-sm font-bold text-muted-foreground leading-relaxed uppercase tracking-widest text-[10px] opacity-60">{ans?.question?.text || 'Questão'}</div>
                                                 <div className="text-lg font-bold text-white tracking-tight">
-                                                    {ans.question.type === 'BOOLEAN' ? (
+                                                    {ans?.question?.type === 'BOOLEAN' ? (
                                                         <span className={cn(
                                                             "px-4 py-1 rounded-lg text-xs font-black uppercase tracking-widest",
                                                             ans.answerText === 'true' ? "bg-red-500/10 text-red-400 border border-red-500/20" : "bg-success/10 text-success border border-success/20"
@@ -421,7 +421,7 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                                             {ans.answerText === 'true' ? 'Sim' : 'Não'}
                                                         </span>
                                                     ) : (
-                                                        ans.answerText || ans.answerArray.join(', ') || '—'
+                                                        ans.answerText || ans.answerArray?.join(', ') || '—'
                                                     )}
                                                 </div>
                                             </div>

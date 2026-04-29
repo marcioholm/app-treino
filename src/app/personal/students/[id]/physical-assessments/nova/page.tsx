@@ -12,6 +12,7 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
     const router = useRouter();
     const [saving, setSaving] = useState(false);
     const [showBioimpedance, setShowBioimpedance] = useState(true);
+    const [showAdvancedBio, setShowAdvancedBio] = useState(false);
     const [showMeasurements, setShowMeasurements] = useState(false);
     
     const [form, setForm] = useState({
@@ -25,7 +26,7 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
         fatPercent: '',
         fatMassKg: '',
         leanMassKg: '',
-        muscleMassKg: '',
+        muscleMassPercent: '',
         waterPercent: '',
         boneMassKg: '',
         basalMetabolism: '',
@@ -82,7 +83,7 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
                 if (form.fatPercent) payload.fatPercent = parseFloat(form.fatPercent);
                 if (form.fatMassKg) payload.fatMassKg = parseFloat(form.fatMassKg);
                 if (form.leanMassKg) payload.leanMassKg = parseFloat(form.leanMassKg);
-                if (form.muscleMassKg) payload.muscleMassKg = parseFloat(form.muscleMassKg);
+                if (form.muscleMassPercent) payload.muscleMassPercent = parseFloat(form.muscleMassPercent);
                 if (form.waterPercent) payload.waterPercent = parseFloat(form.waterPercent);
                 if (form.boneMassKg) payload.boneMassKg = parseFloat(form.boneMassKg);
                 if (form.basalMetabolism) payload.basalMetabolism = parseInt(form.basalMetabolism);
@@ -261,19 +262,19 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 lg:grid-cols-3 gap-6">
                                 {[
-                                    { k: 'fatPercent', l: '% Gordura', p: '00.0' },
+                                    { k: 'fatPercent', l: '% Gordura Corporal', p: '00.0' },
                                     { k: 'fatMassKg', l: 'Massa Gorda (kg)', p: '00.0' },
                                     { k: 'leanMassKg', l: 'Massa Magra (kg)', p: '00.0' },
-                                    { k: 'muscleMassKg', l: 'Massa Muscular (kg)', p: '00.0' },
-                                    { k: 'waterPercent', l: '% Água Corporal', p: '00.0' },
-                                    { k: 'boneMassKg', l: 'Massa Óssea (kg)', p: '0.0' },
+                                    { k: 'muscleMassPercent', l: 'Massa Muscular (%)', p: '00.0' },
                                     { k: 'basalMetabolism', l: 'Metab. Basal (kcal)', p: '0000' },
                                     { k: 'metabolicAge', l: 'Idade Metabólica', p: '00' },
                                 ].map((field) => (
                                     <div key={field.k} className={inputWrapper}>
-                                        <label className={labelStyle}>{field.l}</label>
+                                        <label className={labelStyle}>
+                                            {field.l}
+                                        </label>
                                         <input
                                             type="number"
                                             step="0.01"
@@ -284,6 +285,38 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
                                         />
                                     </div>
                                 ))}
+                            </div>
+
+                            {/* Advanced/Optional Metrics Toggle */}
+                            <div className="pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAdvancedBio(!showAdvancedBio)}
+                                    className="flex items-center gap-2 text-[10px] font-black text-white/40 hover:text-primary-light transition-colors uppercase tracking-[0.2em] px-4"
+                                >
+                                    {showAdvancedBio ? '- Ocultar Métricas Avançadas' : '+ Mostrar Métricas Avançadas (Bioimpedância)'}
+                                </button>
+
+                                {showAdvancedBio && (
+                                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-6 animate-fade-in">
+                                        {[
+                                            { k: 'waterPercent', l: '% Água Corporal', p: '00.0' },
+                                            { k: 'boneMassKg', l: 'Massa Óssea (kg)', p: '0.0' },
+                                        ].map((field) => (
+                                            <div key={field.k} className={inputWrapper}>
+                                                <label className={labelStyle}>{field.l}</label>
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    value={(form as any)[field.k]}
+                                                    onChange={(e) => setForm({...form, [field.k]: e.target.value})}
+                                                    placeholder={field.p}
+                                                    className={cn(inputStyle, "opacity-60")}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Goals for this Athlete */}
@@ -305,13 +338,13 @@ export default function NewPhysicalAssessment({ params }: { params: Promise<{ id
                                         />
                                     </div>
                                     <div className={inputWrapper}>
-                                        <label className={labelStyle}>Meta Massa Muscular</label>
+                                        <label className={labelStyle}>Meta Massa Muscular (%)</label>
                                         <input
                                             type="number"
-                                            step="0.01"
+                                            step="0.1"
                                             value={form.muscleGoalKg}
                                             onChange={(e) => setForm({...form, muscleGoalKg: e.target.value})}
-                                            placeholder="Ex: 52.0"
+                                            placeholder="Ex: 35.0"
                                             className={cn(inputStyle, "border-primary/20 bg-primary/5")}
                                         />
                                     </div>

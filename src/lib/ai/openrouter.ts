@@ -54,39 +54,76 @@ export async function generateWorkoutWithAI(context: {
     level: string;
     daysPerWeek: number;
     exercises: string[];
+    weight?: number;
+    fatPercent?: number;
     restrictions?: string[];
 }): Promise<{
     name: string;
-    sessions: { name: string; exercises: { name: string; sets: number; reps: string }[] }[];
+    sessions: { name: string; exercises: { name: string; sets: number; reps: string; restTime: number }[] }[];
 }> {
-    const exercisesList = context.exercises.slice(0, 20).join(', ');
+    const exercisesList = context.exercises.join(', ');
     
-    const prompt = `
-Gere um treino de musculação para uma aluna chamada ${context.studentName}.
+    const systemPrompt = `
+Você é um personal trainer especialista em treinamento de força e hipertrofia para mulheres, com base em evidências científicas atualizadas.
 
-Objetivo: ${context.goal}
-Nível: ${context.level}
-Dias por semana: ${context.daysPerWeek}
-Restrições: ${context.restrictions?.join(', ') || 'nenhuma'}
+PRINCÍPIOS CIENTÍFICOS PARA MULHERES:
+- Mulheres respondem bem a volumes moderados-altos (12-20 séries/semana por grupo muscular)
+- Maior tolerância ao volume e menor necessidade de descanso que homens (geralmente 45-90 segundos)
+- Ênfase em membros inferiores e glúteos (objetivo mais comum)
+- Incluir variações unilaterais para correção de assimetrias
+- Progressão de carga deve ser gradual e consistente
+- Exercícios multiarticulares como base, isolados como complemento
+- Considerar fase do ciclo menstrual se informada (fase folicular: maior força; fase lútea: priorizar técnica)
 
-Exercícios disponíveis:
+AO MONTAR O TREINO:
+- Use OBRIGATORIAMENTE os dados da avaliação física fornecidos.
+- Adapte o volume e intensidade ao nível:
+  - Iniciante: 3x/semana, foco em técnica e base.
+  - Intermediário: 4x/semana, divisões como Upper/Lower ou Push/Pull/Legs.
+  - Avançado: 5-6x/semana, maior volume e intensidade.
+- Estratégias por objetivo:
+  - "Emagrecimento": Priorizar compostos, circuitos, menor descanso (45s).
+  - "Hipertrofia/Definição": Foco em mecânica, tempo sob tensão, descanso moderado (60-90s).
+  - "Condicionamento": Mix de força e cardio funcional.
+- NUNCA gere treino sem considerar as restrições e dados de peso/objetivo.
+- Selecione exercícios APENAS da lista de exercícios disponíveis fornecida.
+`.trim();
+
+    const userPrompt = `
+Gere um treino personalizado para a aluna ${context.studentName}.
+
+DADOS DA ALUNA:
+- Peso: ${context.weight || 'Não informado'} kg
+- % Gordura: ${context.fatPercent || 'Não informado'}%
+- Objetivo Principal: ${context.goal}
+- Nível de Condicionamento: ${context.level}
+- Frequência: ${context.daysPerWeek} dias por semana
+- Restrições: ${context.restrictions?.join(', ') || 'Nenhuma'}
+
+LISTA DE EXERCÍCIOS DISPONÍVEIS:
 ${exercisesList}
 
-Retorne em formato JSON válido (sem markdown):
+INSTRUÇÕES DE SAÍDA:
+Retorne OBRIGATORIAMENTE em formato JSON puro, sem blocos de código markdown, seguindo esta estrutura:
 {
-  "name": "Nome do Treino",
+  "name": "Nome do Treino (Ex: Protocolo Hipertrofia Feminina)",
   "sessions": [
     {
-      "name": "Nome da sessão",
+      "name": "Nome da Sessão (Ex: Inferiores A)",
       "exercises": [
-        { "name": "Nome do exercício", "sets": 3, "reps": "8-12" }
+        { "name": "Nome Exato do Exercício da Lista", "sets": 4, "reps": "10-12", "restTime": 60 }
       ]
     }
   ]
 }
 `.trim();
 
-    const response = await callOpenRouter(prompt);
+    const response = await callOpenRouter(userPrompt, {
+        messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+        ]
+    });
     
     try {
         const jsonMatch = response.match(/\{[\s\S]*\}/);

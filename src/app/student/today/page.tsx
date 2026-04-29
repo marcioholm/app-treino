@@ -17,7 +17,11 @@ export default async function StudentToday() {
 
     const student: any = await prisma.student.findUnique({
         where: { userId: payload.userId },
-        include: { user: true, anamnesisAnswers: true }
+        include: { 
+            user: true, 
+            anamnesisAnswers: true,
+            physicalAssessments: { orderBy: { date: 'desc' }, take: 1 }
+        }
     });
 
     if (!student) {
@@ -27,6 +31,8 @@ export default async function StudentToday() {
     if (student.anamnesisAnswers.length === 0) {
         redirect('/student/anamnesis');
     }
+
+    const hasAssessment = student.physicalAssessments.length > 0;
 
     const lastCheckIn = await (prisma as any).weeklyCheckIn.findFirst({
         where: { studentId: student.id },
@@ -76,7 +82,7 @@ export default async function StudentToday() {
                     </div>
                 </div>
                 <h1 className="text-2xl font-bold text-white">
-                    Olá, {student.user.name.split(' ')[0]}! 💪
+                    Olá, {student?.user?.name ? student.user.name.split(' ')[0] : 'atleta'}! 💪
                 </h1>
                 <p className="text-gray-400 mt-1 text-sm">Vamos arrasar no treino hoje?</p>
             </header>
@@ -142,43 +148,68 @@ export default async function StudentToday() {
                 </div>
             )}
 
-            {/* Today's Workout Card */}
-            <Link href="/student/workout/mock-id" className="block group">
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
-                    {/* Background gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#D4537E] via-[#993556] to-[#72243E]" />
-                    
-                    {/* Decorative elements */}
-                    <div className="absolute top-0 right-0 w-40 h-40 bg-[#111111] opacity-10 rounded-full -mr-16 -mt-16" />
-                    <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#111111] opacity-10 rounded-full -ml-10 -mb-10" />
-                    <div className="absolute top-1/2 right-8 w-24 h-24 border border-white/10 rounded-full" />
-                    
-                    <div className="relative z-10 p-6 pt-8">
-                        <span className="inline-block px-4 py-1.5 bg-[#111111]/20 rounded-full text-xs font-semibold tracking-wide uppercase mb-4 backdrop-blur-sm">
-                            Treino do Dia
-                        </span>
+            {/* Today's Workout Card or Assessment Blocker */}
+            {hasAssessment ? (
+                <Link href="/student/workout/today" className="block group">
+                    <div className="relative rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
+                        {/* Background gradient */}
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#D4537E] via-[#993556] to-[#72243E]" />
+                        
+                        {/* Decorative elements */}
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-[#111111] opacity-10 rounded-full -mr-16 -mt-16" />
+                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#111111] opacity-10 rounded-full -ml-10 -mb-10" />
+                        <div className="absolute top-1/2 right-8 w-24 h-24 border border-white/10 rounded-full" />
+                        
+                        <div className="relative z-10 p-6 pt-8">
+                            <span className="inline-block px-4 py-1.5 bg-[#111111]/20 rounded-full text-xs font-semibold tracking-wide uppercase mb-4 backdrop-blur-sm">
+                                Treino do Dia
+                            </span>
 
-                        <h2 className="text-3xl font-bold text-white mb-2">A - Push</h2>
-                        <p className="text-pink-100 text-base mb-6">Peito, Ombros e Tríceps • ~50 min</p>
+                            <h2 className="text-3xl font-bold text-white mb-2">Seu Treino</h2>
+                            <p className="text-pink-100 text-base mb-6">Personalizado para seus objetivos</p>
 
-                        <div className="bg-[#111111] rounded-2xl p-4 flex items-center gap-4 shadow-lg">
-                            <div className="w-14 h-14 rounded-xl bg-[#D4537E] flex items-center justify-center">
-                                <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            <div className="bg-[#111111] rounded-2xl p-4 flex items-center gap-4 shadow-lg">
+                                <div className="w-14 h-14 rounded-xl bg-[#D4537E] flex items-center justify-center">
+                                    <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-bold text-white">Iniciar Treino</p>
+                                    <p className="text-sm text-gray-400">Ver exercícios disponíveis</p>
+                                </div>
+                                <svg className="w-6 h-6 text-gray-400 group-hover:text-[#D4537E] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                 </svg>
                             </div>
-                            <div className="flex-1">
-                                <p className="font-bold text-white">Iniciar Treino</p>
-                                <p className="text-sm text-gray-400">6 exercícios • 24 séries</p>
-                            </div>
-                            <svg className="w-6 h-6 text-gray-400 group-hover:text-[#D4537E] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
                         </div>
                     </div>
+                </Link>
+            ) : (
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#D4537E]/20 bg-[#111111] p-8 text-center space-y-6">
+                    <div className="w-20 h-20 bg-[#D4537E]/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <svg className="w-10 h-10 text-[#D4537E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white mb-2">Avaliação Pendente</h2>
+                        <p className="text-sm text-gray-400 leading-relaxed">
+                            Para receber seu treino personalizado e seguro, precisamos completar sua <span className="text-white font-bold">Avaliação Física</span> primeiro.
+                        </p>
+                    </div>
+                    <Link 
+                        href="/student/chat"
+                        className="block w-full py-4 bg-[#D4537E] text-white rounded-2xl font-bold shadow-lg shadow-[#D4537E]/20 active:scale-95 transition-all"
+                    >
+                        Falar com Treinador
+                    </Link>
+                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
+                        O treino será liberado após o registro das métricas
+                    </p>
                 </div>
-            </Link>
+            )}
 
             {/* Quick Actions */}
             <div className="grid grid-cols-2 gap-4">

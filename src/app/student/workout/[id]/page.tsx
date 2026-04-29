@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWorkoutTimer } from '../../WorkoutTimerContext';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 const MOCK_EXERCISES = [
     { id: "e1", name: "Supino Reto Barra", details: "Peito • Barra Livre • 4 séries de 8-12 reps" },
@@ -24,6 +25,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     const [currentProgression, setCurrentProgression] = useState<any>(null);
     const [isLoadingProgression, setIsLoadingProgression] = useState(false);
     const [isLoadingSession, setIsLoadingSession] = useState(true);
+    const [fetchError, setFetchError] = useState<string | null>(null);
 
     // Track sets: { [exerciseIndex]: { [setNumber]: { load: number, reps: number, isCompleted: boolean } } }
     const [workoutLogs, setWorkoutLogs] = useState<any>({});
@@ -39,8 +41,11 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     useEffect(() => {
         const fetchSession = async () => {
             setIsLoadingSession(true);
+            setFetchError(null);
             try {
                 const res = await fetch(`/api/student/workout/today`);
+                if (!res.ok) throw new Error('Falha ao carregar dados do servidor');
+                
                 const data = await res.json();
                 if (data.todaySession) {
                     setSessionData({ ...data.todaySession, id: sessionId });
@@ -48,8 +53,9 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     // Fallback: se não houver today, usa o ID da URL como workoutId
                     setSessionData({ id: sessionId, name: 'Treino', exercises: [] });
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Failed to load session', error);
+                setFetchError(error.message || 'Erro desconhecido ao carregar treino');
                 setSessionData({ id: sessionId, name: 'Treino', exercises: [] });
             } finally {
                 setIsLoadingSession(false);
@@ -92,7 +98,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     };
 
     const handleNext = async () => {
-        if (currentIndex < sessionData.exercises.length - 1) {
+        if (currentIndex < (sessionData?.exercises?.length || 0) - 1) {
             setCurrentIndex(prev => prev + 1);
         } else {
             pauseTimer();
@@ -106,7 +112,9 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
             if (!sessionData?.exercises[currentIndex]) return;
 
             setIsLoadingProgression(true);
-            const exerciseId = sessionData.exercises[currentIndex].exerciseId;
+            const exerciseId = sessionData?.exercises?.[currentIndex]?.exerciseId;
+            if (!exerciseId) return;
+
             try {
                 const res = await fetch(`/api/student/workout/progressions/${exerciseId}`);
                 const data = await res.json();
@@ -130,7 +138,9 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
             
             const allSetLogs: any[] = [];
             Object.entries(workoutLogs).forEach(([exIdx, sets]: [string, any]) => {
-                const exercise = sessionData.exercises[parseInt(exIdx)];
+                const exercise = sessionData?.exercises?.[parseInt(exIdx)];
+                if (!exercise) return;
+                
                 Object.entries(sets).forEach(([setNum, data]: [string, any]) => {
                     if (data.isCompleted) {
                         allSetLogs.push({
@@ -188,7 +198,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
             router.push(`/student/workout/complete?result=${btoa(JSON.stringify(result))}`);
         } catch (error) {
             console.error('Failed to finish workout', error);
-            router.push('/student/today');
+            alert('Erro ao salvar treino. Tente novamente.');
         }
     };
 
@@ -200,11 +210,17 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
         );
     }
 
-    if (!sessionData) {
+    if (fetchError || !sessionData || !sessionData.exercises || sessionData.exercises.length === 0) {
         return (
             <div className="h-screen flex flex-col items-center justify-center bg-black p-6 text-center">
-                <h1 className="text-xl font-bold text-white mb-2">Sessão não encontrada</h1>
-                <Link href="/student/today" className="text-[#D4537E] font-bold">Voltar</Link>
+                <div className="w-16 h-16 bg-[#D4537E]/10 rounded-full flex items-center justify-center mb-4">
+                    <svg className="w-8 h-8 text-[#D4537E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h1 className="text-xl font-bold text-white mb-2">Nenhum treino disponível</h1>
+                <p className="text-gray-400 mb-6 max-w-xs">Não encontramos exercícios planejados para hoje ou houve um erro no carregamento.</p>
+                <Link href="/student/today" className="bg-[#D4537E] text-white px-8 py-3 rounded-xl font-bold">Voltar para Início</Link>
             </div>
         );
     }
@@ -228,7 +244,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     <div className="flex flex-col items-center border-l border-white/20">
                         <span className="text-3xl font-black mb-1">
                             {Object.values(workoutLogs).reduce((acc: number, sets: any) =>
-                                acc + Object.values(sets).reduce((sacc: number, s: any) => sacc + (s.isCompleted ? (parseFloat(s.load) || 0) * (parseInt(s.reps) || 0) : 0), 0)
+                                acc + (sets ? Object.values(sets).reduce((sacc: number, s: any) => sacc + (s?.isCompleted ? (parseFloat(s.load) || 0) * (parseInt(s.reps) || 0) : 0), 0) : 0)
                                 , 0).toFixed(0)}
                         </span>
                         <span className="text-xs text-blue-200 uppercase tracking-widest font-bold">Kg Levantados</span>
@@ -260,10 +276,13 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     }
 
     const currentWorkoutExercise = sessionData.exercises[currentIndex];
-    const progressPerc = Math.round(((currentIndex + 1) / sessionData.exercises.length) * 100);
+    if (!currentWorkoutExercise) return null;
+    
+    const progressPerc = Math.round(((currentIndex + 1) / (sessionData.exercises.length || 1)) * 100);
 
     return (
-        <div className="flex flex-col h-screen w-full bg-black pb-20">
+        <ErrorBoundary>
+            <div className="flex flex-col h-screen w-full bg-black pb-20">
             <header className="bg-[#111111] border-b border-[#333333] px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
                 <Link href="/student/today" onClick={() => pauseTimer()} className="text-gray-400 p-2 -ml-2 hover:bg-black rounded-full">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
@@ -316,7 +335,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     <div className="p-5">
                         <h2 className="text-xl font-bold text-white mb-1">{currentWorkoutExercise.exercise.name}</h2>
                         <p className="text-sm text-gray-400 mb-6 font-medium">
-                            {currentWorkoutExercise.exercise.group} • {currentWorkoutExercise.sets} séries de {currentWorkoutExercise.reps} reps
+                            {currentWorkoutExercise.exercise?.group || 'Geral'} • {currentWorkoutExercise.sets} séries de {currentWorkoutExercise.reps} reps
                         </p>
 
                         {/* Progression UI */}
@@ -338,7 +357,11 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                         <div className="space-y-3">
                             {Array.from({ length: currentWorkoutExercise.sets }).map((_, i) => {
                                 const setNum = i + 1;
-                                const setLog = workoutLogs[currentIndex]?.[setNum] || { load: '', reps: currentWorkoutExercise.reps.split('-')[0], isCompleted: false };
+                                const setLog = workoutLogs[currentIndex]?.[setNum] || { 
+                                    load: '', 
+                                    reps: typeof currentWorkoutExercise.reps === 'string' ? currentWorkoutExercise.reps.split('-')[0] : currentWorkoutExercise.reps, 
+                                    isCompleted: false 
+                                };
                                 return (
                                     <div key={setNum} className={`flex items-center gap-3 p-3 rounded-xl border transition-colors ${setLog.isCompleted ? 'border-blue-500 bg-[#D4537E]/10' : 'border-[#333333] bg-black'}`}>
                                         <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${setLog.isCompleted ? 'bg-[#D4537E] text-white' : 'bg-[#333333] text-gray-400'}`}>
@@ -389,6 +412,6 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     Substituir Exercício
                 </button>
             </div>
-        </div>
+        </ErrorBoundary>
     );
 }

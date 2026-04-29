@@ -39,6 +39,11 @@ export async function POST(req: Request) {
             return sum;
         }, 0);
 
+        const student = await prisma.student.findUnique({
+            where: { id: payload.studentId },
+            include: { user: true }
+        });
+
         await prisma.workoutLog.update({
             where: { id: workoutLogId },
             data: { endedAt, totalSeconds, notes },
@@ -46,6 +51,7 @@ export async function POST(req: Request) {
 
         return NextResponse.json({
             completed: true,
+            studentName: student?.user?.name || 'atleta',
             durationMinutes: Math.round(totalSeconds / 60),
             totalVolume,
             totalSets: log.setLogs.length,

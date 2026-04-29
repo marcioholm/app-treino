@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
+import ErrorBoundary from '@/components/ErrorBoundary';
 
 interface BottomNavItem {
   icon: React.ReactNode;
@@ -84,9 +85,11 @@ function BottomNav() {
 export default function StudentLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen w-full bg-background">
-      <main className="flex-1 overflow-auto pb-24">
-        {children}
-      </main>
+      <ErrorBoundary>
+        <main className="flex-1 overflow-auto pb-24">
+          {children}
+        </main>
+      </ErrorBoundary>
       <BottomNav />
     </div>
   );
