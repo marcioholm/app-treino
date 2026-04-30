@@ -110,8 +110,8 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                 data: {
                     tenantId: student.tenantId,
                     studentId: student.id,
-                    name: aiResult.name || `Treino Personalizado - ${student.user.name}`,
-                    notes: `Gerado via IA com foco em fisiologia feminina. Objetivo: ${goal.objective}.`,
+                    name: aiResult.name ? `M&K: ${aiResult.name}` : `M&K: Treino Personalizado - ${student.user.name}`,
+                    notes: `Gerado via Engine M&K Fitness v2. Foco: ${goal.objective}.`,
                     published: false
                 }
             });
