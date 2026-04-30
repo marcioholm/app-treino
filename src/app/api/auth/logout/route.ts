@@ -1,11 +1,15 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 
-export async function GET() {
+async function logout(req: Request) {
     // Clear cookies
     const cookieStore = await cookies();
-    cookieStore.delete('token');
+    cookieStore.delete('mk_app_token');
 
-    // Redirect to login
-    return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3001'));
+    // Redirect to login using a relative URL or constructing from current request
+    const url = new URL('/login', req.url);
+    return NextResponse.redirect(url);
 }
+
+export const GET = logout;
+export const POST = logout;

@@ -66,6 +66,15 @@ export default function ProfilePage() {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/auth/logout', { method: 'POST' });
+        } catch (e) {
+            console.error('Logout error:', e);
+        }
+        router.push('/login');
+    };
+
     return (
         <div className="flex flex-col h-screen bg-black pb-20">
             <header className="bg-[#111111] px-6 py-5 border-b border-[#333333] shadow-sm sticky top-0 z-10 flex items-center justify-between">
@@ -146,10 +155,10 @@ export default function ProfilePage() {
 
                 {/* Logout */}
                 <div className="pt-6">
-                    <Link href="/api/auth/logout" className="w-full flex items-center justify-center gap-2 bg-[#1a0f14] border border-[#4a1f2f] text-[#ff4d85] py-4 rounded-xl font-bold hover:bg-[#2a141b] transition-colors">
+                    <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 bg-[#1a0f14] border border-[#4a1f2f] text-[#ff4d85] py-4 rounded-xl font-bold hover:bg-[#2a141b] transition-colors">
                         <LogOut className="w-5 h-5" />
                         Sair da Conta
-                    </Link>
+                    </button>
                 </div>
             </main>
 
