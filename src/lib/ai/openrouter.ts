@@ -31,7 +31,7 @@ export async function callOpenRouter(prompt: string, options?: Partial<OpenRoute
         },
         body: JSON.stringify({
             model: options?.model || MODEL,
-            messages: [
+            messages: options?.messages || [
                 { role: 'system', content: 'Você é um assistente útil de fitness. Responda em português brasileiro.' },
                 { role: 'user', content: prompt }
             ],
@@ -67,48 +67,41 @@ export async function generateWorkoutWithAI(context: {
     const exercisesList = context.exercises.join(', ');
     
     const systemPrompt = `
-Você é um personal trainer especialista em treinamento de força e hipertrofia para mulheres, com base em evidências científicas atualizadas.
+Você é um personal trainer especialista em treinamento de força e hipertrofia, com foco em individualidade biológica.
 
-PRINCÍPIOS CIENTÍFICOS (METODOLOGIA PROFISSIONAL) - REGRAS INEGOCIÁVEIS:
-1. GÊNERO: Se 'FEMININO', o treino deve ser 70% focado em Glúteos/Pernas. Se 'MASCULINO', foco em Superiores.
-2. VOLUME OBRIGATÓRIO: Cada sessão DEVE conter EXATAMENTE 8 exercícios. Nem mais, nem menos.
-3. VARIEDADE TOTAL: É PROIBIDO repetir o mesmo exercício em sessões diferentes. Cada sessão (A, B, C) deve ter exercícios ÚNICOS.
-4. SELEÇÃO DA LISTA: Você deve escolher exercícios APENAS da 'LISTA DE EXERCÍCIOS DISPONÍVEIS' abaixo. Nunca invente nomes.
-5. ESTRUTURA 3 DIAS (FEMININO):
-   - SESSÃO A: Quadríceps e Glúteo Máximo (Mínimo 6 de perna + 2 core).
-   - SESSÃO B: Membros Superiores (Costas, Ombro, Bíceps) + Cardio.
-   - SESSÃO C: Posterior de Coxa e Glúteo Médio (Mínimo 6 de perna + 2 core).
-6. SEPARAÇÃO: Nunca misture treino de peito/tríceps em sessões focadas em glúteo para o público feminino M&K.
-7. PENALIDADE: Se o resultado contiver menos de 8 exercícios ou exercícios repetidos, ele será invalidado. Seja rigoroso.
+REGRAS INEGOCIÁVEIS (METODOLOGIA PROFISSIONAL):
+1. ANÁLISE DE GÊNERO: 
+   - Se FEMININO: Foco em Glúteos e Inferiores (70% do volume). Proibido treinos excessivos de peito/tríceps.
+   - Se MASCULINO: Foco em Membros Superiores e pernas equilibradas.
+2. VOLUME POR SESSÃO: Gere EXATAMENTE 8 exercícios por sessão.
+3. VARIEDADE: Nunca repita o mesmo exercício entre sessões A, B e C.
+4. FONTE DE DADOS: Use APENAS os nomes da LISTA DE EXERCÍCIOS DISPONÍVEIS abaixo.
+5. ANAMNESE: Priorize o que o aluno gosta e respeite o que ele odeia. Ajuste o volume com base na experiência (${context.level}).
 `.trim();
 
     const userPrompt = `
-Gere um treino personalizado para o aluno(a) ${context.studentName}.
- 
- DADOS DO ALUNO:
- - Gênero: ${context.gender || 'Não informado'}
- - Peso: ${context.weight || 'Não informado'} kg
-- % Gordura: ${context.fatPercent || 'Não informado'}%
-- Objetivo Principal: ${context.goal}
-- Nível de Condicionamento: ${context.level}
-- Frequência: ${context.daysPerWeek} dias por semana
-- Restrições Iniciais: ${context.restrictions?.join(', ') || 'Nenhuma'}
+Gere um treino de ALTA PERFORMANCE para: ${context.studentName}
 
-RESPOSTAS DETALHADAS DA ANAMNESE (ANALISE COM CUIDADO):
-${context.anamnesisContext || 'Nenhum dado adicional informado.'}
+DADOS DO ALUNO:
+- Gênero: ${context.gender || 'FEMININO'}
+- Nível: ${context.level}
+- Frequência: ${context.daysPerWeek} dias/semana
 
-LISTA DE EXERCÍCIOS DISPONÍVEIS:
+ANÁLISE DA ANAMNESE (PERSONALIZAÇÃO REAL):
+${context.anamnesisContext || 'Nenhum dado adicional.'}
+
+LISTA DE EXERCÍCIOS DISPONÍVEIS (USE APENAS ESTES):
 ${exercisesList}
 
 INSTRUÇÕES DE SAÍDA:
-Retorne OBRIGATORIAMENTE em formato JSON puro, sem blocos de código markdown, seguindo esta estrutura:
+Retorne APENAS o JSON puro, seguindo esta estrutura:
 {
-  "name": "Nome do Treino (Ex: Protocolo Hipertrofia Feminina)",
+  "name": "Nome do Protocolo Personalizado",
   "sessions": [
     {
-      "name": "Nome da Sessão (Ex: Inferiores A)",
+      "name": "Nome da Sessão (ex: Foco em Glúteo e Posterior)",
       "exercises": [
-        { "name": "Nome Exato do Exercício da Lista", "sets": 4, "reps": "10-12", "restTime": 60 }
+        { "name": "Nome Exato da Lista", "sets": 4, "reps": "12", "restTime": 60 }
       ]
     }
   ]
