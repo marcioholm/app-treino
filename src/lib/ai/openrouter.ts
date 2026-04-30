@@ -13,7 +13,7 @@ interface OpenRouterOptions {
 export async function callOpenRouter(prompt: string, options?: Partial<OpenRouterOptions>): Promise<string> {
     const API_KEY = process.env.OPENROUTER_API_KEY;
     const BASE_URL = process.env.OPENROUTER_BASE_URL || 'https://openrouter.ai/api/v1';
-    const MODEL = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-2024-11-20';
+    const MODEL = process.env.OPENROUTER_MODEL || 'openai/gpt-4o-mini';
 
     if (!API_KEY) {
         throw new Error('OPENROUTER_API_KEY not configured');
