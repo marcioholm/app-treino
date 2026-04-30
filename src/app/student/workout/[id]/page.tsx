@@ -88,8 +88,10 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
     // Auto-start timer when starting finishes
     useEffect(() => {
-        if (!isStarting && !isRunning && !isFinished) startTimer();
-    }, [isStarting, isRunning, startTimer, isFinished]);
+        if (!isLoadingSession && !isStarting && !isRunning && !isFinished && activeSeconds === 0) {
+            startTimer();
+        }
+    }, [isStarting, isRunning, isFinished, isLoadingSession, activeSeconds, startTimer]);
 
     // Rest Timer Logic
     useEffect(() => {
@@ -228,22 +230,23 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                 });
             });
 
-            // Primeiro inicia a sessão e pega o logId
+            // Primeiro inicia a sessão e pega o logId usando o workoutId real
             const startRes = await fetch('/api/student/workout/log', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ workoutId: sessionData.id })
+                body: JSON.stringify({ workoutId: sessionData.workoutId })
             });
             
             if (!startRes.ok) {
-                throw new Error('Failed to start workout');
+                const errData = await startRes.json();
+                throw new Error(errData.error || 'Failed to start workout');
             }
             
             const { logId } = await startRes.json();
 
             // Registra cada set
             for (const setLog of allSetLogs) {
-                await fetch('/api/student/workout/log-set', {
+                const logSetRes = await fetch('/api/student/workout/log-set', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
@@ -254,6 +257,10 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                         load: setLog.load
                     })
                 });
+
+                if (!logSetRes.ok) {
+                    console.warn('Failed to log set:', setLog);
+                }
             }
 
             // Finaliza o treino e limpa o cache local
