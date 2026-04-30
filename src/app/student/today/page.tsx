@@ -5,6 +5,7 @@ import { verifyToken } from '@/lib/auth/jwt';
 import { prisma } from '@/lib/db/prisma';
 import ManifestoBanner from '@/components/ManifestoBanner';
 import MKLogo from '@/components/MKLogo';
+import ResumeWorkout from '@/components/ResumeWorkout';
 
 export default async function StudentToday() {
     const cookieStore = await cookies();
@@ -97,6 +98,9 @@ export default async function StudentToday() {
                 </h1>
                 <p className="text-gray-400 mt-1 text-sm">Vamos arrasar no treino hoje?</p>
             </header>
+
+            {/* Resume Active Workout */}
+            <ResumeWorkout />
 
             {/* Manifesto Banner */}
             <ManifestoBanner />
