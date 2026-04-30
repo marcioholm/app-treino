@@ -4,11 +4,21 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { History, Calendar, UserRound, LogOut, Award, Camera } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { cn } from '@/lib/utils';
 
 const NotificationManager = dynamic(() => import('@/components/NotificationManager'), { ssr: false });
 
 export default function ProfilePage() {
-    const [profile, setProfile] = useState<{name: string, email: string, avatarUrl: string|null} | null>(null);
+    const [profile, setProfile] = useState<{
+        name: string, 
+        email: string, 
+        avatarUrl: string|null,
+        stats?: {
+            workoutsCount: number,
+            currentWeight: number | null,
+            weightDiff: number | null
+        }
+    } | null>(null);
     const [loading, setLoading] = useState(true);
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -109,13 +119,28 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-2 gap-4">
                     <div className="bg-[#111111] p-4 rounded-xl border border-[#333333] shadow-sm flex flex-col items-center justify-center">
                         <Award className="w-8 h-8 text-[#D4537E] mb-2" />
-                        <span className="text-2xl font-bold text-white">12</span>
-                        <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Treinos Feitos</span>
+                        <span className="text-2xl font-bold text-white">
+                            {loading ? '...' : profile?.stats?.workoutsCount || 0}
+                        </span>
+                        <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold text-center">Treinos Feitos</span>
                     </div>
                     <div className="bg-[#111111] p-4 rounded-xl border border-[#333333] shadow-sm flex flex-col items-center justify-center">
-                        <span className="text-2xl font-bold text-[#D4537E] mb-1">↑ 2.5kg</span>
-                        <span className="block text-xl font-bold text-white">75 kg</span>
-                        <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Peso Atual</span>
+                        {!loading && profile?.stats?.currentWeight ? (
+                            <>
+                                {profile.stats.weightDiff !== null && profile.stats.weightDiff !== 0 && (
+                                    <span className={cn(
+                                        "text-sm font-bold mb-1",
+                                        profile.stats.weightDiff > 0 ? "text-primary-light" : "text-success"
+                                    )}>
+                                        {profile.stats.weightDiff > 0 ? '↑' : '↓'} {Math.abs(profile.stats.weightDiff).toFixed(1)}kg
+                                    </span>
+                                )}
+                                <span className="block text-xl font-bold text-white">{profile.stats.currentWeight} kg</span>
+                            </>
+                        ) : (
+                            <span className="block text-xl font-bold text-white">—</span>
+                        )}
+                        <span className="text-xs text-gray-400 uppercase tracking-wider font-semibold text-center">Peso Atual</span>
                     </div>
                 </div>
 

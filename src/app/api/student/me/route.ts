@@ -13,15 +13,35 @@ export async function GET(req: Request) {
 
         const student = await prisma.student.findUnique({
             where: { id: payload.studentId },
-            include: { user: true }
+            include: { 
+                user: true,
+                physicalAssessments: {
+                    orderBy: { date: 'desc' },
+                    take: 2,
+                    select: { weight: true }
+                }
+            }
         });
 
         if (!student) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
+        const workoutsCount = await prisma.workoutLog.count({
+            where: { session: { workout: { studentId: payload.studentId } } }
+        });
+
+        const currentWeight = student.physicalAssessments[0]?.weight || null;
+        const previousWeight = student.physicalAssessments[1]?.weight || null;
+        const weightDiff = currentWeight && previousWeight ? currentWeight - previousWeight : null;
+
         return NextResponse.json({
             name: student.user.name,
             email: student.user.email,
-            avatarUrl: student.avatarUrl || student.user.avatarUrl
+            avatarUrl: student.avatarUrl || student.user.avatarUrl,
+            stats: {
+                workoutsCount,
+                currentWeight,
+                weightDiff
+            }
         });
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 500 });
