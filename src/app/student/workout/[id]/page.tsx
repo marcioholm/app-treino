@@ -132,15 +132,37 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                 setShowRestTimer(true);
             }
 
-            return {
+            const newLogs = {
                 ...prev,
                 [exerciseIdx]: {
                     ...exerciseLogs,
                     [setNum]: { ...setLog, isCompleted: newState }
                 }
             };
+            
+            // Auto-save logs
+            localStorage.setItem(`mk_workout_logs_${sessionId}`, JSON.stringify(newLogs));
+            return newLogs;
         });
     };
+
+    // Load persisted state
+    useEffect(() => {
+        if (sessionData && sessionId) {
+            const savedLogs = localStorage.getItem(`mk_workout_logs_${sessionId}`);
+            const savedIndex = localStorage.getItem(`mk_workout_index_${sessionId}`);
+            
+            if (savedLogs) setWorkoutLogs(JSON.parse(savedLogs));
+            if (savedIndex) setCurrentIndex(parseInt(savedIndex));
+        }
+    }, [sessionData, sessionId]);
+
+    // Persist current index
+    useEffect(() => {
+        if (sessionId) {
+            localStorage.setItem(`mk_workout_index_${sessionId}`, currentIndex.toString());
+        }
+    }, [currentIndex, sessionId]);
 
     const handleNext = async () => {
         if (currentIndex < (sessionData?.exercises?.length || 0) - 1) {
@@ -227,7 +249,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                 });
             }
 
-            // Finaliza o treino
+            // Finaliza o treino e limpa o cache local
             const endRes = await fetch('/api/student/workout/end', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -236,7 +258,9 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
             const result = await endRes.json();
 
-            // Salva no localStorage para a página de conclusão
+            // Limpa o progresso salvo
+            localStorage.removeItem(`mk_workout_logs_${sessionId}`);
+            localStorage.removeItem(`mk_workout_index_${sessionId}`);
             localStorage.setItem('lastWorkoutResult', JSON.stringify(result));
 
             resetTimer();
@@ -341,12 +365,12 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
             {/* Rest Timer Floating UI */}
             {showRestTimer && (
-                <div className="fixed bottom-24 left-4 right-4 z-50 bg-[#111111] border-2 border-primary/30 rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 duration-300 backdrop-blur-xl">
+                <div className="fixed bottom-24 left-4 right-4 z-50 bg-[#111111] border-2 border-[#D4537E]/30 rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 duration-300 backdrop-blur-xl">
                     <div className="flex items-center justify-between gap-6">
                         <div className="relative size-16 shrink-0">
                             <svg className="size-full -rotate-90">
                                 <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-white/5" />
-                                <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-primary-light" strokeDasharray={176} strokeDashoffset={176 - (176 * (restTime / (sessionData.exercises[currentIndex].restTime || 60)))} />
+                                <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-[#D4537E]" strokeDasharray={176} strokeDashoffset={176 - (176 * (restTime / (sessionData.exercises[currentIndex].restTime || 60)))} />
                             </svg>
                             <span className="absolute inset-0 flex items-center justify-center font-display font-black text-white text-xl">{restTime}</span>
                         </div>
@@ -360,6 +384,8 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     </div>
                 </div>
             )}
+
+            <div className="flex flex-col h-screen w-full bg-black pb-20">
             <header className="bg-[#111111] border-b border-[#333333] px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
                 <Link href="/student/today" onClick={() => pauseTimer()} className="text-gray-400 p-2 -ml-2 hover:bg-black rounded-full">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>

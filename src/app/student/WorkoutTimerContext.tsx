@@ -20,6 +20,24 @@ const TimerContext = createContext<TimerContextType>({
 export function TimerProvider({ children }: { children: ReactNode }) {
     const [activeSeconds, setActiveSeconds] = useState(0);
     const [isRunning, setIsRunning] = useState(false);
+    const [isHydrated, setIsHydrated] = useState(false);
+
+    // Load initial state
+    useEffect(() => {
+        const savedTime = localStorage.getItem('mk_timer_seconds');
+        const savedRunning = localStorage.getItem('mk_timer_running');
+        if (savedTime) setActiveSeconds(parseInt(savedTime));
+        if (savedRunning === 'true') setIsRunning(true);
+        setIsHydrated(true);
+    }, []);
+
+    // Persist state
+    useEffect(() => {
+        if (isHydrated) {
+            localStorage.setItem('mk_timer_seconds', activeSeconds.toString());
+            localStorage.setItem('mk_timer_running', isRunning.toString());
+        }
+    }, [activeSeconds, isRunning, isHydrated]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -36,6 +54,8 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     const resetTimer = () => {
         setIsRunning(false);
         setActiveSeconds(0);
+        localStorage.removeItem('mk_timer_seconds');
+        localStorage.removeItem('mk_timer_running');
     };
 
     return (
