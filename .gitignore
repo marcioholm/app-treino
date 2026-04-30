@@ -82,3 +82,6 @@ skills/
 apps/
 packages/
 services/
+
+# Temporary scratch files
+/scratch
