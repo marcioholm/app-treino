@@ -33,7 +33,8 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        const { name, email, password, birthDate } = studentSchema.parse(body);
+        let { name, email, password, birthDate } = studentSchema.parse(body);
+        email = email.toLowerCase().trim();
 
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) return NextResponse.json({ error: 'E-mail em uso' }, { status: 400 });

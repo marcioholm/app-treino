@@ -13,7 +13,8 @@ const loginSchema = z.object({
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { email, password } = loginSchema.parse(body);
+        let { email, password } = loginSchema.parse(body);
+        email = email.toLowerCase().trim();
 
         const ipKey = `login:${email}`;
         if (!checkRateLimit(ipKey, 'login')) {
