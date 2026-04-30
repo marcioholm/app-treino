@@ -25,6 +25,14 @@ export async function GET(req: Request) {
             },
             orderBy: { createdAt: 'desc' },
             include: {
+                tenant: {
+                    select: {
+                        name: true,
+                        logoUrl: true,
+                        primaryColor: true,
+                        secondaryColor: true
+                    }
+                },
                 sessions: {
                     orderBy: { order: 'asc' },
                     include: {

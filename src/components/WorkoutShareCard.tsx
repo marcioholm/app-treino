@@ -7,6 +7,12 @@ interface ShareStats {
     duration: string;
     totalWeight: string;
     date: string;
+    branding?: {
+        gymName: string;
+        logoUrl?: string;
+        primaryColor?: string;
+        secondaryColor?: string;
+    }
 }
 
 export default function WorkoutShareCard({ stats }: { stats: ShareStats }) {
@@ -23,25 +29,29 @@ export default function WorkoutShareCard({ stats }: { stats: ShareStats }) {
         canvas.width = 1080;
         canvas.height = 1920;
 
+        const primary = stats.branding?.primaryColor || '#D4537E';
+        const secondary = stats.branding?.secondaryColor || '#111111';
+        const gymName = stats.branding?.gymName || 'M&K FITNESS CENTER';
+
         // 1. Background Gradient
         const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
         gradient.addColorStop(0, '#1a1a1a');
-        gradient.addColorStop(0.5, '#2d0a15');
+        gradient.addColorStop(0.5, `${primary}22`); // Low opacity primary
         gradient.addColorStop(1, '#111111');
         ctx.fillStyle = gradient;
         ctx.fillRect(0, 0, 1080, 1920);
 
         // 2. Decorative circles (Branding feel)
-        ctx.fillStyle = 'rgba(212, 83, 126, 0.1)';
+        ctx.fillStyle = `${primary}1a`; // 10% opacity primary
         ctx.beginPath();
         ctx.arc(1080, 0, 600, 0, Math.PI * 2);
         ctx.fill();
 
         // 3. Logo Placeholder (or Text Logo)
-        ctx.fillStyle = '#D4537E';
+        ctx.fillStyle = primary;
         ctx.font = 'bold 80px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('M&K FITNESS CENTER', 540, 300);
+        ctx.fillText(gymName.toUpperCase(), 540, 300);
         
         ctx.fillStyle = 'rgba(255,255,255,0.4)';
         ctx.font = '30px sans-serif';
@@ -51,7 +61,7 @@ export default function WorkoutShareCard({ stats }: { stats: ShareStats }) {
         ctx.fillStyle = 'rgba(255,255,255,0.05)';
         ctx.roundRect?.(100, 600, 880, 800, 60);
         ctx.fill();
-        ctx.strokeStyle = 'rgba(212, 83, 126, 0.3)';
+        ctx.strokeStyle = `${primary}4d`; // 30% opacity primary
         ctx.lineWidth = 4;
         ctx.stroke();
 
@@ -69,7 +79,7 @@ export default function WorkoutShareCard({ stats }: { stats: ShareStats }) {
         ctx.stroke();
 
         // 7. Duration
-        ctx.fillStyle = '#D4537E';
+        ctx.fillStyle = primary;
         ctx.font = 'bold 160px sans-serif';
         ctx.fillText(stats.duration, 540, 1100);
         ctx.fillStyle = 'rgba(255,255,255,0.5)';
@@ -88,7 +98,7 @@ export default function WorkoutShareCard({ stats }: { stats: ShareStats }) {
         ctx.fillStyle = 'rgba(255,255,255,0.3)';
         ctx.font = '40px sans-serif';
         ctx.fillText(stats.date, 540, 1750);
-        ctx.fillText('@MKFITNESSCENTER', 540, 1820);
+        ctx.fillText(`@${gymName.replace(/\s+/g, '').toUpperCase()}`, 540, 1820);
 
         // 10. Download
         const link = document.createElement('a');

@@ -342,8 +342,6 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     </div>
                 </div>
 
-                </div>
-                
                 <div className="w-full max-w-sm mx-auto px-4">
                     <WorkoutShareCard 
                         stats={{
@@ -352,7 +350,13 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                             totalWeight: Object.values(workoutLogs).reduce((acc: number, sets: any) =>
                                 acc + (sets ? Object.values(sets).reduce((sacc: number, s: any) => sacc + (s?.isCompleted ? (parseFloat(s.load) || 0) * (parseInt(s.reps) || 0) : 0), 0) : 0)
                                 , 0).toFixed(0),
-                            date: new Date().toLocaleDateString('pt-BR')
+                            date: new Date().toLocaleDateString('pt-BR'),
+                            branding: sessionData.tenant ? {
+                                gymName: sessionData.tenant.name,
+                                logoUrl: sessionData.tenant.logoUrl,
+                                primaryColor: sessionData.tenant.primaryColor,
+                                secondaryColor: sessionData.tenant.secondaryColor
+                            } : undefined
                         }}
                     />
                 </div>
