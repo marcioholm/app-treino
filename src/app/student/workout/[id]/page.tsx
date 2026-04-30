@@ -76,7 +76,10 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                 setCountdown(prev => {
                     if (prev <= 1) {
                         clearInterval(timer);
-                        setTimeout(() => setIsStarting(false), 500);
+                        setTimeout(() => {
+                            setIsStarting(false);
+                            startTimer(); // GATILHO DIRETO
+                        }, 500);
                         return 0;
                     }
                     return prev - 1;
@@ -84,14 +87,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
             }, 1000);
             return () => clearInterval(timer);
         }
-    }, [isLoadingSession, isStarting]);
-
-    // Auto-start timer when starting finishes
-    useEffect(() => {
-        if (!isLoadingSession && !isStarting && !isRunning && !isFinished && activeSeconds === 0) {
-            startTimer();
-        }
-    }, [isStarting, isRunning, isFinished, isLoadingSession, activeSeconds, startTimer]);
+    }, [isLoadingSession, isStarting, startTimer]);
 
     // Rest Timer Logic
     useEffect(() => {

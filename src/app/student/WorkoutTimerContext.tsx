@@ -39,7 +39,7 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     }, [activeSeconds, isRunning, isHydrated]);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: any;
         if (isRunning) {
             interval = setInterval(() => {
                 setActiveSeconds(prev => prev + 1);
