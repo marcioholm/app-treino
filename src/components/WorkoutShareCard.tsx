@@ -88,54 +88,71 @@ export default function WorkoutShareCard({ stats }: { stats: ShareStats }) {
             ctx.fillText(stats.date, 540, 1750);
             ctx.fillText(`@${gymName.replace(/\s+/g, '').toUpperCase()}`, 540, 1820);
         } else {
-            // Sticker mode: 1080x300 (Horizontal bar)
+            // Sticker mode: 1080x280 (Horizontal glass bar)
             canvas.width = 1080;
-            canvas.height = 300;
+            canvas.height = 280;
 
             // Clear background for transparency
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Semi-transparent bar with rounded corners
-            ctx.fillStyle = 'rgba(0,0,0,0.8)';
-            ctx.roundRect?.(40, 40, 1000, 220, 110);
+            // 1. Semi-transparent Glass Bar
+            ctx.fillStyle = 'rgba(15, 15, 15, 0.85)';
+            ctx.roundRect?.(20, 20, 1040, 240, 120);
             ctx.fill();
-            ctx.strokeStyle = `${primary}66`;
+            
+            // Subtle border
+            ctx.strokeStyle = `${primary}44`;
             ctx.lineWidth = 3;
             ctx.stroke();
 
-            // Divider
+            // 2. Dividers
             ctx.strokeStyle = 'rgba(255,255,255,0.1)';
             ctx.lineWidth = 1;
             ctx.beginPath();
-            ctx.moveTo(360, 80); ctx.lineTo(360, 220);
-            ctx.moveTo(720, 80); ctx.lineTo(720, 220);
+            ctx.moveTo(280, 70); ctx.lineTo(280, 210);
+            ctx.moveTo(540, 70); ctx.lineTo(540, 210);
+            ctx.moveTo(800, 70); ctx.lineTo(800, 210);
             ctx.stroke();
 
             ctx.textAlign = 'center';
             
-            // Duration
-            ctx.fillStyle = primary;
-            ctx.font = 'bold 70px sans-serif';
-            ctx.fillText(stats.duration, 200, 160);
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
-            ctx.font = 'bold 24px sans-serif';
-            ctx.fillText('TEMPO', 200, 200);
+            // Calculate Calories (Simplified: ~400 kcal/hr)
+            const [mins, secs] = stats.duration.split(':').map(Number);
+            const totalMins = mins + (secs / 60);
+            const kcal = Math.round(totalMins * 6.5); // ~390 kcal/hr
 
-            // Volume
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 70px sans-serif';
-            ctx.fillText(`${stats.totalWeight}kg`, 540, 160);
-            ctx.fillStyle = 'rgba(255,255,255,0.6)';
-            ctx.font = 'bold 24px sans-serif';
-            ctx.fillText('VOLUME', 540, 200);
-
-            // Gym Name
-            ctx.fillStyle = '#FFFFFF';
-            ctx.font = 'bold 45px sans-serif';
-            ctx.fillText(gymName.toUpperCase(), 880, 160);
+            // Stat 1: Duration
             ctx.fillStyle = primary;
-            ctx.font = 'bold 20px sans-serif';
-            ctx.fillText('M&K TRAINER OS', 880, 200);
+            ctx.font = 'bold 60px sans-serif';
+            ctx.fillText(stats.duration, 150, 145);
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillText('TEMPO', 150, 185);
+
+            // Stat 2: Volume
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 60px sans-serif';
+            ctx.fillText(`${stats.totalWeight}`, 410, 145);
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillText('VOLUME KG', 410, 185);
+
+            // Stat 3: Calories
+            ctx.fillStyle = primary;
+            ctx.font = 'bold 60px sans-serif';
+            ctx.fillText(`${kcal}`, 670, 145);
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.font = 'bold 22px sans-serif';
+            ctx.fillText('KCAL EST.', 670, 185);
+
+            // Gym Name / Branding
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 32px sans-serif';
+            const shortName = gymName.length > 12 ? gymName.substring(0, 12) + '...' : gymName;
+            ctx.fillText(shortName.toUpperCase(), 910, 145);
+            ctx.fillStyle = primary;
+            ctx.font = 'bold 18px sans-serif';
+            ctx.fillText('TRAINER OS', 910, 180);
         }
 
         const link = document.createElement('a');
