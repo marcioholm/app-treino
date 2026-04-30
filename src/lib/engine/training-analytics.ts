@@ -96,8 +96,12 @@ export async function logExercisePerformance(params: {
     data: params
   });
 
-  if (params.usedLoad && params.plannedLoad) {
-    await detectAndCreateLoadInsight(params);
+  if (params.usedLoad !== undefined && params.plannedLoad !== undefined) {
+    await detectAndCreateLoadInsight({
+      ...params,
+      usedLoad: params.usedLoad,
+      plannedLoad: params.plannedLoad
+    });
   }
 
   if (params.completedReps < params.plannedReps) {
