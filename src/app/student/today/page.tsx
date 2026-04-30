@@ -58,6 +58,30 @@ export default async function StudentToday() {
         }
     });
 
+    // Birthday Logic
+    const allStudents = await prisma.student.findMany({
+        where: { tenantId: student.tenantId },
+        include: { user: true }
+    });
+
+    const today = new Date();
+    const upcomingBirthdays = allStudents.filter(s => {
+        if (!s.user.birthDate || s.id === student.id) return false;
+        const bdate = new Date(s.user.birthDate);
+        bdate.setFullYear(today.getFullYear());
+        if (bdate < today && today.getDate() !== bdate.getDate()) {
+            bdate.setFullYear(today.getFullYear() + 1);
+        }
+        const diffDays = Math.ceil((bdate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+        return diffDays >= 0 && diffDays <= 7;
+    }).sort((a, b) => {
+        const dA = new Date(a.user.birthDate!); dA.setFullYear(today.getFullYear());
+        const dB = new Date(b.user.birthDate!); dB.setFullYear(today.getFullYear());
+        if (dA < today) dA.setFullYear(today.getFullYear() + 1);
+        if (dB < today) dB.setFullYear(today.getFullYear() + 1);
+        return dA.getTime() - dB.getTime();
+    });
+
     return (
         <div className="p-4 space-y-5 max-w-md mx-auto">
             {/* Header */}
