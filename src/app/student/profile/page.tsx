@@ -275,10 +275,9 @@ export default function ProfilePage() {
                         ) : (
                             <p className="text-center text-gray-500 py-20">Nenhuma avaliação física encontrada.</p>
                         )}
-                    </div>
                 </div>
             )}
-            </main>
+
 
             {/* Bottom Navigation */}
             <nav className="fixed bottom-0 w-full bg-[#111111] border-t border-[#333333] px-6 py-3 flex justify-between items-center pb-safe-bottom z-50 md:hidden">
