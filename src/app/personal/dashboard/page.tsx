@@ -108,12 +108,54 @@ export default async function PersonalDashboard() {
         return diffDays >= 0 && diffDays <= 7;
     });
 
-    const activityItems = students.slice(0, 5).map((s, i) => ({
-        aluna: s.user.name,
-        evento: i === 0 ? 'Concluiu o treino de hoje' : i === 1 ? 'Nova avaliação física' : 'Treino agendado',
-        tipo: i === 0 ? 'check' as const : i === 1 ? 'clipboard' as const : 'clipboard' as const,
-        tempo: i === 0 ? 'Agora' : i === 1 ? '2h atrás' : '5h atrás'
-    }));
+    // Fetch real recent activities
+    const [recentLogs, recentAssessments] = await Promise.all([
+        prisma.workoutLog.findMany({
+            where: { 
+                endedAt: { not: null },
+                session: { workout: { tenantId: payload.tenantId } }
+            },
+            include: { session: { include: { workout: { include: { student: { include: { user: true } } } } } } },
+            orderBy: { endedAt: 'desc' },
+            take: 10
+        }),
+        prisma.physicalAssessment.findMany({
+            where: { tenantId: payload.tenantId },
+            include: { student: { include: { user: true } } },
+            orderBy: { date: 'desc' },
+            take: 10
+        })
+    ]);
+
+    const formatTimeAgo = (date: Date) => {
+        const now = new Date();
+        const diffInMs = now.getTime() - date.getTime();
+        const diffInMins = Math.floor(diffInMs / (1000 * 60));
+        const diffInHours = Math.floor(diffInMins / 60);
+        const diffInDays = Math.floor(diffInHours / 24);
+
+        if (diffInMins < 1) return 'Agora';
+        if (diffInMins < 60) return `${diffInMins}m atrás`;
+        if (diffInHours < 24) return `${diffInHours}h atrás`;
+        return `${diffInDays}d atrás`;
+    };
+
+    const activityItems = [
+        ...recentLogs.map(log => ({
+            aluna: log.session.workout.student.user.name,
+            evento: `Concluiu o treino: ${log.session.name}`,
+            tipo: 'check' as const,
+            tempo: formatTimeAgo(log.endedAt!),
+            date: log.endedAt!
+        })),
+        ...recentAssessments.map(pa => ({
+            aluna: pa.student.user.name,
+            evento: `Nova avaliação: ${pa.label}`,
+            tipo: 'clipboard' as const,
+            tempo: formatTimeAgo(pa.date),
+            date: pa.date
+        }))
+    ].sort((a, b) => b.date.getTime() - a.date.getTime()).slice(0, 8);
 
     return (
         <div className="min-h-screen bg-background pb-24">
