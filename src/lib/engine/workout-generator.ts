@@ -135,8 +135,23 @@ export async function generateWorkout({ studentId }: GenerateParams) {
 
                 let exerciseOrder = 0;
                 for (const exData of sessionData.exercises) {
-                    const matchedExercise = validExercises.find(e => e.name.toLowerCase() === exData.name.toLowerCase());
-                    if (!matchedExercise) continue;
+                    // Fuzzy matching: find exercise that contains the name or is contained by it
+                    let matchedExercise = validExercises.find(e => 
+                        e.name.toLowerCase() === exData.name.toLowerCase() ||
+                        e.name.toLowerCase().includes(exData.name.toLowerCase()) ||
+                        exData.name.toLowerCase().includes(e.name.toLowerCase())
+                    );
+
+                    // Ultimate fallback: if still not found, try matching by first word
+                    if (!matchedExercise) {
+                        const firstWord = exData.name.split(' ')[0].toLowerCase();
+                        matchedExercise = validExercises.find(e => e.name.toLowerCase().startsWith(firstWord));
+                    }
+
+                    if (!matchedExercise) {
+                        console.warn(`Exercise not found: ${exData.name}`);
+                        continue;
+                    }
 
                     await tx.workoutExercise.create({
                         data: {
