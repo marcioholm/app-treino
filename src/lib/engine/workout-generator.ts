@@ -11,9 +11,6 @@ type AnamnesisAnswerPayload = {
     answerText: string | null;
     answerArray: string[];
 };
-
-import { prisma } from '../db/prisma';
-import { Objective, Level, Modality, ExerciseType } from '@prisma/client';
 import { generateWorkoutWithAI } from '../ai/openrouter';
 
 interface GenerateParams {
@@ -21,7 +18,7 @@ interface GenerateParams {
 }
 
 export async function generateWorkout({ studentId }: GenerateParams) {
-    const student = await prisma.student.findUnique({
+    const student: any = await prisma.student.findUnique({
         where: { id: studentId },
         include: {
             user: true,

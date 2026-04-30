@@ -412,6 +412,7 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     Substituir Exercício
                 </button>
             </div>
+            </div>
         </ErrorBoundary>
     );
 }

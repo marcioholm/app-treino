@@ -21,7 +21,7 @@ interface PhysicalAssessment {
     height: number | null;
     bmi: number | null;
     fatPercent: number | null;
-    muscleMassKg: number | null;
+    muscleMassPercent: number | null;
     bodyMeasurements: {
         waistCm: number | null;
     }[];
