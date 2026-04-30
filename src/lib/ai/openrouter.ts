@@ -50,6 +50,7 @@ export async function callOpenRouter(prompt: string, options?: Partial<OpenRoute
 
 export async function generateWorkoutWithAI(context: {
     studentName: string;
+    gender?: string;
     goal: string;
     level: string;
     daysPerWeek: number;
@@ -67,25 +68,30 @@ export async function generateWorkoutWithAI(context: {
     const systemPrompt = `
 Você é um personal trainer especialista em treinamento de força e hipertrofia para mulheres, com base em evidências científicas atualizadas.
 
-PRINCÍPIOS CIENTÍFICOS PARA MULHERES (METODOLOGIA M&K) - REGRAS OBRIGATÓRIAS:
-1. QUANTIDADE DE SESSÕES: Se o dado 'Frequência' for X dias, você DEVE gerar EXATAMENTE X sessões diferentes (A, B, C...).
-2. PRIORIDADE DE GLÚTEOS: O treino DEVE ser focado em Glúteos e Pernas.
-3. ESTRUTURA PARA 3 DIAS (A, B, C):
-   - SESSÃO A: Foco total em Quadríceps e Glúteo (Agachamentos, Leg Press, Extensora).
-   - SESSÃO B: Foco em Membros Superiores e Core (Costas, Ombros, Bíceps, Abdominais).
-   - SESSÃO C: Foco total em Glúteo e Posterior de Coxa (Stiff, Elevação Pélvica, Cadeira Flexora).
-4. REGRAS DE VOLUME:
-   - Mínimo de 5 exercícios para sessões de Inferiores.
-   - Máximo de 4 exercícios para a sessão de Superiores.
-5. ANALISE A ANAMNESE: Se a aluna citar dores, substitua exercícios de alto impacto. Se ela citar que gosta de algo, aumente o volume dessa área.
-6. NUNCA gere apenas treinos de membros superiores para o público feminino da M&K.
+PRINCÍPIOS CIENTÍFICOS (METODOLOGIA PROFISSIONAL) - REGRAS OBRIGATÓRIAS:
+1. GÊNERO E FOCO:
+   - Se GÊNERO for 'FEMININO': Prioridade total em Glúteos e Pernas (Volume 2:1 em relação a superiores).
+   - Se GÊNERO for 'MASCULINO': Foco em Membros Superiores (Costas, Peito, Ombros) e Pernas equilibradas.
+2. QUANTIDADE DE SESSÕES: Se o dado 'Frequência' for X dias, você DEVE gerar EXATAMENTE X sessões diferentes (A, B, C...).
+3. VOLUME POR SESSÃO: Cada sessão DEVE ter entre 7 e 9 exercícios. Nunca menos que 7.
+4. VARIEDADE: NUNCA repita o mesmo exercício em sessões diferentes do mesmo plano. Use a lista de exercícios para variar ao máximo.
+5. ESTRUTURA PARA MULHERES (3 DIAS):
+   - SESSÃO A: Foco total em Quadríceps e Glúteo.
+   - SESSÃO B: Foco em Membros Superiores e Core.
+   - SESSÃO C: Foco total em Glúteo e Posterior de Coxa.
+6. ESTRUTURA PARA HOMENS (3 DIAS):
+   - SESSÃO A: Peito, Tríceps e Ombro.
+   - SESSÃO B: Costas, Bíceps e Trapézio.
+   - SESSÃO C: Pernas Completo e Core.
+7. ANALISE A ANAMNESE: Respeite dores e limitações reportadas.
 `.trim();
 
     const userPrompt = `
-Gere um treino personalizado para a aluna ${context.studentName}.
-
-DADOS DA ALUNA:
-- Peso: ${context.weight || 'Não informado'} kg
+Gere um treino personalizado para o aluno(a) ${context.studentName}.
+ 
+ DADOS DO ALUNO:
+ - Gênero: ${context.gender || 'Não informado'}
+ - Peso: ${context.weight || 'Não informado'} kg
 - % Gordura: ${context.fatPercent || 'Não informado'}%
 - Objetivo Principal: ${context.goal}
 - Nível de Condicionamento: ${context.level}

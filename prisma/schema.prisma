@@ -30,6 +30,7 @@ model User {
   email            String    @unique
   password         String
   role             Role      @default(TRAINER)
+  gender           Gender    @default(FEMININO)
   studentCode      String?
   avatarUrl        String?
   pushSubscription String?
@@ -403,6 +404,12 @@ model RefreshToken {
 
   @@index([token])
   @@index([userId])
+}
+
+enum Gender {
+  MASCULINO
+  FEMININO
+  OUTRO
 }
 
 enum Role {

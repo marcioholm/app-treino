@@ -91,6 +91,7 @@ export async function generateWorkout({ studentId }: GenerateParams) {
     // Call AI for generation
     const aiResult = await generateWorkoutWithAI({
         studentName: student.user.name,
+        gender: student.user.gender,
         goal: goal.objective,
         level: goal.level,
         daysPerWeek: goal.daysPerWeek,
