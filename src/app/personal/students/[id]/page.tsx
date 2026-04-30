@@ -342,6 +342,31 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                             )}
                         </div>
                     </div>
+
+                    {/* AI Performance Insight (Acompanhamento) */}
+                    <div className="mt-6 animate-fade-up stagger-2">
+                        <div className="bg-glass-dark border border-white/5 rounded-[2.5rem] overflow-hidden group">
+                            <div className="px-8 py-6 border-b border-white/5 flex items-center justify-between bg-white/[0.02]">
+                                <div className="flex items-center gap-3">
+                                    <Sparkles size={18} className="text-primary-light animate-pulse" />
+                                    <h4 className="font-display font-black text-lg text-white tracking-tight uppercase">Diagnóstico de Performance</h4>
+                                </div>
+                                <div className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-[9px] font-black text-primary-light uppercase tracking-widest">IA Real-Time</div>
+                            </div>
+                            <div className="p-8 flex flex-col md:flex-row gap-8 items-center">
+                                <div className="flex-1">
+                                    <p className="text-muted-foreground text-sm font-medium leading-relaxed">
+                                        Clique no botão abaixo para analisar o histórico recente de treinos, cargas e repetições desta aluna. A IA irá gerar um diagnóstico detalhado sobre a evolução dela.
+                                    </p>
+                                </div>
+                                <Link href="/personal/performance">
+                                    <GradientButton size="sm" className="whitespace-nowrap px-8 font-black text-xs tracking-widest">
+                                        GERAR DIAGNÓSTICO
+                                    </GradientButton>
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
