@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/db/prisma';
 import { verifyToken } from '@/lib/auth/jwt';
 import { z } from 'zod';
+import { completeWorkoutSessionTracking } from '@/lib/engine/training-analytics';
 
 const completeSchema = z.object({
     workoutLogId: z.string(),
@@ -23,7 +24,15 @@ export async function POST(req: Request) {
 
         const log = await prisma.workoutLog.findUnique({
             where: { id: workoutLogId },
-            include: { setLogs: true },
+            include: { 
+                setLogs: true,
+                session: {
+                    include: {
+                        workout: true,
+                        exercises: true
+                    }
+                }
+            },
         });
 
         if (!log) {
@@ -54,6 +63,25 @@ export async function POST(req: Request) {
                 notes 
             },
         });
+
+        const tracking = await prisma.workoutSessionTracking.findFirst({
+            where: {
+                studentId: student?.userId,
+                workoutSessionId: log.sessionId,
+                status: 'STARTED'
+            }
+        });
+
+        if (tracking) {
+            const totalExercises = log.session?.exercises?.length || 0;
+            const completedExercises = log.setLogs.filter(sl => sl.reps && sl.reps > 0).length;
+            const percentage = totalExercises > 0 ? Math.round((completedExercises / totalExercises) * 100) : 0;
+
+            await completeWorkoutSessionTracking({
+                trackingId: tracking.id,
+                completedPercentage: percentage
+            });
+        }
 
         return NextResponse.json({
             completed: true,

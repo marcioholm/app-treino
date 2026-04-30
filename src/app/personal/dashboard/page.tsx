@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/jwt';
 import { prisma } from '@/lib/db/prisma';
 import { generateTrainerAlerts } from '@/lib/engine/alerts';
-import { Activity, Dumbbell, ClipboardCheck, Users, Plus } from 'lucide-react';
+import { Activity, Dumbbell, ClipboardCheck, Users, Plus, Bell } from 'lucide-react';
 import GradientButton from '@/components/trainer/GradientButton';
 import MetricCard from '@/components/trainer/MetricCard';
 import StudentCard from '@/components/trainer/StudentCard';
@@ -179,6 +179,11 @@ export default async function PersonalDashboard() {
                             <GradientButton size="md" variant="outline">
                                 <Activity size={18} /> Relatórios
                             </GradientButton>
+                            <Link href="/personal/alerts">
+                                <GradientButton size="md" variant="outline">
+                                    <Bell size={18} /> Alertas
+                                </GradientButton>
+                            </Link>
                             <GradientButton size="md">
                                 <Plus size={18} /> Nova Aluna
                             </GradientButton>

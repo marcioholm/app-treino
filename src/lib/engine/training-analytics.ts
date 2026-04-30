@@ -576,7 +576,7 @@ export async function createN8nWebhookLog(params: {
   workoutSessionTrackingId?: string;
   aiTrainingInsightId?: string;
   webhookUrl?: string;
-  payload: Json;
+  payload: any;
   status?: WebhookStatus;
 }) {
   return prisma.n8nWebhookLog.create({
