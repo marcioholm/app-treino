@@ -46,6 +46,7 @@ interface Student {
     physicalAssessments: PhysicalAssessment[];
     anamnesisAnswers: AnamnesisAnswer[];
     goals: { objective: string; level: string; daysPerWeek: number }[];
+    workouts: any[];
 }
 
 export default function StudentDetails({ params }: { params: Promise<{ id: string }> }) {
@@ -69,7 +70,8 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                     assessments: s.assessments || [],
                     physicalAssessments: s.physicalAssessments || [],
                     anamnesisAnswers: s.anamnesisAnswers || [],
-                    goals: s.goals || []
+                    goals: s.goals || [],
+                    workouts: s.workouts || []
                 });
                 setProfileForm({
                     name: s?.user?.name || '',
@@ -434,23 +436,106 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                 </div>
             )}
 
-            {/* Default Placeholder for other tabs */}
-            {tab < 2 && (
-                <div className="container mx-auto px-4 md:px-6 mt-20 pb-32">
-                    <div className="bg-glass-dark rounded-[3rem] p-20 md:p-32 border-white/5 text-center backdrop-blur-3xl shadow-pink">
-                        <div className="size-24 rounded-[2rem] bg-primary/5 border border-primary/10 grid place-items-center mx-auto mb-10 text-primary-light/50 group">
-                            <Sparkles size={48} className="animate-pulse" />
+            {/* Tab Content: Current Workout */}
+            {tab === 0 && (
+                <div className="container mx-auto px-4 md:px-6 mt-16 pb-32 animate-fade-up">
+                    {student.workouts.length === 0 ? (
+                        <div className="bg-glass-dark rounded-[3rem] p-24 text-center border border-white/5">
+                            <div className="size-20 rounded-[2rem] bg-white/5 grid place-items-center mx-auto mb-8 text-muted-foreground/30">
+                                <Sparkles size={40} />
+                            </div>
+                            <h3 className="font-display text-2xl font-black text-white mb-2">Nenhum treino ativo</h3>
+                            <p className="text-muted-foreground max-w-xs mx-auto mb-8">Use a IA SmartWorkout para gerar um planejamento personalizado.</p>
+                            <GradientButton onClick={handleMagicGenerate} disabled={!canGenerateMagic || isGenerating}>
+                                {isGenerating ? 'Gerando...' : 'Gerar com IA'}
+                            </GradientButton>
                         </div>
-                        <h3 className="font-display text-4xl font-black text-white mb-6 tracking-tight">Recurso Premium</h3>
-                        <p className="text-muted-foreground text-xl max-w-lg mx-auto leading-relaxed">
-                            A aba <span className="text-gradient-brand font-black">"{tabs[tab]}"</span> está sendo otimizada pela nossa IA para entregar insights de nível profissional.
-                        </p>
-                        <div className="mt-10">
-                            <GradientButton variant="outline" className="h-12 px-8 border-white/5 text-xs font-black uppercase tracking-widest">Notificar quando pronto</GradientButton>
+                    ) : (
+                        <div className="grid gap-10">
+                            {student.workouts.filter(w => w.published).slice(0, 1).map((workout) => (
+                                <div key={workout.id} className="bg-glass rounded-[2.5rem] overflow-hidden border border-white/5 shadow-2xl transition-all hover:border-white/10 group">
+                                    <div className="px-10 py-10 border-b border-white/5 bg-white/[0.01] flex items-center justify-between">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-1">
+                                                <h3 className="font-display font-black text-3xl text-white tracking-tight">{workout.name}</h3>
+                                                <span className="px-3 py-1 rounded-full bg-success/10 border border-success/20 text-[10px] font-black text-success uppercase tracking-widest">Ativo</span>
+                                            </div>
+                                            <p className="label-caps opacity-60">Criado em {new Date(workout.createdAt).toLocaleDateString('pt-BR')}</p>
+                                        </div>
+                                        <Link href={`/personal/workouts/${workout.id}/editor?studentId=${id}`}>
+                                            <GradientButton variant="outline" size="sm">Editar Treino</GradientButton>
+                                        </Link>
+                                    </div>
+                                    <div className="p-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {workout.sessions.map((session: any) => (
+                                            <div key={session.id} className="bg-white/5 rounded-3xl p-6 border border-white/5">
+                                                <h4 className="font-display font-bold text-white mb-4 flex items-center justify-between">
+                                                    {session.name}
+                                                    <span className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{session.exercises.length} Exercícios</span>
+                                                </h4>
+                                                <div className="space-y-3">
+                                                    {session.exercises.slice(0, 4).map((ex: any) => (
+                                                        <div key={ex.id} className="text-xs text-muted-foreground flex items-center gap-2">
+                                                            <div className="size-1.5 rounded-full bg-primary-light/50" />
+                                                            {ex.exercise.name}
+                                                        </div>
+                                                    ))}
+                                                    {session.exercises.length > 4 && (
+                                                        <div className="text-[10px] text-primary-light font-black uppercase tracking-widest pt-2">+ {session.exercises.length - 4} outros</div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
+                    )}
+                </div>
+            )}
+
+            {/* Tab Content: History */}
+            {tab === 1 && (
+                <div className="container mx-auto px-4 md:px-6 mt-16 pb-32 animate-fade-up">
+                    <div className="grid gap-6">
+                        {student.workouts.length === 0 ? (
+                            <div className="bg-glass-dark rounded-[3rem] p-24 text-center border border-white/5">
+                                <h3 className="font-display text-2xl font-black text-white mb-2">Sem histórico</h3>
+                                <p className="text-muted-foreground">O histórico de treinos aparecerá aqui conforme você criar novos ciclos.</p>
+                            </div>
+                        ) : (
+                            student.workouts.map((workout) => (
+                                <div key={workout.id} className="bg-glass rounded-3xl p-8 border border-white/5 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
+                                    <div className="flex items-center gap-6">
+                                        <div className="size-14 rounded-2xl bg-white/5 border border-white/5 grid place-items-center text-muted-foreground group-hover:text-primary-light transition-colors">
+                                            <ClipboardList size={24} />
+                                        </div>
+                                        <div>
+                                            <h4 className="font-display font-bold text-xl text-white">{workout.name}</h4>
+                                            <div className="flex items-center gap-4 mt-1">
+                                                <span className="text-xs text-muted-foreground font-medium">{new Date(workout.createdAt).toLocaleDateString('pt-BR')}</span>
+                                                <span className={cn(
+                                                    "text-[10px] font-black uppercase tracking-widest",
+                                                    workout.published ? "text-success" : "text-amber-500"
+                                                )}>
+                                                    {workout.published ? 'Publicado' : 'Rascunho'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <Link href={`/personal/workouts/${workout.id}/editor?studentId=${id}`}>
+                                        <button className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-xs font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
+                                            Ver Detalhes
+                                        </button>
+                                    </Link>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             )}
+
+            {/* Default Placeholder for other tabs (removed as we implemented all now) */}
         </div>
     );
 }

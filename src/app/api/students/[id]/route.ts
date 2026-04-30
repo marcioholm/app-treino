@@ -37,6 +37,19 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
                     question: { include: { section: true } }
                 },
                 orderBy: { createdAt: 'desc' }
+            },
+            workouts: {
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    sessions: {
+                        include: {
+                            exercises: {
+                                include: { exercise: true }
+                            }
+                        }
+                    }
+                },
+                take: 5
             }
         }
     });
