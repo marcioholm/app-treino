@@ -275,6 +275,7 @@ export default function ProfilePage() {
                         ) : (
                             <p className="text-center text-gray-500 py-20">Nenhuma avaliação física encontrada.</p>
                         )}
+                    </div>
                 </div>
             )}
 
