@@ -16,41 +16,52 @@ import { generateWorkoutWithAI } from '../ai/openrouter';
 interface GenerateParams {
     studentId: string;
 }
-
 export async function generateWorkout({ studentId }: GenerateParams) {
-    const student: any = await prisma.student.findUnique({
+    // Fetch student with user, goals, assessments and RECENT anamnesis
+    const student = await prisma.student.findUnique({
         where: { id: studentId },
         include: {
-            user: true,
+            user: { select: { name: true, gender: true } },
             goals: { orderBy: { createdAt: 'desc' }, take: 1 },
             anamnesisAnswers: {
+                orderBy: { createdAt: 'desc' },
                 include: { question: true }
             },
             physicalAssessments: { orderBy: { date: 'desc' }, take: 1 },
             tenant: true
         }
-    } as any);
+    });
 
     if (!student) {
         throw new Error('Aluno não encontrado.');
     }
 
-    const goal = (student as any).goals[0];
-    const physicalAssessment = (student as any).physicalAssessments[0];
+    const goal = student.goals[0];
+    const physicalAssessment = student.physicalAssessments[0];
 
-    // CRITICAL: Block generation if no physical assessment exists
+    // Filter anamnesis to only use the most recent template's answers
+    let anamnesisContext = 'Nenhum dado de anamnese encontrado.';
+    if (student.anamnesisAnswers.length > 0) {
+        const latestTemplateId = student.anamnesisAnswers[0].templateId;
+        const relevantAnswers = student.anamnesisAnswers.filter(a => a.templateId === latestTemplateId);
+        
+        anamnesisContext = relevantAnswers.map(ans => {
+            return `${ans.question.text}: ${ans.answerText || ans.answerArray.join(', ')}`;
+        }).join('\n');
+    }
+
     if (!physicalAssessment) {
-        throw new Error('Avaliação física ausente. O treino personalizado exige uma avaliação física prévia para garantir segurança e eficiência científica.');
+        throw new Error('Avaliação física ausente. O treino personalizado exige uma avaliação física prévia.');
     }
 
     if (!goal) {
-        throw new Error('Objetivos do aluno não definidos. Complete a anamnese primeiro.');
+        throw new Error('Objetivos do aluno não definidos.');
     }
 
     const weight = physicalAssessment.weight;
     const fatPercent = physicalAssessment.fatPercent;
 
-    // Fetch all exercises available
+    // Fetch exercises available for this tenant
     const rawExercises = await prisma.exercise.findMany({
         where: {
             OR: [
@@ -65,16 +76,15 @@ export async function generateWorkout({ studentId }: GenerateParams) {
         }
     });
 
-    // Filter by active status (default to true if no status set for tenant)
+    // Filter by active status
     const activeExercises = rawExercises.filter(ex => {
         const tenantStatus = ex.tenantExercises[0];
         return tenantStatus ? tenantStatus.isActive : true;
     });
 
-    // Filter exercises by equipment/modality
+    // Filter exercises by equipment/modality and restrictions
     const validExercises = activeExercises.filter(ex => {
-        if (!goal.hasGymAccess && ex.modality === Modality.GYM) return false;
-        // Static restrictions
+        if (!goal.hasGymAccess && ex.modality === 'GYM') return false;
         for (const tag of ex.tags) {
             if (goal.restrictions.includes(tag)) return false;
         }
@@ -83,21 +93,16 @@ export async function generateWorkout({ studentId }: GenerateParams) {
 
     const exerciseNames = validExercises.map(ex => ex.name);
 
-    // Format anamnesis answers for the AI
-    const anamnesisContext = student.anamnesisAnswers.map((ans: any) => {
-        return `${ans.question.text}: ${ans.answerText || ans.answerArray.join(', ')}`;
-    }).join('\n');
-
     // Call AI for generation
     const aiResult = await generateWorkoutWithAI({
         studentName: student.user.name,
-        gender: student.user.gender,
+        gender: student.user.gender as string,
         goal: goal.objective,
         level: goal.level,
         daysPerWeek: goal.daysPerWeek,
         exercises: exerciseNames,
-        weight,
-        fatPercent,
+        weight: weight || undefined,
+        fatPercent: fatPercent || undefined,
         restrictions: goal.restrictions,
         anamnesisContext
     });
