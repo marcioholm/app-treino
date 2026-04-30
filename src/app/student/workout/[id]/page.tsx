@@ -309,19 +309,22 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
     if (isFinished) {
         return (
-            <div className="flex flex-col h-screen w-full bg-[#D4537E] p-6 text-center text-white space-y-6 flex-1 justify-center animate-in fade-in zoom-in duration-500">
-                <div className="w-24 h-24 bg-[#111111]/20 rounded-full flex items-center justify-center mb-4 mx-auto">
-                    <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="flex flex-col min-h-screen w-full bg-[#D4537E] p-6 text-center text-white space-y-6 flex-1 animate-in fade-in zoom-in duration-500 overflow-auto pb-12">
+                <div className="w-20 h-20 bg-[#111111]/20 rounded-full flex items-center justify-center mt-4 mx-auto shrink-0">
+                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                 </div>
-                <h1 className="text-3xl font-extrabold">Treino Concluído!</h1>
-                <p className="text-blue-100 text-lg mb-8">Excelente trabalho hoje. O descanso também faz parte do processo.</p>
+                
+                <div className="shrink-0">
+                    <h1 className="text-3xl font-extrabold mb-2">Treino Concluído!</h1>
+                    <p className="text-blue-100 text-sm opacity-80 uppercase tracking-widest font-bold">Excelente trabalho hoje</p>
+                </div>
 
-                <div className="bg-[#111111]/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 grid grid-cols-2 gap-4 w-full max-w-sm mx-auto">
+                <div className="bg-[#111111]/10 rounded-2xl p-5 backdrop-blur-sm border border-white/20 grid grid-cols-2 gap-4 w-full max-w-sm mx-auto shrink-0">
                     <div className="flex flex-col items-center">
                         <span className="text-3xl font-black mb-1">{Math.floor(activeSeconds / 60)}</span>
-                        <span className="text-xs text-blue-200 uppercase tracking-widest font-bold">Minutos</span>
+                        <span className="text-[10px] text-blue-200 uppercase tracking-widest font-bold">Minutos</span>
                     </div>
                     <div className="flex flex-col items-center border-l border-white/20">
                         <span className="text-3xl font-black mb-1">
@@ -329,26 +332,18 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                                 acc + (sets ? Object.values(sets).reduce((sacc: number, s: any) => sacc + (s?.isCompleted ? (parseFloat(s.load) || 0) * (parseInt(s.reps) || 0) : 0), 0) : 0)
                                 , 0).toFixed(0)}
                         </span>
-                        <span className="text-xs text-blue-200 uppercase tracking-widest font-bold">Kg Levantados</span>
+                        <span className="text-[10px] text-blue-200 uppercase tracking-widest font-bold">Volume (KG)</span>
                     </div>
                 </div>
 
-                <div className="bg-[#111111]/10 rounded-2xl p-6 backdrop-blur-sm border border-white/20 w-full max-w-sm mx-auto space-y-4">
-                    <label className="block text-sm font-bold text-white uppercase tracking-wider text-left">
-                        Qual foi a intensidade do treino? (RPE)
-                    </label>
-                    <input
-                        type="range" min="1" max="10" value={rpe} onChange={(e) => setRpe(Number(e.target.value))}
-                        className="w-full accent-white"
-                    />
-                    <div className="flex justify-between text-xs font-medium text-blue-200">
-                        <span>1 (Leve)</span>
-                        <span className="text-white font-bold text-lg">{rpe}/10</span>
-                        <span>10 (Exaustivo)</span>
+                <div className="bg-white/10 rounded-3xl p-6 backdrop-blur-md border border-white/20 w-full max-w-sm mx-auto space-y-6 shadow-2xl">
+                    <div className="flex items-center justify-center gap-3 pb-2 border-b border-white/10">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                        </svg>
+                        <h3 className="font-black text-white uppercase tracking-tighter text-lg">Compartilhar Progresso</h3>
                     </div>
-                </div>
 
-                <div className="w-full max-w-sm mx-auto px-4">
                     <WorkoutShareCard 
                         stats={{
                             workoutName: sessionData.name,
@@ -367,11 +362,25 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                     />
                 </div>
 
-                <div className="flex-1"></div>
+                <div className="bg-[#111111]/10 rounded-2xl p-5 backdrop-blur-sm border border-white/20 w-full max-w-sm mx-auto space-y-4">
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="text-[10px] font-bold text-white uppercase tracking-wider">Como foi o treino? (RPE)</label>
+                        <span className="bg-white/20 px-2 py-0.5 rounded text-xs font-black">{rpe}/10</span>
+                    </div>
+                    <input
+                        type="range" min="1" max="10" value={rpe} onChange={(e) => setRpe(Number(e.target.value))}
+                        className="w-full accent-white"
+                    />
+                </div>
 
-                <button onClick={handleFinishWorkout} className="mt-auto bg-[#111111] text-[#D4537E] font-bold text-lg px-8 py-4 rounded-xl shadow-lg w-full mb-8 max-w-sm mx-auto hover:bg-black active:scale-95 transition-all">
-                    Registrar e Voltar
-                </button>
+                <div className="pt-4">
+                    <button onClick={handleFinishWorkout} className="bg-black text-white font-black text-lg px-8 py-4 rounded-2xl shadow-2xl w-full max-w-sm mx-auto hover:bg-zinc-900 active:scale-95 transition-all flex items-center justify-center gap-3">
+                        FINALIZAR E SALVAR
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                        </svg>
+                    </button>
+                </div>
             </div>
         );
     }
