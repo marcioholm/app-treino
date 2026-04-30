@@ -24,6 +24,9 @@ export default function ProfilePage() {
     const [uploading, setUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const [showAnamnesis, setShowAnamnesis] = useState(false);
+    const [showAssessment, setShowAssessment] = useState(false);
+
     useEffect(() => {
         fetch('/api/student/me')
             .then(res => res.json())
@@ -75,6 +78,8 @@ export default function ProfilePage() {
         }
         router.push('/login');
     };
+
+    const studentData = profile as any;
 
     return (
         <div className="flex flex-col h-screen bg-black pb-20">
@@ -154,13 +159,125 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
+                {/* Health & Progress Sections */}
+                <div className="space-y-3">
+                    <button 
+                        onClick={() => setShowAnamnesis(true)}
+                        className="w-full bg-[#111111] border border-[#333333] p-5 rounded-2xl flex items-center justify-between group active:scale-[0.98] transition-all"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 grid place-items-center text-primary-light">
+                                <History className="w-5 h-5" />
+                            </div>
+                            <div className="text-left">
+                                <h4 className="text-white font-bold text-sm tracking-tight">Minha Anamnese</h4>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Respostas de Saúde</p>
+                            </div>
+                        </div>
+                        <span className="text-gray-600 group-hover:text-primary-light transition-colors">→</span>
+                    </button>
+
+                    <button 
+                        onClick={() => setShowAssessment(true)}
+                        className="w-full bg-[#111111] border border-[#333333] p-5 rounded-2xl flex items-center justify-between group active:scale-[0.98] transition-all"
+                    >
+                        <div className="flex items-center gap-4">
+                            <div className="size-10 rounded-xl bg-secondary/10 border border-secondary/20 grid place-items-center text-secondary-light">
+                                <Award className="w-5 h-5" />
+                            </div>
+                            <div className="text-left">
+                                <h4 className="text-white font-bold text-sm tracking-tight">Avaliação Física</h4>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mt-0.5">Medidas e Progresso</p>
+                            </div>
+                        </div>
+                        <span className="text-gray-600 group-hover:text-secondary-light transition-colors">→</span>
+                    </button>
+                </div>
+
                 {/* Logout */}
-                <div className="pt-6">
+                <div className="pt-2">
                     <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 bg-[#1a0f14] border border-[#4a1f2f] text-[#ff4d85] py-4 rounded-xl font-bold hover:bg-[#2a141b] transition-colors">
                         <LogOut className="w-5 h-5" />
                         Sair da Conta
                     </button>
                 </div>
+            </main>
+
+            {/* Anamnesis Modal */}
+            {showAnamnesis && (
+                <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md animate-fade-in flex flex-col">
+                    <header className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">Minha Anamnese</h3>
+                        <button onClick={() => setShowAnamnesis(false)} className="text-gray-500 font-bold p-2">FECHAR</button>
+                    </header>
+                    <div className="flex-1 overflow-auto p-6 space-y-6">
+                        {studentData?.anamnesis?.length > 0 ? (
+                            studentData.anamnesis.map((ans: any, idx: number) => (
+                                <div key={idx} className="space-y-2 border-b border-white/5 pb-4">
+                                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest leading-none">
+                                        {ans.question?.section?.name || 'Geral'}
+                                    </p>
+                                    <p className="text-white font-bold text-sm leading-snug">{ans.question?.text}</p>
+                                    <p className="text-primary-light font-bold text-lg">
+                                        {ans.answerText === 'true' ? 'Sim' : ans.answerText === 'false' ? 'Não' : ans.answerText || ans.answerArray?.join(', ') || '—'}
+                                    </p>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-center text-gray-500 py-20">Nenhuma anamnese encontrada.</p>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* Assessment Modal */}
+            {showAssessment && (
+                <div className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-md animate-fade-in flex flex-col">
+                    <header className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
+                        <h3 className="text-xl font-black text-white uppercase tracking-tighter">Minha Avaliação</h3>
+                        <button onClick={() => setShowAssessment(false)} className="text-gray-500 font-bold p-2">FECHAR</button>
+                    </header>
+                    <div className="flex-1 overflow-auto p-6 space-y-8">
+                        {studentData?.lastAssessment ? (
+                            <>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Peso</p>
+                                        <p className="text-2xl font-black text-white">{studentData.lastAssessment.weight}kg</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">IMC</p>
+                                        <p className="text-2xl font-black text-white">{studentData.lastAssessment.bmi?.toFixed(1) || '—'}</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">% Gordura</p>
+                                        <p className="text-2xl font-black text-white">{studentData.lastAssessment.fatPercent || '—'}%</p>
+                                    </div>
+                                    <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Massa Muscular</p>
+                                        <p className="text-2xl font-black text-white">{studentData.lastAssessment.muscleMassPercent || '—'}kg</p>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <h4 className="text-xs font-black text-white uppercase tracking-widest border-l-2 border-primary-light pl-3">Perímetros (cm)</h4>
+                                    <div className="grid grid-cols-2 gap-x-8 gap-y-4 px-3">
+                                        {studentData.lastAssessment.bodyMeasurements?.map((m: any, idx: number) => (
+                                            <div key={idx} className="flex justify-between items-center border-b border-white/5 pb-2">
+                                                <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">Cintura</span>
+                                                <span className="text-white font-black">{m.waistCm || '—'} cm</span>
+                                            </div>
+                                        ))}
+                                        {/* Fallback for other common measurements if needed */}
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <p className="text-center text-gray-500 py-20">Nenhuma avaliação física encontrada.</p>
+                        )}
+                    </div>
+                </div>
+            )}
             </main>
 
             {/* Bottom Navigation */}

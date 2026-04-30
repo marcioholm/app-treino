@@ -17,8 +17,14 @@ export async function GET(req: Request) {
                 user: true,
                 physicalAssessments: {
                     orderBy: { date: 'desc' },
-                    take: 2,
-                    select: { weight: true }
+                    include: { bodyMeasurements: true }
+                },
+                anamnesisAnswers: {
+                    include: {
+                        question: {
+                            include: { section: true }
+                        }
+                    }
                 }
             }
         });
@@ -41,7 +47,9 @@ export async function GET(req: Request) {
                 workoutsCount,
                 currentWeight,
                 weightDiff
-            }
+            },
+            anamnesis: student.anamnesisAnswers,
+            lastAssessment: student.physicalAssessments[0] || null
         });
     } catch (e: any) {
         return NextResponse.json({ error: e.message }, { status: 500 });
