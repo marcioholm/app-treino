@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronDown, LogOut, Dumbbell, Users, BarChart3, MessageSquare, Menu, X } from 'lucide-react';
+import { ChevronDown, LogOut, Dumbbell, Users, BarChart3, MessageSquare, Menu, X, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface PersonalLayoutProps {
@@ -13,6 +13,7 @@ interface PersonalLayoutProps {
 const links = [
     { href: '/personal/dashboard', label: 'Dashboard', icon: BarChart3 },
     { href: '/personal/students', label: 'Alunas', icon: Users },
+    { href: '/personal/performance', label: 'IA de Performance', icon: Sparkles },
     { href: '/personal/library', label: 'Exercícios', icon: Dumbbell },
     { href: '/personal/chat', label: 'Mensagens', icon: MessageSquare },
 ];
