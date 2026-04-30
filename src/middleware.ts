@@ -43,16 +43,19 @@ export async function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/personal/dashboard', request.url));
     }
 
-    // Inject user info into headers so API routes can easily access without re-verifying
-    const response = NextResponse.next();
-    response.headers.set('x-user-id', payload.userId);
-    response.headers.set('x-tenant-id', payload.tenantId);
-    response.headers.set('x-user-role', payload.role);
+    const requestHeaders = new Headers(request.headers);
+    requestHeaders.set('x-user-id', payload.userId);
+    requestHeaders.set('x-tenant-id', payload.tenantId);
+    requestHeaders.set('x-user-role', payload.role);
     if (payload.studentId) {
-        response.headers.set('x-student-id', payload.studentId);
+        requestHeaders.set('x-student-id', payload.studentId);
     }
 
-    return response;
+    return NextResponse.next({
+        request: {
+            headers: requestHeaders,
+        },
+    });
 }
 
 function redirectToLogin(request: NextRequest) {

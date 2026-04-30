@@ -18,7 +18,7 @@ export async function GET(req: Request) {
         where: { tenantId },
         include: {
             user: {
-                select: { name: true, email: true }
+                select: { name: true, email: true, birthDate: true }
             },
             goals: { orderBy: { createdAt: 'desc' }, take: 1 }
         }
