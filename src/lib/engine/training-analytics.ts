@@ -288,7 +288,16 @@ async function generateWorkoutInsights(tracking: any, score: number, status: Ins
   });
 }
 
-async function detectAndCreateLoadInsight(params: any) {
+async function detectAndCreateLoadInsight(params: {
+  tenantId: string;
+  studentId: string;
+  trainerId: string;
+  workoutSessionTrackingId: string;
+  exerciseId: string;
+  exerciseName: string;
+  usedLoad: number;
+  plannedLoad: number;
+}) {
   const previousLog = await prisma.exercisePerformanceLog.findFirst({
     where: {
       studentId: params.studentId,
@@ -333,7 +342,15 @@ async function detectAndCreateLoadInsight(params: any) {
   }
 }
 
-async function createExerciseRepsFailedInsight(params: any) {
+async function createExerciseRepsFailedInsight(params: {
+  tenantId: string;
+  studentId: string;
+  trainerId: string;
+  workoutSessionTrackingId: string;
+  exerciseName: string;
+  completedReps: number;
+  plannedReps: number;
+}) {
   await prisma.aiTrainingInsight.create({
     data: {
       tenantId: params.tenantId,
@@ -349,7 +366,15 @@ async function createExerciseRepsFailedInsight(params: any) {
   });
 }
 
-async function createExerciseSkippedInsight(params: any) {
+async function createExerciseSkippedInsight(params: {
+  tenantId: string;
+  studentId: string;
+  trainerId: string;
+  workoutSessionTrackingId: string;
+  exerciseName: string;
+  skipReason: SkipReason;
+  skipNote?: string;
+}) {
   const reasonLabels: Record<SkipReason, string> = {
     SEM_TEMPO: 'Sem tempo',
     NAO_GOSTO: 'Não gosto desse exercício',
@@ -376,12 +401,19 @@ async function createExerciseSkippedInsight(params: any) {
         ? 'Agendar breve orientação sobre técnica do exercício.'
         : params.skipReason === 'SENTI_DOR'
         ? 'Verificar se há necessidade de adaptação ou substituição.'
-        : null
+        : undefined
     }
   });
 }
 
-async function createSkippedRecurrentlyInsight(params: any, skipCount: number) {
+async function createSkippedRecurrentlyInsight(params: {
+  tenantId: string;
+  studentId: string;
+  trainerId: string;
+  workoutSessionTrackingId: string;
+  exerciseName: string;
+  skipReason: SkipReason;
+}, skipCount: number) {
   const isDor = params.skipReason === 'SENTI_DOR';
 
   await prisma.aiTrainingInsight.create({

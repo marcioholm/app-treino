@@ -281,6 +281,67 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                             </button>
                         </div>
                     </div>
+
+                    {/* Quick Health Summary */}
+                    <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-fade-up stagger-1">
+                        <div className={cn(
+                            "p-6 rounded-[2rem] border backdrop-blur-md flex items-center justify-between group transition-all",
+                            student.anamnesisAnswers.length > 0 
+                                ? "bg-success/5 border-success/20" 
+                                : "bg-amber-500/5 border-amber-500/20"
+                        )}>
+                            <div className="flex items-center gap-4">
+                                <div className={cn(
+                                    "size-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110",
+                                    student.anamnesisAnswers.length > 0 ? "bg-success/10 text-success" : "bg-amber-500/10 text-amber-500"
+                                )}>
+                                    <ClipboardList size={22} />
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold">Anamnese</h4>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">
+                                        {student.anamnesisAnswers.length > 0 ? 'Preenchida e Ativa' : 'Pendente de Resposta'}
+                                    </p>
+                                </div>
+                            </div>
+                            {student.anamnesisAnswers.length > 0 ? (
+                                <button onClick={() => setTab(3)} className="text-[10px] font-black text-primary-light uppercase tracking-widest hover:text-white transition-colors">Visualizar</button>
+                            ) : (
+                                <button className="bg-amber-500 text-black text-[10px] font-black px-4 py-2 rounded-xl hover:scale-105 active:scale-95 transition-all">SOLICITAR</button>
+                            )}
+                        </div>
+
+                        <div className={cn(
+                            "p-6 rounded-[2rem] border backdrop-blur-md flex items-center justify-between group transition-all",
+                            student.physicalAssessments.length > 0 
+                                ? "bg-primary/5 border-primary/20" 
+                                : "bg-amber-500/5 border-amber-500/20"
+                        )}>
+                            <div className="flex items-center gap-4">
+                                <div className={cn(
+                                    "size-12 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110",
+                                    student.physicalAssessments.length > 0 ? "bg-primary/10 text-primary-light" : "bg-amber-500/10 text-amber-500"
+                                )}>
+                                    <Scale size={22} />
+                                </div>
+                                <div>
+                                    <h4 className="text-white font-bold">Avaliação Física</h4>
+                                    <p className="text-[10px] text-muted-foreground font-black uppercase tracking-widest mt-0.5">
+                                        {student.physicalAssessments.length > 0 
+                                            ? `Última: ${new Date(student.physicalAssessments[0].date).toLocaleDateString('pt-BR')}` 
+                                            : 'Nenhuma Avaliação'}
+                                    </p>
+                                </div>
+                            </div>
+                            {student.physicalAssessments.length > 0 ? (
+                                <button onClick={() => setTab(2)} className="text-[10px] font-black text-primary-light uppercase tracking-widest hover:text-white transition-colors">Visualizar</button>
+                            ) : (
+                                <Link href={`/personal/students/${id}/physical-assessments/nova`}>
+                                    <button className="bg-primary text-white text-[10px] font-black px-4 py-2 rounded-xl hover:scale-105 active:scale-95 transition-all shadow-pink">REALIZAR</button>
+                                </Link>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </section>
 
