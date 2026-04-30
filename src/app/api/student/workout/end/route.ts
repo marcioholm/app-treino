@@ -5,6 +5,7 @@ import { z } from 'zod';
 
 const completeSchema = z.object({
     workoutLogId: z.string(),
+    activeSeconds: z.number().optional(),
     notes: z.string().optional(),
 });
 
@@ -18,7 +19,7 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { workoutLogId, notes } = completeSchema.parse(body);
+        const { workoutLogId, activeSeconds, notes } = completeSchema.parse(body);
 
         const log = await prisma.workoutLog.findUnique({
             where: { id: workoutLogId },
@@ -30,9 +31,9 @@ export async function POST(req: Request) {
         }
 
         const endedAt = new Date();
-        const totalSeconds = log.startedAt 
+        const finalSeconds = activeSeconds || (log.startedAt 
             ? Math.round((endedAt.getTime() - log.startedAt.getTime()) / 1000)
-            : 0;
+            : 0);
 
         const totalVolume = log.setLogs.reduce((sum, s) => {
             if (s.load && s.reps) return sum + (s.load * s.reps);
@@ -46,13 +47,18 @@ export async function POST(req: Request) {
 
         await prisma.workoutLog.update({
             where: { id: workoutLogId },
-            data: { endedAt, totalSeconds, notes },
+            data: { 
+                endedAt, 
+                totalSeconds: finalSeconds, 
+                activeSeconds: finalSeconds,
+                notes 
+            },
         });
 
         return NextResponse.json({
             completed: true,
             studentName: student?.user?.name || 'atleta',
-            durationMinutes: Math.round(totalSeconds / 60),
+            durationMinutes: Math.round(finalSeconds / 60),
             totalVolume,
             totalSets: log.setLogs.length,
         });

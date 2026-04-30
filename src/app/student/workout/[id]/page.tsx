@@ -260,7 +260,10 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
             const endRes = await fetch('/api/student/workout/end', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ workoutLogId: logId })
+                body: JSON.stringify({ 
+                    workoutLogId: logId,
+                    activeSeconds: activeSeconds
+                })
             });
 
             const result = await endRes.json();
