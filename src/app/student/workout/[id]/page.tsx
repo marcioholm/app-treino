@@ -18,12 +18,10 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     const router = useRouter();
     const { activeSeconds, startTimer, pauseTimer, resetTimer, isRunning } = useWorkoutTimer();
 
-    const [sessionData, setSessionData] = useState<any>(null);
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [isFinished, setIsFinished] = useState(false);
-    const [rpe, setRpe] = useState<number>(5);
-    const [currentProgression, setCurrentProgression] = useState<any>(null);
-    const [isLoadingProgression, setIsLoadingProgression] = useState(false);
+    const [isStarting, setIsStarting] = useState(true);
+    const [countdown, setCountdown] = useState(3);
+    const [restTime, setRestTime] = useState(0);
+    const [showRestTimer, setShowRestTimer] = useState(false);
     const [isLoadingSession, setIsLoadingSession] = useState(true);
     const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -64,10 +62,48 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
         fetchSession();
     }, [sessionId]);
 
-    // Auto-start timer on mount if not already running
+    // Start Countdown Logic
     useEffect(() => {
-        if (!isRunning && !isFinished) startTimer();
-    }, [isRunning, startTimer, isFinished]);
+        if (!isLoadingSession && isStarting) {
+            const timer = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timer);
+                        setTimeout(() => setIsStarting(false), 500);
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+            return () => clearInterval(timer);
+        }
+    }, [isLoadingSession, isStarting]);
+
+    // Auto-start timer when starting finishes
+    useEffect(() => {
+        if (!isStarting && !isRunning && !isFinished) startTimer();
+    }, [isStarting, isRunning, startTimer, isFinished]);
+
+    // Rest Timer Logic
+    useEffect(() => {
+        let timer: any;
+        if (showRestTimer && restTime > 0) {
+            timer = setInterval(() => {
+                setRestTime(prev => {
+                    if (prev <= 1) {
+                        setShowRestTimer(false);
+                        // Feedback tátil
+                        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                            navigator.vibrate([200, 100, 200]);
+                        }
+                        return 0;
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+        return () => clearInterval(timer);
+    }, [showRestTimer, restTime]);
 
     const updateSetLog = (exerciseIdx: number, setNum: number, field: string, value: any) => {
         setWorkoutLogs((prev: any) => {
@@ -87,11 +123,20 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
         setWorkoutLogs((prev: any) => {
             const exerciseLogs = prev[exerciseIdx] || {};
             const setLog = exerciseLogs[setNum] || { load: 0, reps: 0, isCompleted: false };
+            const newState = !setLog.isCompleted;
+
+            // Trigger rest timer if set is marked as completed
+            if (newState) {
+                const exercise = sessionData.exercises[exerciseIdx];
+                setRestTime(exercise.restTime || 60);
+                setShowRestTimer(true);
+            }
+
             return {
                 ...prev,
                 [exerciseIdx]: {
                     ...exerciseLogs,
-                    [setNum]: { ...setLog, isCompleted: !setLog.isCompleted }
+                    [setNum]: { ...setLog, isCompleted: newState }
                 }
             };
         });
@@ -282,7 +327,39 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
 
     return (
         <ErrorBoundary>
-            <div className="flex flex-col h-screen w-full bg-black pb-20">
+            {/* Start Animation Overlay */}
+            {isStarting && !isLoadingSession && (
+                <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center animate-in fade-in duration-500">
+                    <div className="text-center">
+                        <div className={`text-9xl font-black text-white transition-all duration-300 transform ${countdown === 0 ? 'scale-150 opacity-0' : 'scale-100 opacity-100 animate-pulse'}`}>
+                            {countdown === 0 ? 'GO!' : countdown}
+                        </div>
+                        <p className="text-[#D4537E] font-display font-black tracking-widest mt-8 animate-bounce">PREPARE-SE</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Rest Timer Floating UI */}
+            {showRestTimer && (
+                <div className="fixed bottom-24 left-4 right-4 z-50 bg-[#111111] border-2 border-primary/30 rounded-3xl p-6 shadow-2xl animate-in slide-in-from-bottom-10 duration-300 backdrop-blur-xl">
+                    <div className="flex items-center justify-between gap-6">
+                        <div className="relative size-16 shrink-0">
+                            <svg className="size-full -rotate-90">
+                                <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-white/5" />
+                                <circle cx="32" cy="32" r="28" stroke="currentColor" strokeWidth="4" fill="transparent" className="text-primary-light" strokeDasharray={176} strokeDashoffset={176 - (176 * (restTime / (sessionData.exercises[currentIndex].restTime || 60)))} />
+                            </svg>
+                            <span className="absolute inset-0 flex items-center justify-center font-display font-black text-white text-xl">{restTime}</span>
+                        </div>
+                        <div className="flex-1 text-left">
+                            <h4 className="font-display font-black text-white text-lg">Descanso Ativo</h4>
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest mt-0.5">Prepare-se para a próxima série</p>
+                        </div>
+                        <button onClick={() => setShowRestTimer(false)} className="bg-white/5 hover:bg-white/10 text-white px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                            Pular
+                        </button>
+                    </div>
+                </div>
+            )}
             <header className="bg-[#111111] border-b border-[#333333] px-4 py-4 flex items-center justify-between sticky top-0 z-10 shadow-sm">
                 <Link href="/student/today" onClick={() => pauseTimer()} className="text-gray-400 p-2 -ml-2 hover:bg-black rounded-full">
                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
