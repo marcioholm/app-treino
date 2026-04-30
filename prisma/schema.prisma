@@ -38,9 +38,11 @@ model User {
   avatarUrl        String?
   pushSubscription String?
   birthDate        DateTime?
+  phone            String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  student          Student?
+  student          Student?  @relation("StudentUser")
+  students         Student[] @relation("StudentTrainer")
   tenant           Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
 }
 
@@ -48,6 +50,7 @@ model Student {
   id                  String                @id @default(cuid())
   tenantId            String
   userId              String                @unique
+  trainerId           String?
   phone               String?
   avatarUrl           String?
   pushSubscription    String?
@@ -60,7 +63,8 @@ model Student {
   goals               Goal[]
   physicalAssessments PhysicalAssessment[]
   tenant              Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                User                  @relation("StudentUser", fields: [userId], references: [id], onDelete: Cascade)
+  trainer             User?                 @relation("StudentTrainer", fields: [trainerId], references: [id], onDelete: SetNull)
   checkIns            WeeklyCheckIn[]
   workouts            Workout[]
 }
@@ -442,4 +446,172 @@ enum Modality {
 enum ExerciseType {
   STRENGTH
   CARDIO
+}
+
+enum WorkoutSessionStatus {
+  STARTED
+  COMPLETED
+  INCOMPLETE
+  ABANDONED
+}
+
+enum InsightStatus {
+  GREEN
+  YELLOW
+  RED
+}
+
+enum InsightType {
+  WORKOUT_COMPLETED
+  WORKOUT_INCOMPLETE
+  EXERCISE_SKIPPED
+  EXERCISE_SKIPPED_RECURRENTLY
+  EXERCISE_REPS_FAILED
+  EXERCISE_LOAD_INCREASED
+  EXERCISE_LOAD_DECREASED
+  STUDENT_LOW_ADHERENCE
+  STUDENT_PERFORMANCE_DROP
+  STUDENT_NEEDS_ATTENTION
+  STUDENT_PROGRESS_DETECTED
+}
+
+enum SkipReason {
+  SEM_TEMPO
+  NAO_GOSTO
+  SENTI_DOR
+  NAO_SEI_EXECUTAR
+  EQUIPAMENTO_OCUPADO
+  MUITO_DIFICIL
+  OUTRO
+}
+
+enum WebhookStatus {
+  PENDING
+  SENT
+  FAILED
+  DISABLED
+}
+
+model WorkoutSessionTracking {
+  id                   String              @id @default(cuid())
+  tenantId             String
+  studentId            String
+  trainerId            String
+  workoutId            String
+  workoutSessionId     String?
+  startedAt            DateTime?
+  completedAt          DateTime?
+  status               WorkoutSessionStatus @default(STARTED)
+  completedPercentage  Float?
+  aiSummary            String?
+  aiStatus             InsightStatus?
+  performanceScore     Float?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  exerciseLogs         ExercisePerformanceLog[]
+  skippedExercises     SkippedExercise[]
+  insights             AiTrainingInsight[]
+  n8nLogs              N8nWebhookLog[]
+
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([trainerId])
+  @@index([status])
+}
+
+model AiTrainingInsight {
+  id                   String                 @id @default(cuid())
+  tenantId             String
+  studentId            String
+  trainerId            String
+  workoutSessionTrackingId String?
+  type                 InsightType
+  status               InsightStatus
+  title                String
+  summary              String
+  suggestion           String?
+  score                Float?
+  payload              Json?
+  sentToN8n            Boolean                @default(false)
+  n8nSentAt            DateTime?
+  createdAt            DateTime               @default(now())
+
+  workoutSession       WorkoutSessionTracking? @relation(fields: [workoutSessionTrackingId], references: [id], onDelete: SetNull)
+  webhookLogs          N8nWebhookLog[]
+
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([trainerId])
+  @@index([type])
+  @@index([status])
+}
+
+model N8nWebhookLog {
+  id                   String              @id @default(cuid())
+  tenantId             String
+  eventType            String
+  studentId            String?
+  trainerId            String?
+  workoutSessionTrackingId String?
+  aiTrainingInsightId String?
+  webhookUrl           String?
+  payload              Json
+  status               WebhookStatus       @default(PENDING)
+  responseStatus       Int?
+  responseBody         String?
+  errorMessage         String?
+  sentAt               DateTime?
+  createdAt            DateTime            @default(now())
+
+  workoutSession       WorkoutSessionTracking? @relation(fields: [workoutSessionTrackingId], references: [id], onDelete: SetNull)
+  insight              AiTrainingInsight?   @relation(fields: [aiTrainingInsightId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId])
+  @@index([status])
+}
+
+model ExercisePerformanceLog {
+  id                   String                 @id @default(cuid())
+  tenantId             String
+  studentId            String
+  trainerId            String
+  workoutSessionTrackingId String
+  exerciseId           String
+  exerciseName         String
+  plannedSets          Int
+  completedSets        Int
+  plannedReps          Int
+  completedReps        Int
+  plannedLoad          Float?
+  usedLoad             Float?
+  loadVariation        Float?
+  notes                String?
+  createdAt            DateTime               @default(now())
+
+  workoutSession       WorkoutSessionTracking @relation(fields: [workoutSessionTrackingId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([exerciseId])
+}
+
+model SkippedExercise {
+  id                   String                 @id @default(cuid())
+  tenantId             String
+  studentId            String
+  trainerId            String
+  workoutSessionTrackingId String
+  exerciseId           String
+  exerciseName         String
+  skipReason           SkipReason
+  skipNote             String?
+  skippedAt            DateTime               @default(now())
+  createdAt            DateTime               @default(now())
+
+  workoutSession       WorkoutSessionTracking @relation(fields: [workoutSessionTrackingId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([exerciseId])
 }
