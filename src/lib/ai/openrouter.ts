@@ -57,6 +57,7 @@ export async function generateWorkoutWithAI(context: {
     weight?: number;
     fatPercent?: number;
     restrictions?: string[];
+    anamnesisContext?: string;
 }): Promise<{
     name: string;
     sessions: { name: string; exercises: { name: string; sets: number; reps: string; restTime: number }[] }[];
@@ -66,27 +67,14 @@ export async function generateWorkoutWithAI(context: {
     const systemPrompt = `
 Você é um personal trainer especialista em treinamento de força e hipertrofia para mulheres, com base em evidências científicas atualizadas.
 
-PRINCÍPIOS CIENTÍFICOS PARA MULHERES:
-- Mulheres respondem bem a volumes moderados-altos (12-20 séries/semana por grupo muscular)
-- Maior tolerância ao volume e menor necessidade de descanso que homens (geralmente 45-90 segundos)
-- Ênfase em membros inferiores e glúteos (objetivo mais comum)
-- Incluir variações unilaterais para correção de assimetrias
-- Progressão de carga deve ser gradual e consistente
-- Exercícios multiarticulares como base, isolados como complemento
-- Considerar fase do ciclo menstrual se informada (fase folicular: maior força; fase lútea: priorizar técnica)
-
-AO MONTAR O TREINO:
-- Use OBRIGATORIAMENTE os dados da avaliação física fornecidos.
-- Adapte o volume e intensidade ao nível:
-  - Iniciante: 3x/semana, foco em técnica e base.
-  - Intermediário: 4x/semana, divisões como Upper/Lower ou Push/Pull/Legs.
-  - Avançado: 5-6x/semana, maior volume e intensidade.
-- Estratégias por objetivo:
-  - "Emagrecimento": Priorizar compostos, circuitos, menor descanso (45s).
-  - "Hipertrofia/Definição": Foco em mecânica, tempo sob tensão, descanso moderado (60-90s).
-  - "Condicionamento": Mix de força e cardio funcional.
-- NUNCA gere treino sem considerar as restrições e dados de peso/objetivo.
-- Selecione exercícios APENAS da lista de exercícios disponíveis fornecida.
+PRINCÍPIOS CIENTÍFICOS PARA MULHERES (METODOLOGIA M&K):
+- PRIORIDADE MÁXIMA: Membros inferiores e Glúteos. O volume de treino para glúteos e pernas deve ser O DOBRO do volume de membros superiores.
+- DIVISÃO DE TREINO: Mesmo em divisões como Push/Pull, garanta que existam exercícios de membros inferiores em todas as sessões se o objetivo for focado em pernas.
+- Ênfase em Glúteo Máximo e Médio, Quadríceps e Posteriores.
+- Membros superiores devem ser incluídos de forma equilibrada, sem excesso de volume para peitorais.
+- Preferir exercícios que favoreçam a biomecânica feminina.
+- Se a aluna expressar preferência por uma área (ex: Pernas), 70% do treino deve ser focado nessa área.
+- Descanso: Mulheres recuperam mais rápido, manter entre 45-90 segundos.
 `.trim();
 
     const userPrompt = `
@@ -98,7 +86,10 @@ DADOS DA ALUNA:
 - Objetivo Principal: ${context.goal}
 - Nível de Condicionamento: ${context.level}
 - Frequência: ${context.daysPerWeek} dias por semana
-- Restrições: ${context.restrictions?.join(', ') || 'Nenhuma'}
+- Restrições Iniciais: ${context.restrictions?.join(', ') || 'Nenhuma'}
+
+RESPOSTAS DETALHADAS DA ANAMNESE (ANALISE COM CUIDADO):
+${context.anamnesisContext || 'Nenhum dado adicional informado.'}
 
 LISTA DE EXERCÍCIOS DISPONÍVEIS:
 ${exercisesList}

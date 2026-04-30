@@ -21,6 +21,23 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
             return NextResponse.json({ error: 'Not found' }, { status: 404 });
         }
 
+        if (body.isActive !== undefined) {
+            await prisma.tenantExercise.upsert({
+                where: {
+                    tenantId_exerciseId: {
+                        tenantId: payload.tenantId,
+                        exerciseId: id
+                    }
+                },
+                update: { isActive: body.isActive },
+                create: {
+                    tenantId: payload.tenantId,
+                    exerciseId: id,
+                    isActive: body.isActive
+                }
+            });
+        }
+
         const updated = await prisma.exercise.update({
             where: { id },
             data: {

@@ -15,6 +15,7 @@ model Tenant {
   anamnesisTemplates  AnamnesisTemplate[]
   conversations       Conversation[]
   exercises           Exercise[]
+  tenantExercises     TenantExercise[]
   notifications       Notification[]
   physicalAssessments PhysicalAssessment[]
   students            Student[]
@@ -108,6 +109,7 @@ model Exercise {
   tenant           Tenant?               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   progressions     ExerciseProgression[]
   workoutExercises WorkoutExercise[]
+  tenantExercises  TenantExercise[]
 }
 
 model Workout {
@@ -193,6 +195,19 @@ model AuditLog {
   action    String
   details   Json?
   createdAt DateTime @default(now())
+}
+
+model TenantExercise {
+  id         String   @id @default(cuid())
+  tenantId   String
+  exerciseId String
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, exerciseId])
 }
 
 model AnamnesisTemplate {

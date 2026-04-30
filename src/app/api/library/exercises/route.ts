@@ -5,15 +5,26 @@ import { verifyToken } from '@/lib/auth/jwt';
 
 const getCachedExercises = unstable_cache(
     async (tenantId: string | null) => {
-        return prisma.exercise.findMany({
+        const exercises = await prisma.exercise.findMany({
             where: {
                 OR: [
                     { tenantId: null },
                     { tenantId }
                 ]
             },
+            include: {
+                tenantExercises: {
+                    where: { tenantId: tenantId || undefined }
+                }
+            },
             orderBy: { name: 'asc' }
         });
+
+        // Map isActive status
+        return exercises.map(ex => ({
+            ...ex,
+            isActive: ex.tenantExercises.length > 0 ? ex.tenantExercises[0].isActive : true
+        }));
     },
     ['exercises-library'],
     { revalidate: 300 }

@@ -51,17 +51,28 @@ export async function generateWorkout({ studentId }: GenerateParams) {
     const fatPercent = physicalAssessment.fatPercent;
 
     // Fetch all exercises available
-    const allExercises = await prisma.exercise.findMany({
+    const rawExercises = await prisma.exercise.findMany({
         where: {
             OR: [
                 { tenantId: null },
                 { tenantId: student.tenantId }
             ]
+        },
+        include: {
+            tenantExercises: {
+                where: { tenantId: student.tenantId }
+            }
         }
     });
 
+    // Filter by active status (default to true if no status set for tenant)
+    const activeExercises = rawExercises.filter(ex => {
+        const tenantStatus = ex.tenantExercises[0];
+        return tenantStatus ? tenantStatus.isActive : true;
+    });
+
     // Filter exercises by equipment/modality
-    const validExercises = allExercises.filter(ex => {
+    const validExercises = activeExercises.filter(ex => {
         if (!goal.hasGymAccess && ex.modality === Modality.GYM) return false;
         // Static restrictions
         for (const tag of ex.tags) {
@@ -72,6 +83,11 @@ export async function generateWorkout({ studentId }: GenerateParams) {
 
     const exerciseNames = validExercises.map(ex => ex.name);
 
+    // Format anamnesis answers for the AI
+    const anamnesisContext = student.anamnesisAnswers.map((ans: any) => {
+        return `${ans.question.text}: ${ans.answerText || ans.answerArray.join(', ')}`;
+    }).join('\n');
+
     // Call AI for generation
     const aiResult = await generateWorkoutWithAI({
         studentName: student.user.name,
@@ -81,7 +97,8 @@ export async function generateWorkout({ studentId }: GenerateParams) {
         exercises: exerciseNames,
         weight,
         fatPercent,
-        restrictions: goal.restrictions
+        restrictions: goal.restrictions,
+        anamnesisContext
     });
 
     let createdWorkout;

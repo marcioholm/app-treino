@@ -64,6 +64,27 @@ export default function LibraryManager() {
         }
     };
 
+    const toggleStatus = async (exerciseId: string, currentStatus: boolean) => {
+        try {
+            const res = await fetch(`/api/library/exercises/${exerciseId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isActive: !currentStatus })
+            });
+
+            if (res.ok) {
+                setExercises(prev => prev.map(ex =>
+                    ex.id === exerciseId ? { ...ex, isActive: !currentStatus } : ex
+                ));
+                if (selectedExercise?.id === exerciseId) {
+                    setSelectedExercise((prev: any) => ({ ...prev, isActive: !currentStatus }));
+                }
+            }
+        } catch (error) {
+            console.error('Failed to toggle status');
+        }
+    };
+
     const filteredExercises = exercises.filter(ex => {
         const matchesSearch = ex.name.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesGroup = !groupFilter || ex.group === groupFilter;
@@ -134,7 +155,10 @@ export default function LibraryManager() {
                                 )}
                             </div>
                             <div className="p-3">
-                                <h3 className="font-semibold text-white text-sm truncate">{ex.name}</h3>
+                                <div className="flex items-center justify-between mb-1">
+                                    <h3 className="font-semibold text-white text-sm truncate">{ex.name}</h3>
+                                    <div className={`w-2 h-2 rounded-full ${ex.isActive !== false ? 'bg-green-500' : 'bg-red-500'}`} title={ex.isActive !== false ? 'Ativo' : 'Inativo'}></div>
+                                </div>
                                 <p className="text-xs text-gray-400">{ex.equipment || 'Variado'}</p>
                             </div>
                         </div>
@@ -194,6 +218,21 @@ export default function LibraryManager() {
                                     <p className="text-white">{selectedExercise.description}</p>
                                 </div>
                             )}
+
+                            <div className="flex items-center justify-between p-4 bg-black/40 rounded-xl border border-white/5">
+                                <div>
+                                    <p className="text-sm font-bold text-white">Disponível na Academia</p>
+                                    <p className="text-xs text-gray-400">Desative se não houver o aparelho/equipamento.</p>
+                                </div>
+                                <button
+                                    onClick={() => toggleStatus(selectedExercise.id, selectedExercise.isActive !== false)}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${selectedExercise.isActive !== false ? 'bg-green-600' : 'bg-gray-700'}`}
+                                >
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${selectedExercise.isActive !== false ? 'translate-x-6' : 'translate-x-1'}`}
+                                    />
+                                </button>
+                            </div>
 
                             <div className="border-t pt-4">
                                 <p className="text-sm font-medium text-gray-300 mb-3">Adicionar Mídia</p>

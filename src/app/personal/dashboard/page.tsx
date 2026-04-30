@@ -148,10 +148,10 @@ export default async function PersonalDashboard() {
             {/* Metrics */}
             <section className="container mx-auto px-4 md:px-6 -mt-8 relative z-20 animate-fade-up stagger-1">
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-                    <MetricCard label="Alunas ativas" value={students.length} iconName="users" delta={2} deltaLabel="vs mês passado" />
-                    <MetricCard label="Treinos gerados" value={38} unit="/mês" iconName="dumbbell" delta={5} />
-                    <MetricCard label="Avaliações" value={students.filter(s => s.assessments.length > 0).length} iconName="clipboard" delta={3} />
-                    <MetricCard label="Sessões hoje" value={activeWorkouts} iconName="activity" />
+                    <MetricCard label="Alunas ativas" value={students.length} iconName="users" />
+                    <MetricCard label="Treinos gerados" value={students.reduce((acc, s) => acc + s.workouts.length, 0)} unit="/total" iconName="dumbbell" />
+                    <MetricCard label="Avaliações físicas" value={students.filter(s => s.physicalAssessments.length > 0).length} iconName="clipboard" />
+                    <MetricCard label="Alunas com meta" value={students.filter(s => s.goals.length > 0).length} iconName="target" />
                 </div>
             </section>
 
