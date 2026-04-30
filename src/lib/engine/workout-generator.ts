@@ -91,7 +91,12 @@ export async function generateWorkout({ studentId }: GenerateParams) {
         return true;
     });
 
-    const exerciseNames = validExercises.map(ex => ex.name);
+    const exerciseDetails = validExercises.map(ex => ({
+        name: ex.name,
+        group: ex.group,
+        modality: ex.modality,
+        equipment: ex.equipment
+    }));
 
     // Call AI for generation
     const aiResult = await generateWorkoutWithAI({
@@ -100,7 +105,7 @@ export async function generateWorkout({ studentId }: GenerateParams) {
         goal: goal.objective,
         level: goal.level,
         daysPerWeek: goal.daysPerWeek,
-        exercises: exerciseNames,
+        exercises: exerciseDetails as any, // Pass full details now
         weight: weight || undefined,
         fatPercent: fatPercent || undefined,
         restrictions: goal.restrictions,

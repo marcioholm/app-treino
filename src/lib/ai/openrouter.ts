@@ -55,7 +55,7 @@ export async function generateWorkoutWithAI(context: {
     goal: string;
     level: string;
     daysPerWeek: number;
-    exercises: string[];
+    exercises: { name: string; group: string; modality: string; equipment?: string }[];
     weight?: number;
     fatPercent?: number;
     restrictions?: string[];
@@ -64,44 +64,47 @@ export async function generateWorkoutWithAI(context: {
     name: string;
     sessions: { name: string; exercises: { name: string; sets: number; reps: string; restTime: number }[] }[];
 }> {
-    const exercisesList = context.exercises.join(', ');
+    const exercisesCatalog = context.exercises.map(ex => 
+        `- ${ex.name} (${ex.group} | ${ex.modality}${ex.equipment ? ` | ${ex.equipment}` : ''})`
+    ).join('\n');
     
     const systemPrompt = `
-Você é um personal trainer especialista em treinamento de força e hipertrofia, com foco em individualidade biológica.
+Você é um Personal Trainer Especialista da Academia M&K Fitness Center, focado em alta performance feminina e biomecânica.
 
-REGRAS INEGOCIÁVEIS (METODOLOGIA PROFISSIONAL):
-1. ANÁLISE DE GÊNERO: 
-   - Se FEMININO: Foco em Glúteos e Inferiores (70% do volume). Proibido treinos excessivos de peito/tríceps.
-   - Se MASCULINO: Foco em Membros Superiores e pernas equilibradas.
-2. VOLUME POR SESSÃO: Gere EXATAMENTE 8 exercícios por sessão.
-3. VARIEDADE: Nunca repita o mesmo exercício entre sessões A, B e C.
-4. FONTE DE DADOS: Use APENAS os nomes da LISTA DE EXERCÍCIOS DISPONÍVEIS abaixo.
-5. ANAMNESE: Priorize o que o aluno gosta e respeite o que ele odeia. Ajuste o volume com base na experiência (${context.level}).
+DIRETRIZES DE OURO:
+1. SELEÇÃO DE EXERCÍCIOS: Use APENAS os nomes contidos no "CATÁLOGO DE EXERCÍCIOS" abaixo. É PROIBIDO inventar exercícios ou usar nomes diferentes dos fornecidos.
+2. FOCO FEMININO (ESTRATÉGICO):
+   - Priorize Inferiores (Glúteos, Quadríceps, Posterior) em 70% do volume total.
+   - Treinos de Superiores devem ser elegantes e funcionais, sem volume excessivo de ombros/braços a menos que solicitado.
+3. PERSONALIZAÇÃO (ANAMNESE): Leia atentamente a anamnese. Se ela odeia um exercício ou equipamento, NÃO o use. Se ela ama, coloque no treino.
+4. ESTRUTURA: Gere EXATAMENTE 8 exercícios por sessão. Use sessões A, B, C (ou mais conforme os dias da semana).
+5. VARIEDADE: Garanta que cada sessão tenha exercícios únicos. Não repita exercícios em dias diferentes.
 `.trim();
 
     const userPrompt = `
-Gere um treino de ALTA PERFORMANCE para: ${context.studentName}
+Gere o Protocolo de Treinamento para: ${context.studentName}
 
-DADOS DO ALUNO:
+CONTEXTO BIOMÉTRICO:
 - Gênero: ${context.gender || 'FEMININO'}
 - Nível: ${context.level}
-- Frequência: ${context.daysPerWeek} dias/semana
+- Objetivo: ${context.goal}
+- Frequência: ${context.daysPerWeek}x na semana
 
-ANÁLISE DA ANAMNESE (PERSONALIZAÇÃO REAL):
+CONTEXTO DA ANAMNESE (LEITURA OBRIGATÓRIA):
 ${context.anamnesisContext || 'Nenhum dado adicional.'}
 
-LISTA DE EXERCÍCIOS DISPONÍVEIS (USE APENAS ESTES):
-${exercisesList}
+CATÁLOGO DE EXERCÍCIOS DISPONÍVEIS (ESCOLHA APENAS DESTA LISTA):
+${exercisesCatalog}
 
 INSTRUÇÕES DE SAÍDA:
-Retorne APENAS o JSON puro, seguindo esta estrutura:
+Retorne APENAS um JSON puro (sem explicações) seguindo este formato:
 {
-  "name": "Nome do Protocolo Personalizado",
+  "name": "Protocolo M&K: [Nome da Aluna] - [Objetivo]",
   "sessions": [
     {
-      "name": "Nome da Sessão (ex: Foco em Glúteo e Posterior)",
+      "name": "Sessão [A/B/C] - [Foco Muscular]",
       "exercises": [
-        { "name": "Nome Exato da Lista", "sets": 4, "reps": "12", "restTime": 60 }
+        { "name": "NOME EXATO DO CATÁLOGO", "sets": 4, "reps": "10-12", "restTime": 60 }
       ]
     }
   ]
