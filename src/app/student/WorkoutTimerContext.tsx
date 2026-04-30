@@ -24,10 +24,14 @@ export function TimerProvider({ children }: { children: ReactNode }) {
 
     // Load initial state
     useEffect(() => {
-        const savedTime = localStorage.getItem('mk_timer_seconds');
-        const savedRunning = localStorage.getItem('mk_timer_running');
-        if (savedTime) setActiveSeconds(parseInt(savedTime));
-        if (savedRunning === 'true') setIsRunning(true);
+        try {
+            const savedTime = localStorage.getItem('mk_timer_seconds');
+            const savedRunning = localStorage.getItem('mk_timer_running');
+            if (savedTime) setActiveSeconds(Number(savedTime));
+            if (savedRunning === 'true') setIsRunning(true);
+        } catch (e) {
+            console.error('Failed to load timer state', e);
+        }
         setIsHydrated(true);
     }, []);
 
@@ -40,14 +44,14 @@ export function TimerProvider({ children }: { children: ReactNode }) {
     }, [activeSeconds, isRunning, isHydrated]);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
-        if (isRunning) {
+        let interval: any;
+        if (isRunning && isHydrated) {
             interval = setInterval(() => {
                 setActiveSeconds(prev => prev + 1);
             }, 1000);
         }
         return () => clearInterval(interval);
-    }, [isRunning]);
+    }, [isRunning, isHydrated]);
 
     const startTimer = () => setIsRunning(true);
     const pauseTimer = () => setIsRunning(false);

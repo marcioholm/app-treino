@@ -4,6 +4,7 @@ import { use, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWorkoutTimer } from '../../WorkoutTimerContext';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import WorkoutShareCard from '@/components/WorkoutShareCard';
 
 const MOCK_EXERCISES = [
     { id: "e1", name: "Supino Reto Barra", details: "Peito • Barra Livre • 4 séries de 8-12 reps" },
@@ -339,6 +340,21 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                         <span className="text-white font-bold text-lg">{rpe}/10</span>
                         <span>10 (Exaustivo)</span>
                     </div>
+                </div>
+
+                </div>
+                
+                <div className="w-full max-w-sm mx-auto px-4">
+                    <WorkoutShareCard 
+                        stats={{
+                            workoutName: sessionData.name,
+                            duration: formatTime(activeSeconds),
+                            totalWeight: Object.values(workoutLogs).reduce((acc: number, sets: any) =>
+                                acc + (sets ? Object.values(sets).reduce((sacc: number, s: any) => sacc + (s?.isCompleted ? (parseFloat(s.load) || 0) * (parseInt(s.reps) || 0) : 0), 0) : 0)
+                                , 0).toFixed(0),
+                            date: new Date().toLocaleDateString('pt-BR')
+                        }}
+                    />
                 </div>
 
                 <div className="flex-1"></div>
