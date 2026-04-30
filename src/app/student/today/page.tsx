@@ -47,28 +47,15 @@ export default async function StudentToday() {
         }
     }
 
-    // Birthday Logic
-    const allStudents = await prisma.student.findMany({
-        where: { tenantId: student.tenantId },
-        include: { user: true }
-    });
-
-    const today = new Date();
-    const upcomingBirthdays = allStudents.filter(s => {
-        if (!s.user.birthDate || s.id === student.id) return false;
-        const bdate = new Date(s.user.birthDate);
-        bdate.setFullYear(today.getFullYear());
-        if (bdate < today && today.getDate() !== bdate.getDate()) {
-            bdate.setFullYear(today.getFullYear() + 1);
+    // Find the latest published workout
+    const activeWorkout = await prisma.workout.findFirst({
+        where: { studentId: student.id, published: true },
+        orderBy: { createdAt: 'desc' },
+        include: {
+            sessions: {
+                orderBy: { order: 'asc' }
+            }
         }
-        const diffDays = Math.ceil((bdate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-        return diffDays >= 0 && diffDays <= 7;
-    }).sort((a, b) => {
-        const dA = new Date(a.user.birthDate!); dA.setFullYear(today.getFullYear());
-        const dB = new Date(b.user.birthDate!); dB.setFullYear(today.getFullYear());
-        if (dA < today) dA.setFullYear(today.getFullYear() + 1);
-        if (dB < today) dB.setFullYear(today.getFullYear() + 1);
-        return dA.getTime() - dB.getTime();
     });
 
     return (
@@ -94,7 +81,7 @@ export default async function StudentToday() {
             {needsCheckIn && (
                 <Link 
                     href="/student/checkin" 
-                    className="block bg-gradient-to-r from-[#FBEAF0] to-[#FDE8EE] border border-[#F4C0D1] rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
+                    className="block bg-[#111111] border border-[#333333] rounded-2xl p-5 transition-all duration-300 hover:shadow-lg hover:scale-[1.02]"
                 >
                     <div className="flex items-center gap-4">
                         <div className="w-14 h-14 rounded-2xl bg-[#D4537E]/10 flex items-center justify-center">
@@ -103,7 +90,7 @@ export default async function StudentToday() {
                             </svg>
                         </div>
                         <div className="flex-1">
-                            <h3 className="font-bold text-[#1a1a1a]">Check-in Semanal</h3>
+                            <h3 className="font-bold text-white">Check-in Semanal</h3>
                             <p className="text-sm text-gray-400">Como você está se sentindo?</p>
                         </div>
                         <div className="w-10 h-10 rounded-full bg-[#D4537E] flex items-center justify-center">
@@ -149,7 +136,27 @@ export default async function StudentToday() {
             )}
 
             {/* Today's Workout Card or Assessment Blocker */}
-            {hasAssessment ? (
+            {!hasAssessment ? (
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#D4537E]/20 bg-[#111111] p-8 text-center space-y-6">
+                    <div className="w-20 h-20 bg-[#D4537E]/10 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <svg className="w-10 h-10 text-[#D4537E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 className="text-xl font-bold text-white mb-2">Avaliação Pendente</h2>
+                        <p className="text-sm text-gray-400 leading-relaxed">
+                            Para receber seu treino personalizado e seguro, precisamos completar sua <span className="text-white font-bold">Avaliação Física</span> primeiro.
+                        </p>
+                    </div>
+                    <Link 
+                        href="/student/chat"
+                        className="block w-full py-4 bg-[#D4537E] text-white rounded-2xl font-bold shadow-lg shadow-[#D4537E]/20 active:scale-95 transition-all"
+                    >
+                        Falar com Treinador
+                    </Link>
+                </div>
+            ) : activeWorkout ? (
                 <Link href="/student/workout/today" className="block group">
                     <div className="relative rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 group-hover:scale-[1.02]">
                         {/* Background gradient */}
@@ -162,10 +169,10 @@ export default async function StudentToday() {
                         
                         <div className="relative z-10 p-6 pt-8">
                             <span className="inline-block px-4 py-1.5 bg-[#111111]/20 rounded-full text-xs font-semibold tracking-wide uppercase mb-4 backdrop-blur-sm">
-                                Treino do Dia
+                                Treino Ativo
                             </span>
 
-                            <h2 className="text-3xl font-bold text-white mb-2">Seu Treino</h2>
+                            <h2 className="text-3xl font-bold text-white mb-2">{activeWorkout.name}</h2>
                             <p className="text-pink-100 text-base mb-6">Personalizado para seus objetivos</p>
 
                             <div className="bg-[#111111] rounded-2xl p-4 flex items-center gap-4 shadow-lg">
@@ -187,34 +194,31 @@ export default async function StudentToday() {
                     </div>
                 </Link>
             ) : (
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#D4537E]/20 bg-[#111111] p-8 text-center space-y-6">
-                    <div className="w-20 h-20 bg-[#D4537E]/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                        <svg className="w-10 h-10 text-[#D4537E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-[#333333] bg-[#111111] p-8 text-center space-y-6">
+                    <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <svg className="w-10 h-10 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                         </svg>
                     </div>
                     <div>
-                        <h2 className="text-xl font-bold text-white mb-2">Avaliação Pendente</h2>
+                        <h2 className="text-xl font-bold text-white mb-2">Treino em Montagem</h2>
                         <p className="text-sm text-gray-400 leading-relaxed">
-                            Para receber seu treino personalizado e seguro, precisamos completar sua <span className="text-white font-bold">Avaliação Física</span> primeiro.
+                            Sua coach está preparando um planejamento exclusivo para você. Em breve ele aparecerá aqui!
                         </p>
                     </div>
                     <Link 
                         href="/student/chat"
-                        className="block w-full py-4 bg-[#D4537E] text-white rounded-2xl font-bold shadow-lg shadow-[#D4537E]/20 active:scale-95 transition-all"
+                        className="block w-full py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-bold hover:bg-white/10 transition-all"
                     >
                         Falar com Treinador
                     </Link>
-                    <p className="text-[10px] text-gray-500 uppercase tracking-widest font-medium">
-                        O treino será liberado após o registro das métricas
-                    </p>
                 </div>
             )}
 
             {/* Quick Actions */}
             <div className="grid grid-cols-2 gap-4">
-                <Link href="/student/chat" className="bg-[#111111] rounded-2xl p-5 shadow-md border border-pink-50 transition-all duration-300 hover:shadow-lg hover:border-pink-200">
-                    <div className="w-12 h-12 rounded-xl bg-[#FBEAF0] flex items-center justify-center mb-3">
+                <Link href="/student/chat" className="bg-[#111111] rounded-2xl p-5 shadow-md border border-[#333333] transition-all duration-300 hover:border-[#D4537E]/30">
+                    <div className="w-12 h-12 rounded-xl bg-[#D4537E]/10 flex items-center justify-center mb-3">
                         <svg className="w-6 h-6 text-[#D4537E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                         </svg>
@@ -223,43 +227,41 @@ export default async function StudentToday() {
                     <p className="text-xs text-gray-400">Fale com sua coach</p>
                 </Link>
                 
-                <Link href="/student/analytics" className="bg-[#111111] rounded-2xl p-5 shadow-md border border-pink-50 transition-all duration-300 hover:shadow-lg hover:border-pink-200">
-                    <div className="w-12 h-12 rounded-xl bg-[#FBEAF0] flex items-center justify-center mb-3">
+                <Link href="/student/profile" className="bg-[#111111] rounded-2xl p-5 shadow-md border border-[#333333] transition-all duration-300 hover:border-[#D4537E]/30">
+                    <div className="w-12 h-12 rounded-xl bg-[#D4537E]/10 flex items-center justify-center mb-3">
                         <svg className="w-6 h-6 text-[#D4537E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                     </div>
-                    <p className="font-semibold text-white">Minha Evolução</p>
-                    <p className="text-xs text-gray-400">Veja seu progresso</p>
+                    <p className="font-semibold text-white">Meu Perfil</p>
+                    <p className="text-xs text-gray-400">Suas informações</p>
                 </Link>
             </div>
 
-            {/* Upcoming Workouts */}
-            <div>
-                <h3 className="font-bold text-white mb-4">Próximos Treinos</h3>
-                <div className="space-y-3">
-                    {[
-                        { name: 'B - Pull', day: 'Amanhã', color: 'bg-[#D4537E]/20 text-[#D4537E]' },
-                        { name: 'C - Legs', day: 'Quarta', color: 'bg-green-100 text-green-600' },
-                        { name: 'D - Full Body', day: 'Sexta', color: 'bg-purple-100 text-purple-600' },
-                    ].map((workout, i) => (
-                        <div key={i} className="bg-[#111111] p-4 rounded-2xl border border-pink-100 flex items-center justify-between shadow-sm">
-                            <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg ${workout.color}`}>
-                                    {workout.name.charAt(0)}
+            {/* Upcoming Sessions (only if workout exists) */}
+            {activeWorkout && activeWorkout.sessions.length > 1 && (
+                <div>
+                    <h3 className="font-bold text-white mb-4 uppercase text-[10px] tracking-widest opacity-60">Próximas Sessões</h3>
+                    <div className="space-y-3">
+                        {activeWorkout.sessions.slice(1).map((session: any, i: number) => (
+                            <div key={session.id} className="bg-[#111111] p-4 rounded-2xl border border-[#333333] flex items-center justify-between shadow-sm">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/5 flex items-center justify-center font-bold text-lg text-white">
+                                        {session.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-white">{session.name}</p>
+                                        <p className="text-xs text-gray-400">Próxima aula</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-semibold text-white">{workout.name}</p>
-                                    <p className="text-xs text-gray-400">{workout.day}</p>
-                                </div>
+                                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
                             </div>
-                            <svg className="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Bottom spacing */}
             <div className="h-4" />
