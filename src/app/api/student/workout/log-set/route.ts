@@ -4,8 +4,8 @@ import { verifyToken } from '@/lib/auth/jwt';
 import { z } from 'zod';
 
 const logSetSchema = z.object({
-    workoutLogId: z.string().uuid(),
-    workoutExerciseId: z.string().uuid(),
+    workoutLogId: z.string(),
+    workoutExerciseId: z.string(),
     setNumber: z.number().int().positive(),
     reps: z.number().int().nonnegative().optional(),
     load: z.number().nonnegative().optional(),

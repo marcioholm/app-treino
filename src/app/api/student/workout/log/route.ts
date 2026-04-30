@@ -4,7 +4,7 @@ import { verifyToken } from '@/lib/auth/jwt';
 import { z } from 'zod';
 
 const startSchema = z.object({
-    workoutId: z.string().uuid(),
+    workoutId: z.string(),
 });
 
 export async function POST(req: Request) {

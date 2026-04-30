@@ -4,7 +4,7 @@ import { verifyToken } from '@/lib/auth/jwt';
 import { z } from 'zod';
 
 const completeSchema = z.object({
-    workoutLogId: z.string().uuid(),
+    workoutLogId: z.string(),
     notes: z.string().optional(),
 });
 
