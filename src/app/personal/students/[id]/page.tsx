@@ -504,32 +504,45 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                 <p className="text-muted-foreground">O histórico de treinos aparecerá aqui conforme você criar novos ciclos.</p>
                             </div>
                         ) : (
-                            student.workouts.map((workout) => (
-                                <div key={workout.id} className="bg-glass rounded-3xl p-8 border border-white/5 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
-                                    <div className="flex items-center gap-6">
-                                        <div className="size-14 rounded-2xl bg-white/5 border border-white/5 grid place-items-center text-muted-foreground group-hover:text-primary-light transition-colors">
-                                            <ClipboardList size={24} />
-                                        </div>
-                                        <div>
-                                            <h4 className="font-display font-bold text-xl text-white">{workout.name}</h4>
-                                            <div className="flex items-center gap-4 mt-1">
-                                                <span className="text-xs text-muted-foreground font-medium">{new Date(workout.createdAt).toLocaleDateString('pt-BR')}</span>
-                                                <span className={cn(
-                                                    "text-[10px] font-black uppercase tracking-widest",
-                                                    workout.published ? "text-success" : "text-amber-500"
-                                                )}>
-                                                    {workout.published ? 'Publicado' : 'Rascunho'}
-                                                </span>
+                            student.workouts.map((workout) => {
+                                const isAI = workout.name.startsWith('M&K:');
+                                return (
+                                    <div key={workout.id} className="bg-glass rounded-3xl p-8 border border-white/5 flex items-center justify-between group hover:bg-white/[0.04] transition-all">
+                                        <div className="flex items-center gap-6">
+                                            <div className={cn(
+                                                "size-14 rounded-2xl border border-white/5 grid place-items-center transition-colors",
+                                                isAI ? "bg-primary/10 text-primary-light" : "bg-white/5 text-muted-foreground group-hover:text-white"
+                                            )}>
+                                                {isAI ? <Sparkles size={24} /> : <ClipboardList size={24} />}
+                                            </div>
+                                            <div>
+                                                <div className="flex items-center gap-3">
+                                                    <h4 className="font-display font-bold text-xl text-white">{workout.name}</h4>
+                                                    {isAI && (
+                                                        <span className="px-2 py-0.5 rounded-lg bg-primary/20 text-[9px] font-black text-primary-light uppercase tracking-widest border border-primary/20">IA SmartWorkout</span>
+                                                    )}
+                                                </div>
+                                                <div className="flex items-center gap-4 mt-1">
+                                                    <span className="text-xs text-muted-foreground font-medium">
+                                                        {new Date(workout.createdAt).toLocaleDateString('pt-BR')} às {new Date(workout.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                    <span className={cn(
+                                                        "text-[10px] font-black uppercase tracking-widest",
+                                                        workout.published ? "text-success" : "text-amber-500"
+                                                    )}>
+                                                        {workout.published ? 'Publicado' : 'Rascunho (IA)'}
+                                                    </span>
+                                                </div>
                                             </div>
                                         </div>
+                                        <Link href={`/personal/workouts/${workout.id}/editor?studentId=${id}`}>
+                                            <button className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-xs font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
+                                                Ver Detalhes
+                                            </button>
+                                        </Link>
                                     </div>
-                                    <Link href={`/personal/workouts/${workout.id}/editor?studentId=${id}`}>
-                                        <button className="px-6 py-3 rounded-xl bg-white/5 border border-white/5 text-xs font-black uppercase tracking-widest text-white hover:bg-white/10 transition-all">
-                                            Ver Detalhes
-                                        </button>
-                                    </Link>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 </div>
