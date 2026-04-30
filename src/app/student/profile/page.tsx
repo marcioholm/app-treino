@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 const NotificationManager = dynamic(() => import('@/components/NotificationManager'), { ssr: false });
 
 export default function ProfilePage() {
+    const router = useRouter();
     const [profile, setProfile] = useState<{
         name: string, 
         email: string, 
