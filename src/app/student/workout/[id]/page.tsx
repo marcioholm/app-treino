@@ -18,6 +18,12 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
     const router = useRouter();
     const { activeSeconds, startTimer, pauseTimer, resetTimer, isRunning } = useWorkoutTimer();
 
+    const [sessionData, setSessionData] = useState<any>(null);
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [isFinished, setIsFinished] = useState(false);
+    const [rpe, setRpe] = useState<number>(5);
+    const [currentProgression, setCurrentProgression] = useState<any>(null);
+    const [isLoadingProgression, setIsLoadingProgression] = useState(false);
     const [isStarting, setIsStarting] = useState(true);
     const [countdown, setCountdown] = useState(3);
     const [restTime, setRestTime] = useState(0);
