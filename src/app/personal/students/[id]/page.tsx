@@ -264,7 +264,10 @@ export default function StudentDetails({ params }: { params: Promise<{ id: strin
                                                 </div>
                                             </>
                                         ) : (
-                                            <span className="px-5 py-2 rounded-2xl bg-white/5 border border-white/5 text-[11px] font-bold text-muted-foreground italic uppercase tracking-widest">Sem metas ativas</span>
+                                            <Link href={`/personal/students/${id}/assessment`} className="px-5 py-2 rounded-2xl bg-primary/10 border border-primary/20 flex items-center gap-2 hover:bg-primary/20 transition-all group/goal">
+                                                <Target size={14} className="text-primary-light group-hover/goal:scale-110 transition-transform" />
+                                                <span className="text-[11px] font-black text-primary-light uppercase tracking-widest">Definir Metas</span>
+                                            </Link>
                                         )}
                                     </div>
                                 </>
