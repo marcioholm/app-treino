@@ -20,7 +20,15 @@ export async function GET(req: Request) {
             user: {
                 select: { name: true, email: true, birthDate: true }
             },
-            goals: { orderBy: { createdAt: 'desc' }, take: 1 }
+            goals: { orderBy: { createdAt: 'desc' }, take: 1 },
+            physicalAssessments: {
+                orderBy: { date: 'desc' },
+                take: 2
+            },
+            assessments: {
+                orderBy: { date: 'desc' },
+                take: 2
+            }
         }
     });
 

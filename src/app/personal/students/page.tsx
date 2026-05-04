@@ -54,17 +54,30 @@ export default function StudentsList() {
         s.user.email.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const studentsWithCards = filteredStudents.map(s => ({
-        id: s.id,
-        name: s.user.name,
-        objetivo: 'Avaliação',
-        imc: 0,
-        gordura: { atual: 0, variacao: 0 },
-        ultimaAvaliacao: s.user.birthDate 
-            ? new Date(s.user.birthDate).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' })
-            : 'N/A',
-        peso: { atual: 0, variacao: 0 }
-    }));
+    const studentsWithCards = filteredStudents.map(s => {
+        const latestAssessment = s.physicalAssessments?.[0] || s.assessments?.[0];
+        const prevAssessment = s.physicalAssessments?.[1] || s.assessments?.[1];
+        
+        const currentWeight = latestAssessment?.weight || 0;
+        const prevWeight = prevAssessment?.weight || currentWeight;
+        const weightVar = currentWeight - prevWeight;
+
+        const currentFat = latestAssessment?.fatPercent || 0;
+        const prevFat = prevAssessment?.fatPercent || currentFat;
+        const fatVar = currentFat - prevFat;
+
+        return {
+            id: s.id,
+            name: s.user.name,
+            objetivo: s.goals?.[0]?.objective || 'Avaliação',
+            imc: latestAssessment?.bmi || 0,
+            gordura: { atual: currentFat, variacao: fatVar },
+            ultimaAvaliacao: latestAssessment?.date 
+                ? new Date(latestAssessment.date).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+                : 'N/A',
+            peso: { atual: currentWeight, variacao: weightVar }
+        };
+    });
 
     return (
         <div className="min-h-screen bg-background pb-24">
