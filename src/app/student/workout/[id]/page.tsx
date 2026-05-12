@@ -482,17 +482,53 @@ export default function WorkoutExecution({ params }: { params: Promise<{ id: str
                             {currentWorkoutExercise.exercise?.group || 'Geral'} • {currentWorkoutExercise.sets} séries de {currentWorkoutExercise.reps} reps
                         </p>
 
-                        {/* Progression UI */}
+                        {/* Technical Details (RIR, Cadence, Progression) */}
+                        {(currentWorkoutExercise.rir || currentWorkoutExercise.cadence || currentWorkoutExercise.progression) && (
+                            <div className="grid grid-cols-3 gap-2 mb-6">
+                                {currentWorkoutExercise.rir && (
+                                    <div className="bg-[#1a1a1a] p-2 rounded-lg border border-[#333333] text-center">
+                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">RIR</p>
+                                        <p className="text-sm font-black text-[#D4537E]">{currentWorkoutExercise.rir}</p>
+                                    </div>
+                                )}
+                                {currentWorkoutExercise.cadence && (
+                                    <div className="bg-[#1a1a1a] p-2 rounded-lg border border-[#333333] text-center">
+                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Cadência</p>
+                                        <p className="text-sm font-black text-white">{currentWorkoutExercise.cadence}</p>
+                                    </div>
+                                )}
+                                {currentWorkoutExercise.progression && (
+                                    <div className="bg-[#1a1a1a] p-2 rounded-lg border border-[#333333] text-center">
+                                        <p className="text-[10px] text-gray-500 uppercase font-bold tracking-tighter">Meta</p>
+                                        <p className="text-sm font-black text-blue-400">{currentWorkoutExercise.progression}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Trainer Technical Notes */}
+                        {currentWorkoutExercise.technicalNotes && (
+                            <div className="mb-6 p-3 rounded-xl bg-[#D4537E]/5 border border-[#D4537E]/20 flex items-start gap-3">
+                                <div className="p-1.5 rounded-lg bg-[#D4537E]/20 text-[#D4537E] shrink-0">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <p className="text-xs text-gray-300 italic">"{currentWorkoutExercise.technicalNotes}"</p>
+                            </div>
+                        )}
+
+                        {/* Progression UI (Evolution Info) */}
                         {!isLoadingProgression && currentProgression && (
-                            <div className="mb-6 p-4 rounded-xl bg-orange-50 border border-orange-100 flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center shrink-0">
+                            <div className="mb-6 p-4 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-start gap-4 shadow-sm">
+                                <div className="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                                 </div>
                                 <div>
-                                    <h4 className="text-sm font-bold text-orange-900">Evolução Sugerida</h4>
-                                    <p className="text-sm text-orange-800 mt-1">
-                                        Última: <strong>{currentProgression.lastLoad}kg</strong>.
-                                        Meta hoje: <strong>{currentProgression.suggestedLoad}kg</strong>!
+                                    <h4 className="text-sm font-bold text-blue-100 uppercase tracking-tighter">Histórico de Carga</h4>
+                                    <p className="text-sm text-blue-300 mt-1">
+                                        Anterior: <strong>{currentProgression.lastLoad}kg</strong>.
+                                        Meta sugerida: <strong className="text-blue-400">{currentProgression.suggestedLoad}kg</strong>!
                                     </p>
                                 </div>
                             </div>

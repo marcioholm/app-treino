@@ -60,6 +60,7 @@ export async function POST(req: Request) {
                 data: {
                     userId: user.id,
                     tenantId: trainer.tenantId,
+                    trainerId: trainer.id,
                     phone: phone || null,
                 },
             });

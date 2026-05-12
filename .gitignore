@@ -85,3 +85,4 @@ services/
 
 # Temporary scratch files
 /scratch
+.env*.local

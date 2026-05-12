@@ -17,7 +17,7 @@ interface GenerateParams {
     studentId: string;
 }
 export async function generateWorkout({ studentId }: GenerateParams) {
-    // Fetch student with user, goals, assessments and RECENT anamnesis
+    // Fetch student with user, goals, assessments, check-ins and progressions
     const student = await prisma.student.findUnique({
         where: { id: studentId },
         include: {
@@ -28,6 +28,8 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                 include: { question: true }
             },
             physicalAssessments: { orderBy: { date: 'desc' }, take: 1 },
+            checkIns: { orderBy: { createdAt: 'desc' }, take: 3 },
+            progressions: { include: { exercise: true } },
             tenant: true
         }
     });
@@ -39,7 +41,7 @@ export async function generateWorkout({ studentId }: GenerateParams) {
     const goal = student.goals[0];
     const physicalAssessment = student.physicalAssessments[0];
 
-    // Filter anamnesis to only use the most recent template's answers
+    // 1. Contexto de Anamnese
     let anamnesisContext = 'Nenhum dado de anamnese encontrado.';
     if (student.anamnesisAnswers.length > 0) {
         const latestTemplateId = student.anamnesisAnswers[0].templateId;
@@ -49,6 +51,16 @@ export async function generateWorkout({ studentId }: GenerateParams) {
             return `${ans.question.text}: ${ans.answerText || ans.answerArray.join(', ')}`;
         }).join('\n');
     }
+
+    // 2. Contexto de Evolução (Progressões e Performance)
+    const evolutionContext = student.progressions.length > 0 
+        ? student.progressions.map(p => `- ${p.exercise.name}: Última carga ${p.lastLoad}kg | PR ${p.personalRecord}kg`).join('\n')
+        : 'Sem histórico de cargas registrado.';
+
+    // 3. Contexto de Feedback (Check-ins)
+    const feedbackContext = student.checkIns.length > 0
+        ? student.checkIns.map(c => `- Data: ${c.createdAt.toLocaleDateString()} | Peso: ${c.weight}kg | Energia: ${c.energy}/5 | Dor: ${c.soreness}/5 | Motivação: ${c.motivation}/5`).join('\n')
+        : 'Sem check-ins recentes.';
 
     if (!physicalAssessment) {
         throw new Error('Avaliação física ausente. O treino personalizado exige uma avaliação física prévia.');
@@ -98,18 +110,20 @@ export async function generateWorkout({ studentId }: GenerateParams) {
         equipment: ex.equipment
     }));
 
-    // Call AI for generation
+    // Call AI for generation with ENHANCED CONTEXT
     const aiResult = await generateWorkoutWithAI({
         studentName: student.user.name,
         gender: student.user.gender as string,
         goal: goal.objective,
         level: goal.level,
         daysPerWeek: goal.daysPerWeek,
-        exercises: exerciseDetails as any, // Pass full details now
+        exercises: exerciseDetails as any,
         weight: weight || undefined,
         fatPercent: fatPercent || undefined,
         restrictions: goal.restrictions,
-        anamnesisContext
+        anamnesisContext,
+        evolutionContext,
+        feedbackContext
     });
 
     let createdWorkout;
@@ -121,7 +135,7 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                     tenantId: student.tenantId,
                     studentId: student.id,
                     name: aiResult.name ? `M&K: ${aiResult.name}` : `M&K: Treino Personalizado - ${student.user.name}`,
-                    notes: `Gerado via Engine M&K Fitness v2. Foco: ${goal.objective}.`,
+                    notes: `Gerado via Engine M&K Fitness v3 (Master Prompt). Foco: ${goal.objective}.`,
                     published: false
                 }
             });
@@ -140,14 +154,13 @@ export async function generateWorkout({ studentId }: GenerateParams) {
 
                 let exerciseOrder = 0;
                 for (const exData of sessionData.exercises) {
-                    // Fuzzy matching: find exercise that contains the name or is contained by it
+                    // Fuzzy matching
                     let matchedExercise = validExercises.find(e => 
                         e.name.toLowerCase() === exData.name.toLowerCase() ||
                         e.name.toLowerCase().includes(exData.name.toLowerCase()) ||
                         exData.name.toLowerCase().includes(e.name.toLowerCase())
                     );
 
-                    // Ultimate fallback: if still not found, try matching by first word
                     if (!matchedExercise) {
                         const firstWord = exData.name.split(' ')[0].toLowerCase();
                         matchedExercise = validExercises.find(e => e.name.toLowerCase().startsWith(firstWord));
@@ -166,6 +179,10 @@ export async function generateWorkout({ studentId }: GenerateParams) {
                             sets: exData.sets || 3,
                             reps: exData.reps || "12",
                             restTime: exData.restTime || 60,
+                            rir: exData.rir,
+                            cadence: exData.cadence,
+                            progression: exData.progression,
+                            technicalNotes: exData.technicalNotes
                         }
                     });
                     exerciseOrder++;

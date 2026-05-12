@@ -60,51 +60,84 @@ export async function generateWorkoutWithAI(context: {
     fatPercent?: number;
     restrictions?: string[];
     anamnesisContext?: string;
+    evolutionContext?: string; // New context field
+    feedbackContext?: string;  // New context field
 }): Promise<{
     name: string;
-    sessions: { name: string; exercises: { name: string; sets: number; reps: string; restTime: number }[] }[];
+    sessions: { 
+        name: string; 
+        exercises: { 
+            name: string; 
+            sets: number; 
+            reps: string; 
+            restTime: number;
+            rir?: string;
+            cadence?: string;
+            progression?: string;
+            technicalNotes?: string;
+        }[] 
+    }[];
 }> {
     const exercisesCatalog = context.exercises.map(ex => 
         `- ${ex.name} (${ex.group} | ${ex.modality}${ex.equipment ? ` | ${ex.equipment}` : ''})`
     ).join('\n');
     
     const systemPrompt = `
-Você é um Personal Trainer Especialista da Academia M&K Fitness Center, focado em alta performance feminina e biomecânica.
+Você é uma IA especialista em prescrição de treinamento resistido feminino baseada em evidências científicas atualizadas sobre hipertrofia, emagrecimento, recomposição corporal, força e saúde metabólica da M&K Fitness Center.
 
-DIRETRIZES DE OURO:
-1. SELEÇÃO DE EXERCÍCIOS: Use APENAS os nomes contidos no "CATÁLOGO DE EXERCÍCIOS" abaixo. É PROIBIDO inventar exercícios ou usar nomes diferentes dos fornecidos.
-2. FOCO FEMININO (ESTRATÉGICO):
-   - Priorize Inferiores (Glúteos, Quadríceps, Posterior) em 70% do volume total.
-   - Treinos de Superiores devem ser elegantes e funcionais, sem volume excessivo de ombros/braços a menos que solicitado.
-3. PERSONALIZAÇÃO (ANAMNESE): Leia atentamente a anamnese. Se ela odeia um exercício ou equipamento, NÃO o use. Se ela ama, coloque no treino.
-4. ESTRUTURA: Gere EXATAMENTE 8 exercícios por sessão. Use sessões A, B, C (ou mais conforme os dias da semana).
-5. VARIEDADE: Garanta que cada sessão tenha exercícios únicos. Não repita exercícios em dias diferentes.
+Sua função é criar treinos 100% individualizados com base na avaliação física, anamnese e evolução da aluna.
+
+REGRAS CIENTÍFICAS OBRIGATÓRIAS:
+1. Baseie as decisões em: Sobrecarga progressiva, Volume semanal ideal, Intensidade relativa (RIR/RPE), Periodização ondulatória/linear e Recuperação muscular.
+2. NUNCA gere treinos genéricos. Cada plano deve ter identidade única.
+3. SELEÇÃO DE EXERCÍCIOS: Use APENAS os nomes contidos no "CATÁLOGO DE EXERCÍCIOS" abaixo.
+4. FOCO FEMININO: Priorize biomecânica de glúteos e quadríceps (70% do volume), mantendo superiores elegantes e funcionais.
+5. LÓGICA DE DECISÃO:
+   - Se Iniciante: Técnica e adaptação.
+   - Se Avançada: Periodização estratégica.
+   - Se Fadiga Alta: Aplicar Deload.
+   - Se Estagnação: Alterar estímulo.
+
+PROIBIDO REPETIR TREINOS IGUAIS ENTRE ALUNAS.
 `.trim();
 
     const userPrompt = `
-Gere o Protocolo de Treinamento para: ${context.studentName}
-
-CONTEXTO BIOMÉTRICO:
+DADOS DA ALUNA:
+- Nome: ${context.studentName}
 - Gênero: ${context.gender || 'FEMININO'}
-- Nível: ${context.level}
 - Objetivo: ${context.goal}
+- Nível: ${context.level}
 - Frequência: ${context.daysPerWeek}x na semana
 
-CONTEXTO DA ANAMNESE (LEITURA OBRIGATÓRIA):
+AVALIAÇÃO E ANAMNESE:
 ${context.anamnesisContext || 'Nenhum dado adicional.'}
 
-CATÁLOGO DE EXERCÍCIOS DISPONÍVEIS (ESCOLHA APENAS DESTA LISTA):
+EVOLUÇÃO E PERFORMANCE RECENTE:
+${context.evolutionContext || 'Primeiro treino ou sem dados recentes.'}
+
+FEEDBACK E ADESÃO:
+${context.feedbackContext || 'Sem feedback recente.'}
+
+CATÁLOGO DE EXERCÍCIOS DISPONÍVEIS (USE APENAS ESTES):
 ${exercisesCatalog}
 
-INSTRUÇÕES DE SAÍDA:
-Retorne APENAS um JSON puro (sem explicações) seguindo este formato:
+ESTRUTURA DE SAÍDA OBRIGATÓRIA (JSON PURO):
 {
-  "name": "Protocolo M&K: [Nome da Aluna] - [Objetivo]",
+  "name": "Protocolo Premium: [Objetivo] - [Aluna]",
   "sessions": [
     {
       "name": "Sessão [A/B/C] - [Foco Muscular]",
       "exercises": [
-        { "name": "NOME EXATO DO CATÁLOGO", "sets": 4, "reps": "10-12", "restTime": 60 }
+        { 
+          "name": "NOME EXATO DO CATÁLOGO", 
+          "sets": 4, 
+          "reps": "10-12", 
+          "restTime": 60,
+          "rir": "2",
+          "cadence": "2-0-2",
+          "progression": "+2-5% carga se concluir reps",
+          "technicalNotes": "Ex: Pico de contração de 2s"
+        }
       ]
     }
   ]

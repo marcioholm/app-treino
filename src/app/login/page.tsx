@@ -11,13 +11,15 @@ function cn(...inputs: ClassValue[]) {
 }
 
 function LoginForm() {
-    const [isRegister, setIsRegister] = useState(false);
+    const [mode, setMode] = useState<'login' | 'register' | 'reset'>('login');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [phone, setPhone] = useState('');
     const [trainerCode, setTrainerCode] = useState('');
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
@@ -25,7 +27,7 @@ function LoginForm() {
 
     useEffect(() => {
         if (searchParams.get('register') === 'true') {
-            setIsRegister(true);
+            setMode('register');
         }
     }, [searchParams]);
 
@@ -84,6 +86,48 @@ function LoginForm() {
             }
 
             router.push('/student/today');
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleResetPassword = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+        setSuccess('');
+
+        if (password !== confirmPassword) {
+            setError('As senhas não coincidem');
+            setLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    email, 
+                    trainerCode, 
+                    newPassword: password 
+                })
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                throw new Error(data.error || 'Erro ao redefinir senha');
+            }
+
+            setSuccess('Senha redefinida com sucesso! Você já pode entrar.');
+            setTimeout(() => {
+                setMode('login');
+                setSuccess('');
+                setPassword('');
+                setConfirmPassword('');
+            }, 3000);
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -154,10 +198,14 @@ function LoginForm() {
                     {/* Header */}
                     <div className="text-center mb-10">
                         <h2 className="font-display text-4xl font-black text-white mb-3 tracking-tight">
-                            {isRegister ? 'Criar conta' : 'Acesse o App'}
+                            {mode === 'register' ? 'Criar conta' : mode === 'reset' ? 'Recuperar senha' : 'Acesse o App'}
                         </h2>
                         <p className="text-muted-foreground font-medium">
-                            {isRegister ? 'O seu corpo dos sonhos começa aqui.' : 'Entre para continuar evoluindo.'}
+                            {mode === 'register' 
+                                ? 'O seu corpo dos sonhos começa aqui.' 
+                                : mode === 'reset'
+                                ? 'Use o código do seu personal para redefinir.'
+                                : 'Entre para continuar evoluindo.'}
                         </p>
                     </div>
 
@@ -165,20 +213,20 @@ function LoginForm() {
                     <div className="flex mb-10 bg-white/5 border border-white/10 p-1.5 rounded-2xl backdrop-blur-md">
                         <button
                             type="button"
-                            onClick={() => { setIsRegister(false); setError(''); }}
+                            onClick={() => { setMode('login'); setError(''); setSuccess(''); }}
                             className={cn(
                                 "flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300",
-                                !isRegister ? 'bg-gradient-brand text-white shadow-pink translate-y-0' : 'text-muted-foreground hover:text-white'
+                                mode === 'login' ? 'bg-gradient-brand text-white shadow-pink translate-y-0' : 'text-muted-foreground hover:text-white'
                             )}
                         >
                             Já sou aluna
                         </button>
                         <button
                             type="button"
-                            onClick={() => { setIsRegister(true); setError(''); }}
+                            onClick={() => { setMode('register'); setError(''); setSuccess(''); }}
                             className={cn(
                                 "flex-1 py-3 px-4 rounded-xl text-sm font-bold transition-all duration-300",
-                                isRegister ? 'bg-gradient-brand text-white shadow-pink translate-y-0' : 'text-muted-foreground hover:text-white'
+                                mode === 'register' ? 'bg-gradient-brand text-white shadow-pink translate-y-0' : 'text-muted-foreground hover:text-white'
                             )}
                         >
                             Quero treinar
@@ -191,7 +239,13 @@ function LoginForm() {
                         </div>
                     )}
 
-                    {isRegister ? (
+                    {success && (
+                        <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-500 p-4 rounded-xl mb-6 text-sm">
+                            {success}
+                        </div>
+                    )}
+
+                    {mode === 'register' ? (
                         <form onSubmit={handleRegister} className="space-y-4">
                             <div>
                                 <label className="block text-sm font-medium text-foreground mb-2">Nome completo</label>
@@ -273,6 +327,63 @@ function LoginForm() {
                                 Ao criar conta, você concorda com nossos termos de uso
                             </p>
                         </form>
+                    ) : mode === 'reset' ? (
+                        <form onSubmit={handleResetPassword} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">E-mail</label>
+                                <input
+                                    type="email"
+                                    required
+                                    className="w-full px-4 py-3.5 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                    placeholder="seu@email.com"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">Código da personal</label>
+                                <input
+                                    type="text"
+                                    required
+                                    className="w-full px-4 py-3.5 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all uppercase"
+                                    value={trainerCode}
+                                    onChange={(e) => setTrainerCode(e.target.value)}
+                                    placeholder="MK123456"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">Nova senha</label>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    required
+                                    className="w-full px-4 py-3.5 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-foreground mb-2">Confirmar nova senha</label>
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    required
+                                    className="w-full px-4 py-3.5 bg-card border border-border rounded-xl text-foreground placeholder-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    placeholder="••••••••"
+                                />
+                            </div>
+                            <GradientButton type="submit" className="w-full mt-2" size="lg" disabled={loading}>
+                                {loading ? 'Redefinindo...' : 'Redefinir senha'}
+                            </GradientButton>
+                            <button 
+                                type="button"
+                                onClick={() => setMode('login')}
+                                className="w-full text-sm text-muted-foreground hover:text-white transition-colors py-2"
+                            >
+                                Voltar para o login
+                            </button>
+                        </form>
                     ) : (
                         <form onSubmit={handleLogin} className="space-y-4">
                             <div>
@@ -289,9 +400,13 @@ function LoginForm() {
                             <div>
                                 <div className="flex items-center justify-between mb-2">
                                     <label className="block text-sm font-medium text-foreground">Senha</label>
-                                    <Link href="#" className="text-xs text-primary hover:text-primary-light">
+                                    <button 
+                                        type="button"
+                                        onClick={() => setMode('reset')}
+                                        className="text-xs text-primary hover:text-primary-light"
+                                    >
                                         Esqueceu a senha?
-                                    </Link>
+                                    </button>
                                 </div>
                                 <div className="relative">
                                     <input
